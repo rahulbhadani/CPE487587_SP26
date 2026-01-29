@@ -1117,6 +1117,76 @@ dropout.
 \end{frame}
 
 
+\subsection{Network Architecture Consideration}
+
+\begin{frame}
+    \subsectionpage
+\end{frame}
+
+\begin{frame}{Skip/Residual Connection}
+
+    A shallower layer directly connected to a much deeper layer in a neural network is called \textbf{Skip Connection} or \textbf{Residual Connection}.
+
+    \begin{tikzpicture}[scale=0.4,
+    node distance=0.4cm,
+    block/.style={rectangle, draw, minimum width=3cm, minimum height=0.4cm, text centered},
+    arrow/.style={->,thick},
+    ]
+    
+    % Input x
+    \node (input) at (0, 4) {$x$};
+    
+    % First weight layer
+    \node [block, below=of input] (w1) {weight layer};
+    \draw [arrow] (input) -- (w1);
+    
+    % First relu
+    \node (relu1) [below=0.3cm of w1] {relu};
+    \draw [arrow] (w1) -- (relu1);
+    
+    % % Second weight layer
+    % \node [block, below=0.3cm of relu1] (w2) {weight layer};
+    % \draw [arrow] (relu1) -- (w2);
+    
+    % Ellipsis (dots)
+    \node (dots) [below=0.2cm of relu1] {$\vdots$};
+    \draw [arrow] (relu1) -- (dots);
+    
+    % Third weight layer
+    \node [block, below=0.1cm of dots] (w3) {weight layer};
+    
+    % Last relu
+    \node (relu2) [below=0.2cm of w3] {relu};
+    \draw [arrow] (w3) -- (relu2);
+    
+    % Addition node
+    \node [circle, draw, minimum width=0.8cm, below=0.3cm of relu2] (add) {$\oplus$};
+    \draw [arrow] (relu2) -- (add);
+    
+    % Identity connection (curved arrow from input to add)
+    \draw [arrow] (input) -- ++(4, 0) -- ++(0, -6.5) -- (add);
+    
+    % Output
+    \node (output) [below=0.25cm of add] {relu};
+    \draw [arrow] (add) -- (output);
+    
+    % Labels
+    \node [left=0.5cm of w1] {$\mathcal{F}(x)$};
+    \node [left=0.5cm of add] {$\mathcal{F}(x) + x$};
+    \node [right=1.5cm of relu1] {$x$};
+    \node [right=1cm of add] {identity};
+
+\end{tikzpicture}
+
+\end{frame}
+
+
+
+\begin{frame}{Skip/Residual Connection}
+
+    Prevents Vanishing or Exploding Gradients.
+    
+\end{frame}
 
 \begin{frame}{References and Additional Reading}
 
