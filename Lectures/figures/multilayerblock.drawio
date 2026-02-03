@@ -1,0 +1,34 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" version="29.3.6">
+  <diagram name="Page-1" id="8phGlNGCK9FWJFax0Ctq">
+    <mxGraphModel dx="640" dy="406" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="1" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Q94mk1ZHUudXeH12byjq-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=24;strokeWidth=2;" value="&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;5.045ex&quot; height=&quot;2.262ex&quot; role=&quot;img&quot; viewBox=&quot;0 -750 2230 1000&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; style=&quot;vertical-align: -0.566ex;&quot;&gt;&lt;defs&gt;&lt;path id=&quot;MJX-1-TEX-C-48&quot; d=&quot;M37 475C60 477 85 490 104 508C112 517 113 519 119 531C134 559 150 580 169 592C187 605 220 613 254 613C282 613 300 603 300 578C300 526 278 413 264 359L260 343L236 342C208 341 204 340 187 332C160 319 139 298 139 285C139 283 140 281 141 279C146 273 145 273 194 273C228 273 240 273 240 272C240 271 237 260 233 247C210 170 187 99 159 26C143-18 139-26 139-29C139-37 147-41 155-41C179-41 215-22 232 0C236 5 241 16 258 62C279 118 305 195 321 249L328 273L438 273L549 274C553 275 567 279 569 281L562 250C541 168 528 93 522 23L522 13C522-18 535-35 562-46C568-48 569-48 588-48C679-48 761-9 792 46C797 55 803 71 803 75C803 85 795 88 782 87C760 84 735 72 718 55C708 45 705 38 701 25C687 23 669 20 658 20C634 20 621 32 621 56C621 64 623 77 625 101C633 173 647 240 675 341C702 439 738 550 774 645C780 661 783 668 783 672C783 681 774 683 764 683C739 681 704 661 690 641C679 625 623 466 594 366L587 342L467 342C365 342 348 342 348 343C365 394 383 480 391 540C395 569 400 613 400 622C400 630 397 641 393 649C384 671 362 683 330 683C202 683 100 619 45 539C32 521 18 498 18 487C18 479 27 475 37 475Z&quot;&gt;&lt;/path&gt;&lt;path id=&quot;MJX-1-TEX-N-28&quot; d=&quot;M333-241C333-237 332-236 322-226C217-115 167 37 167 250C167 463 217 615 322 726C332 736 333 737 333 741C333 743 332 745 330 747C327 750 327 750 315 750L302 750L274 726C205 663 153 575 123 473C103 403 94 342 94 250C94 39 160-122 274-226L302-250L315-250C328-250 333-249 333-241Z&quot;&gt;&lt;/path&gt;&lt;path id=&quot;MJX-1-TEX-B-1D431&quot; d=&quot;M227 0L235 0L235 62L217 62L198 63L285 163C286 162 366 63 366 62L338 62L338 0L347 0C359 2 445 3 469 3C492 3 566 3 578 0L586 0L586 62L545 62L504 63L355 246L471 382L566 382L566 444L559 444C550 441 485 441 466 441C446 441 369 442 360 444L352 444L352 382L389 382L354 341C335 318 318 297 316 297C314 297 309 304 281 339L246 382L274 382L274 444L265 444C253 442 167 441 143 441C120 441 46 441 34 444L26 444L26 382L109 382L245 213L117 62L21 62L21 0L28 0C37 3 102 3 121 3C141 3 218 2 227 0Z&quot;&gt;&lt;/path&gt;&lt;path id=&quot;MJX-1-TEX-N-29&quot; d=&quot;M60 749C57 747 55 742 55 738C56 737 61 731 66 725C172 615 221 462 221 250C221 38 172-115 66-225C61-231 56-237 55-238C55-249 59-250 74-250L86-250L114-226C183-163 235-75 265 28C285 96 294 159 294 250C294 461 228 622 114 726L86 750L74 750C66 750 62 749 60 749Z&quot;&gt;&lt;/path&gt;&lt;/defs&gt;&lt;g stroke=&quot;currentColor&quot; fill=&quot;currentColor&quot; stroke-width=&quot;0&quot; transform=&quot;scale(1,-1)&quot;&gt;&lt;g data-mml-node=&quot;math&quot; data-latex=&quot;\mathcal{H}(\mathbf{x})&quot;&gt;&lt;g data-mml-node=&quot;TeXAtom&quot; data-latex=&quot;\mathcal{H}&quot; data-mjx-texclass=&quot;ORD&quot;&gt;&lt;g data-mml-node=&quot;mi&quot; data-latex=&quot;H&quot;&gt;&lt;use data-c=&quot;48&quot; xlink:href=&quot;#MJX-1-TEX-C-48&quot;&gt;&lt;/use&gt;&lt;/g&gt;&lt;/g&gt;&lt;g data-mml-node=&quot;mo&quot; data-latex=&quot;(&quot; transform=&quot;translate(845,0)&quot;&gt;&lt;use data-c=&quot;28&quot; xlink:href=&quot;#MJX-1-TEX-N-28&quot;&gt;&lt;/use&gt;&lt;/g&gt;&lt;g data-mml-node=&quot;TeXAtom&quot; data-latex=&quot;\mathbf{x}&quot; data-mjx-texclass=&quot;ORD&quot; transform=&quot;translate(1234,0)&quot;&gt;&lt;g data-mml-node=&quot;mi&quot; data-latex=&quot;x&quot;&gt;&lt;use data-c=&quot;1D431&quot; xlink:href=&quot;#MJX-1-TEX-B-1D431&quot;&gt;&lt;/use&gt;&lt;/g&gt;&lt;/g&gt;&lt;g data-mml-node=&quot;mo&quot; data-latex=&quot;)&quot; transform=&quot;translate(1841,0)&quot;&gt;&lt;use data-c=&quot;29&quot; xlink:href=&quot;#MJX-1-TEX-N-29&quot;&gt;&lt;/use&gt;&lt;/g&gt;&lt;/g&gt;&lt;/g&gt;&lt;/svg&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="200" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Q94mk1ZHUudXeH12byjq-2" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="130" y="189.5" as="sourcePoint" />
+            <mxPoint x="200" y="189.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q94mk1ZHUudXeH12byjq-3" edge="1" parent="1" source="Q94mk1ZHUudXeH12byjq-1" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=2;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="350" y="230" as="sourcePoint" />
+            <mxPoint x="390" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q94mk1ZHUudXeH12byjq-4" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Multi-layer Neural Network&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="120" x="200" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="Q94mk1ZHUudXeH12byjq-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;$$\mathbf{x}$$&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="70" y="171" as="geometry" />
+        </mxCell>
+        <mxCell id="Q94mk1ZHUudXeH12byjq-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=24;" value="$$\mathbf{y}$$" vertex="1">
+          <mxGeometry height="30" width="60" x="380" y="171" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
