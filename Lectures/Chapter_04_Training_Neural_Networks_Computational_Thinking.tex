@@ -1184,8 +1184,166 @@ dropout.
 
 \begin{frame}{Skip/Residual Connection}
 
+\small
+
     Prevents Vanishing or Exploding Gradients.
+
+Consider a regular ANN:
+\begin{figure}
+\includegraphics[width=0.5\linewidth]{figures/multilayerblock.pdf}
+
+If a multilayer nn can mdel $\mathcal{H}$, then it may also be able to model residual $\mathcal{H}(\xbf) - \xbf$, assuming input/ouput have same dimensions. So rather than expecting layers to model $\mathcal{H}$, we expect them to model $\Fcal(\xbf) = \mathcal{H}(\xbf) - \xbf$, and the using a skip connection, we have $\Fcal(\xbf) + \xbf$ later.
+\end{figure}
+
+So input-output mapping becomes:
+
+\begin{align*}
+\ybf = \Fcal( \xbf, \{ W_i\} ) + \xbf
+\end{align*}
+
+\footnotesize
+
+\textbf{Reference}: He, Kaiming, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. "Deep residual learning for image recognition." In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 770-778. 2016.
+
     
+\end{frame}
+
+\begin{frame}{Number of layers and neurons to consider}
+
+Consider following citieria:
+
+\begin{enumerate}
+
+
+\item How does the peformance change as we increase the number of layers?
+\item Do training time scale with number of layers?
+
+\item What happens to the training performance if you add more neurons?
+\end{enumerate}
+
+\end{frame}
+
+
+
+\begin{frame}{Early Stopping}
+
+
+
+\begin{block}{}
+
+Stop the training process when some conditions are fulfilled to avoid overfitting.
+
+\end{block}
+
+Usually adhoc, but we can establish some rules. Use validation set for early stopping.
+
+\begin{figure}
+\includegraphics[width=0.5\linewidth]{figures/training_validation.png}
+\end{figure}
+
+\end{frame}
+
+
+
+\begin{frame}{Early Stopping}
+
+
+
+
+$\Lcal$ be the loss (or objective or cost) function. $\Lcal_{tr}$ be the training loss, $\Lcal_{val}$ be the validation loss. We can define the lowest validation set error obtained in epochs upto $t$ epochs:
+
+\begin{align*}
+\Lcal_{opt}(t) := \min_{t' \leq t} E_{val}(t')
+\end{align*}
+
+
+We can define generalization loss as 
+
+\begin{align*}
+G(t) = 100 \bigg( \frac{\Lcal_{val}(t)}{\Lcal_{opt}(t)} -1 \bigg)
+\end{align*}
+
+It  means we define generalization loss at epoch $t$ as relative increase of validation error over the minimum so far. And, we specify a stopping criteria as, \textbf{stop when generalization loss after epoch $t$ exceeds a certain threshold $\alpha$.}
+
+\end{frame}
+
+
+
+
+\begin{frame}{But let it train for a while before early stopping}
+
+
+
+To avoid stopping while the model is still learning rapidly, we define \textbf{training progress} over a strip of length $k$:
+    
+    \vfill
+    
+    \begin{align*}
+        P_k(t) &:= 1000 \cdot \left( \frac{\sum_{t'=t-k+1}^{t} E_{tr}(t')}{k \cdot \min_{t'=t-k+1}^{t} E_{tr}(t')} - 1 \right)
+    \end{align*}
+    
+    \vfill
+    
+    \begin{itemize}
+        \item Measures how much \textbf{average} error exceeds \textbf{minimum} error in a strip.
+        \item High values indicate unstable or rapidly improving phases.
+        \item Approaches zero as training stabilizes.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Stopping Criteria: Generalization vs. Progress}
+    We can define a criterion using the quotient of generalization loss ($G$) and training progress ($P_k$):
+    
+    \vfill
+    
+    \begin{align*}
+        PQ_{\alpha} &: \text{stop at first end-of-strip epoch } t \text{ where} \\
+        &\frac{G(t)}{P_k(t)} > \alpha
+    \end{align*}
+    
+    \vfill
+    
+    \begin{itemize}
+        \item \textbf{Logic:} Only stop when the ratio of "error increase" to "learning speed" is too high.
+        \item Assumes strips of length $k=5$ for standard measurements.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Stopping Criteria: Successive Increases}
+    The \textbf{third class} of stopping criteria relies on the sign of changes in generalization error.
+    
+    \vfill
+    
+    \begin{align*}
+        UP_s &: \text{stop if } UP_{s-1} \text{ stops after epoch } t - k \text{ and} \\
+        &E_{va}(t) > E_{va}(t - k) \\
+        UP_1 &: \text{stop after first end-of-strip epoch } t \text{ with } E_{va}(t) > E_{va}(t - k)
+    \end{align*}
+    
+    \vfill
+    
+    \begin{itemize}
+        \item Training stops when generalization error increases in $s$ successive strips.
+        \item This assumes consecutive increases indicate the start of final overfitting.
+    \end{itemize}
+\end{frame}
+
+% --- Frame 4: Advantages of UP Criteria ---
+\begin{frame}{Advantages of the UP Criteria}
+    \vfill
+    
+    \begin{itemize}
+        \item \textbf{Magnitude Independent}: The decision is independent of how large the increases actually are.
+        \item \textbf{Local Measurement}: Changes are measured locally rather than against global minima.
+        \item \textbf{Application}: Useful in pruning algorithms where errors may remain high over long periods.
+    \end{itemize}
+    
+    \vfill
+    
+    But remember, these is just one kind of early stopping example, you can design your own.
+    
+    \textbf{Reference:} Prechelt, Lutz. "Early stopping-but when?." In Neural Networks: Tricks of the trade, pp. 55-69. Berlin, Heidelberg: Springer Berlin Heidelberg, 2002.
 \end{frame}
 
 \begin{frame}{References and Additional Reading}
@@ -1197,6 +1355,217 @@ dropout.
 \item Huang, Lei. Normalization Techniques in Deep Learning. Cham: Springer, 2022.
 \end{enumerate}
 
+\end{frame}
+
+\begin{frame}{Learning Rate Scheduling}
+
+\begin{block}{}
+
+Automatically adjust the learning rate during training.
+
+\end{block}
+
+\begin{enumerate}
+\item \textbf{StepLR:} reduces the learning rate by a fixed factor at regular intervals.
+\item \textbf{ExponentialLR:} reduces the learning rate by multiplying it by a decay factor each epoch.
+
+\item \textbf{CosineAnnealingLR:} follows a cosine curve, starting high and smoothly decreasing to a minimum value.
+
+\item \textbf{ReduceLROnPlateau:}  monitoring validation metrics and reducing the learning rate only when improvement stops happening.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Warm-Up Scheduling}
+
+\begin{block}{}
+
+Warmup scheduling is a strategy used in deep learning to stabilize the training of complex neural network architectures. It addresses the trade-off between optimization stability and training speed.
+
+\end{block}
+
+\begin{enumerate}
+\item For simplicity, the learning rate typically increases linearly during the warmup period until it reaches a specified initial maximum.
+
+\item Once the warmup is complete, the learning rate is gradually decreased (cooled down) until the optimization process concludes.
+\end{enumerate}
+
+\end{frame}
+
+
+\subsection{Optimizers}
+
+\begin{frame}
+    \subsectionpage
+\end{frame}
+
+\begin{frame}{Different Kind of Optimizers}
+Gradient Descent is one of the many optimizers that can be used to optimize a function and find its minima. Some other commonly popular optimizers are
+\begin{enumerate}
+\item RMSProp
+\item Adagrad (Adaptive Gradient)
+\item SGD with Momentum
+\item SGD with Nesterov Accelerated Gradient
+\item AdaDelta
+\item ADAM
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{RMSProp}
+\small
+\textbf{RMSProp} (Root Mean Square Propagation) is an adaptive learning rate method that divides the learning rate by an exponentially decaying average of squared gradients.
+
+\begin{itemize}
+    \item Update rule:
+    \begin{multiequation}
+    g_t &= \nabla_\theta J(\theta_t) \\
+    v_t &= \beta v_{t-1} + (1 - \beta) g_t^2 \\
+    \theta_{t+1} &= \theta_t - \frac{\eta}{\sqrt{v_t} + \epsilon} g_t
+    \end{multiequation}
+    \item $\eta$: Learning rate
+    \item $\beta$: Decay rate (typically 0.9)
+    \item $\epsilon$: Small constant for numerical stability
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Adagrad (Adaptive Gradient)}
+\small
+\textbf{Adagrad} adapts the learning rate to the parameters, performing smaller updates for frequently occurring features and larger updates for infrequent ones.
+
+\begin{itemize}
+    \item Update rule:
+    \begin{multiequation}
+    g_t &= \nabla_\theta J(\theta_t) \\
+    G_t &= G_{t-1} + g_t^2 \\
+    \theta_{t+1} &= \theta_t - \frac{\eta}{\sqrt{G_t} + \epsilon} g_t
+    \end{multiequation}
+    \item $\eta$: Learning rate
+    \item $G_t$: Accumulated squared gradients
+    \item $\epsilon$: Small constant for numerical stability
+\end{itemize}
+\end{frame}
+
+\begin{frame}{SGD with Momentum}
+\small
+\textbf{SGD with Momentum} accelerates gradient descent by adding a fraction of the previous update to the current update.
+
+\begin{itemize}
+    \item Update rule:
+    \begin{multiequation}
+    g_t &= \nabla_\theta J(\theta_t) \\
+    v_t &= \gamma v_{t-1} + \eta g_t \\
+    \theta_{t+1} &= \theta_t - v_t
+    \end{multiequation}
+    \item $\eta$: Learning rate
+    \item $\gamma$: Momentum term (typically 0.9)
+    \item $v_t$: Velocity vector
+\end{itemize}
+\end{frame}
+
+\begin{frame}{SGD with Nesterov Accelerated Gradient}
+\small
+\textbf{Nesterov Accelerated Gradient (NAG)} improves momentum by calculating the gradient at the estimated future position.
+
+\begin{itemize}
+    \item Update rule:
+    \begin{multiequation}
+    g_t &= \nabla_\theta J(\theta_t - \gamma v_{t-1}) \\
+    v_t &= \gamma v_{t-1} + \eta g_t \\
+    \theta_{t+1} &= \theta_t - v_t
+\end{multiequation}
+    \item $\eta$: Learning rate
+    \item $\gamma$: Momentum term (typically 0.9)
+    \item $v_t$: Velocity vector
+\end{itemize}
+\end{frame}
+
+\begin{frame}{AdaDelta}
+\small
+\textbf{AdaDelta} is an extension of Adagrad that reduces its aggressive, monotonically decreasing learning rate.
+\begin{columns}
+\column{0.5\linewidth}
+\begin{itemize}
+    \item Update rule:
+    \begin{multiequation}
+    g_t &= \nabla_\theta J(\theta_t) \\
+    E[g^2]_t &= \rho E[g^2]_{t-1} + (1 - \rho) g_t^2 \\
+    \Delta \theta_t &= -\frac{\sqrt{E[\Delta \theta^2]_{t-1} + \epsilon}}{\sqrt{E[g^2]_t + \epsilon}} g_t \\
+    E[\Delta \theta^2]_t &= \rho E[\Delta \theta^2]_{t-1} + (1 - \rho) \Delta \theta_t^2 \\
+    \theta_{t+1} &= \theta_t + \Delta \theta_t
+\end{multiequation}
+
+\end{itemize}
+
+\column{0.5\linewidth}
+\begin{itemize}
+    \item $\rho$: Decay rate (typically 0.9)
+    \item $\epsilon$: Small constant for numerical stability
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{ADAM (Adaptive Moment Estimation)}
+\small
+\textbf{ADAM} combines the benefits of RMSProp and Momentum by adapting learning rates and using momentum.
+
+\begin{columns}
+\column{0.5\linewidth}
+\begin{itemize}
+    \item Update rule:
+    \begin{multiequation}
+    g_t &= \nabla_\theta J(\theta_t) \\
+    m_t &= \beta_1 m_{t-1} + (1 - \beta_1) g_t \\
+    v_t &= \beta_2 v_{t-1} + (1 - \beta_2) g_t^2 \\
+    \hat{m}_t &= \frac{m_t}{1 - \beta_1^t} \\
+    \hat{v}_t &= \frac{v_t}{1 - \beta_2^t} \\
+    \theta_{t+1} &= \theta_t - \frac{\eta}{\sqrt{\hat{v}_t} + \epsilon} \hat{m}_t
+\end{multiequation}
+\end{itemize}
+
+\column{0.5\linewidth}
+\begin{itemize}
+    \item $\eta$: Learning rate
+    \item $\beta_1, \beta_2$: Exponential decay rates (typically 0.9 and 0.999)
+    \item $\epsilon$: Small constant for numerical stability
+\end{itemize}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{Stabilizing Gradients: Value Clipping}
+    In \textbf{value clipping}, each element of the gradient vector $g$ is independently forced into the range $[-c, c]$:
+    
+    \vfill
+    
+    \begin{align*}
+        g_i \leftarrow \max(-c, \min(c, g_i))
+    \end{align*}
+    
+    \vfill
+    
+    \begin{itemize}
+        \item \textbf{Hard Thresholding}: Prevents any single weight update from being inappropriately large.
+        \item \textbf{Effect on Direction}: Unlike norm clipping, this may change the \textit{direction} of the gradient vector.
+        \item \textbf{Implementation}: Often used to prevent "jitter" in unstable phases of training.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Stabilizing Gradients: Norm Clipping}
+    To prevent exploding gradients in unstable optimization problems, we rescale the gradient vector $g$ if its norm exceeds a threshold $\tau$:
+    
+    \vfill
+    
+    \begin{align*}
+        g \leftarrow \text{min}\left(1, \frac{\tau}{\|g\|}\right) g
+    \end{align*}
+    
+    \vfill
+    
+    \begin{itemize}
+        \item \textbf{Direction Preservation}: Unlike value clipping, norm clipping maintains the direction of the update.
+        \item \textbf{Synergy with Warmup}: Both techniques mitigate divergence in advanced network designs.
+    \end{itemize}
 \end{frame}
 
 
