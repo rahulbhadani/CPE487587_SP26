@@ -98,6 +98,25 @@ apple/.pic={
 
 \usetikzlibrary{positioning}
 
+% Define styles
+\tikzset{
+    box/.style={
+        rectangle,
+        draw=black,
+        fill=blue!20,
+        text width=2.2cm,
+        text centered,
+        minimum height=0.8cm,
+        font=\small
+    },
+    arrow/.style={
+        ->,
+        >=Stealth,
+        line width=1.5pt,
+        draw=black
+    }
+}
+
 
 \usepackage{bm}
 \usepackage{relsize}
@@ -1566,6 +1585,569 @@ Gradient Descent is one of the many optimizers that can be used to optimize a fu
         \item \textbf{Direction Preservation}: Unlike value clipping, norm clipping maintains the direction of the update.
         \item \textbf{Synergy with Warmup}: Both techniques mitigate divergence in advanced network designs.
     \end{itemize}
+\end{frame}
+
+\section{Customization of Neural Network Architecture}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+\begin{frame}{\texttt{nn.Module} in PyTorch}
+
+\texttt{nn.Module}: The fundamental building block of PyTorch neural networks.
+
+\begin{block}{Basic structure}
+
+\begin{enumerate}
+\item Abstract class
+\item A layer or collection of layers
+\item Encapsulates state (parameters) and behavior (operations).
+\item Can contain another \texttt{nn.Module} object.
+\end{enumerate}
+
+\end{block}
+
+
+\end{frame}
+
+\begin{frame}{}
+
+\begin{center}
+\begin{block}{Everything is a Module}
+
+PyTorch follows the principle that neural networks should be composable from simple, reusable components. Whether it's a single linear layer or a 1000-layer ResNet, both are \texttt{nn.Module} instances.
+
+\end{block}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Philosophy Behind \texttt{nn.Module}}
+
+    \footnotesize
+
+    \begin{block}{Design Principles}
+\begin{itemize}
+    \item \textbf{Everything is a Module}: From single layer to 1000-layer ResNet
+    \item \textbf{Separation of Definition and Execution}:
+    \begin{align*}
+        \text{Definition} &\neq \text{Execution} \\
+        \text{Graph structure} &\neq \text{Forward pass}
+    \end{align*}
+    \item \textbf{Explicit Over Implicit}: Manual forward pass definition
+    \item \textbf{Pythonic Design}: Uses standard Python inheritance and conventions
+    \item \textbf{Minimal Abstraction}: Can drop to raw tensor operations when needed
+\end{itemize}
+
+\vspace{5pt}
+
+\begin{align*}
+\texttt{nn.Module} &= \text{Container} + \text{Behavior} + \text{State} \\
+\text{Parameters} &\in \texttt{nn.Parameter} \subset \text{Tensor} \\
+\text{Sub-modules} &\in \texttt{nn.Module}
+\end{align*}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Philosophy Behind \texttt{nn.Module}}
+
+    \footnotesize
+
+    \begin{enumerate}
+        \item \textbf{Modularity:} Each nn.Module can be a small, reusable component. Complex networks are built by composing these modules. \vspace{2pt} \hrule
+        \item {\color{MediumRed}\textbf{Encapsulation:} nn.Module encapsulates both the parameters (as nn.Parameter) and the operations (in the forward method). It also manages the state of the module, including training mode (train/eval) and device placement (CPU/GPU). \vspace{2pt} \hrule }
+        \item \textbf{Automatic Differentiation:} By defining the forward pass, the backward pass (gradients) is automatically handled by PyTorch's autograd engine, provided that the operations used in the forward pass are differentiable and track gradients. \vspace{2pt} \hrule
+
+        \item {\color{MediumRed}\textbf{Hierarchical Structure:} nn.Module can contain other nn.Module instances, allowing for tree-like structures. This is how complex networks are built from simpler ones.\vspace{2pt} \hrule}
+
+        \item \textbf{Parameter Management:} nn.Module automatically tracks all nn.Parameter objects that are assigned as attributes. It also provides methods for moving parameters to different devices, saving and loading, etc.\vspace{2pt} \hrule
+
+        \item {\color{MediumRed}\textbf{Hooks:} nn.Module allows for the registration of hooks, which are functions that can be called at various stages (before/after forward/backward). This is useful for debugging, visualization, and extending functionality.}
+    \end{enumerate}
+    
+\end{frame}
+
+\begin{frame}[fragile]{A Class Diagram}
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=pink!10,
+    fontsize=\tiny,
+    breaklines
+]{bash}
+nn.Module
+|--- attributes:
+|   |--- _parameters: Dict[str, Parameter]
+|   |--- _modules: Dict[str, Module]
+|   |--- _buffers: Dict[str, Tensor]
+|   |--- training: bool
+|--- methods:
+|   |--- __init__()
+|   |--- __setattr__(name, value)
+|   |--- parameters() -> Iterator[Parameter]
+|   |--- named_parameters() -> Iterator[(str, Parameter)]
+|   |--- modules() -> Iterator[Module]
+|   |--- named_modules() -> Iterator[(str, Module)]
+|   |--- forward(*args, **kwargs) -> Tensor
+|   |--- train(mode: bool)
+|   |--- eval()
+|   |--- to(device: Device)
+|   |--- state_dict() -> Dict[str, Tensor]
+|   |--- load_state_dict(state_dict: Dict[str, Tensor])
+|--- abstract methods:
+|   |--- forward(*args, **kwargs) -> Tensor (to be implemented by subclasses)
+\end{minted}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Forward Pass}
+
+\small
+
+Forward is defined in \texttt{forward} function of \texttt{nn.Module} that has to be implemented for forward propagation structure.
+
+
+A very simplified view:
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=pink!10,
+    fontsize=\tiny,
+    breaklines
+]{Python}
+class Module:
+    def __init__(self):
+        self._parameters = {}       # Trainable parameters
+        self._buffers = {}          # Non-trainable state
+        self._modules = {}          # Child modules
+        self.training = True        # Training mode flag
+        self._forward_hooks = None  # Hooks for customization
+        self._backward_hooks = None
+    def forward(self, *input):
+        """Defines the computation performed at every call.
+        Should be overridden by all subclasses.
+        """
+        raise NotImplementedError
+    def __call__(self, *input, **kwargs):
+        """Enables calling the module like a function.
+        This is where everything happens.
+        """
+        # Set up hooks, handle training mode, etc.
+        result = self.forward(*input, **kwargs)
+        # Clean up hooks, etc.
+        return result
+\end{minted}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Parameters in \texttt{nn.Module}}
+
+The workflow of creating- a Neural Network object for training must register parameters that need to be optimized.
+
+\bigskip
+
+Parameter registration answers the question: \textbf{which parameters to optimize}
+
+\bigskip
+
+as, there can be more attributes in a nn.Module class that won't be to optimized.
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=pink!10,
+    fontsize=\tiny,
+    breaklines
+]{Python}
+self.weight = nn.Parameter(torch.Tensor(out_features, in_features))
+\end{minted}
+
+Other things happen under the hood on registering a parameter:
+
+
+\begin{enumerate}
+\item Only registered parameters are saved/loaded
+\item Registered tensors move together with \texttt{.to(device)}
+\item Only registered parameters get gradients
+\end{enumerate}
+
+
+\end{frame}
+
+
+\begin{frame}[fragile]{How Parameter Registration Works Internally}
+\begin{block}{Using \texttt{\_\_setattr\_\_}}
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=pink!10,
+    fontsize=\tiny,
+    breaklines
+]{Python}
+class MyModule:
+    def __setattr__(self, name, value):
+        # Special handling for Parameter, Module, Buffer
+        if isinstance(value, nn.Parameter):
+            self._parameters[name] = value
+        elif isinstance(value, nn.Module):
+            self._modules[name] = value
+        elif isinstance(value, torch.Tensor):
+            if name in self._buffers:
+                self._buffers[name] = value
+        # Call parent for normal attributes
+        super().__setattr__(name, value)
+\end{minted}
+\end{block}
+
+\footnotesize
+
+\begin{block}{Parameter Types}
+
+    \vspace{-15pt}
+
+\begin{align*}
+&\text{Parameters} &&\text{→ Learned via gradient descent} \\
+&\text{Buffers} &&\text{→ Saved but not learned} %\\
+%&\text{Computation} &&\text{→ Temporary values}
+\end{align*}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{What REALLY happens when you do \texttt{model(x)}?}
+
+\begin{tikzpicture}[
+    node distance=0.6cm and 0.8cm, 
+    scale=0.95, 
+    transform shape]
+    
+    % --- FIRST ROW: Left to Right ---
+    \node[box] (step1) {1. model.\\\texttt{\_\_call\_\_}(x)};
+    \node[box, right=of step1] (step2) {2. Forward\\Pre-Hooks};
+    \node[box, right=of step2] (step3) {3. Check JIT\\Tracing ( different path if true)};
+    \node[box, right=of step3] (step4) {4. Enter Autograd\\Context};
+    \node[box, right=of step4] (step5) {5. model.forward\\+ Graph};
+
+    % --- SECOND ROW: Right to Left (below step 5) ---
+    \node[box, below=1.2cm of step5] (step6) {6. Forward\\Hooks Executed};
+    \node[box, left=of step6] (step7) {7. Backward Hooks\\Registered};
+    \node[box, left=of step7] (step8) {8. Return Result\\with grad\_fn};
+    \node[box, left=of step8] (step9) {9. Autograd Graph\\Ready};
+
+    % --- DRAW ARROWS ---
+    % Row 1
+    \draw[arrow] (step1) -- (step2);
+    \draw[arrow] (step2) -- (step3);
+    \draw[arrow] (step3) -- (step4);
+    \draw[arrow] (step4) -- (step5);
+    
+    % Connection between rows (U-turn)
+    \draw[arrow] (step5.south) -- (step6.north);
+    
+    % Row 2
+    \draw[arrow] (step6) -- (step7);
+    \draw[arrow] (step7) -- (step8);
+    \draw[arrow] (step8) -- (step9);
+
+    % --- Annotation ---
+    \node[draw=gray, dashed, fill=yellow!10, rounded corners, font=\footnotesize, 
+            text width=12cm, below=1.5cm of step8] (note) 
+            {\begin{enumerate}
+            \item Submodules recursively call
+            \item \texttt{\_\_call\_\_}, operations create Function nodes
+            \item Builds computation graph
+            \end{enumerate} };
+    
+    \draw[draw=gray, dashed] (step5.south) -- (note.north west);
+
+    \end{tikzpicture}
+
+
+\end{frame}
+
+\begin{frame}{Layers in Neural Network Construction}
+
+    \begin{block}{}
+        Inherits \texttt{nn.Module}
+
+        \bigskip
+
+        Layers can be treated as composable, independent building blocks
+    \end{block}
+    
+\end{frame}
+
+
+\begin{frame}[fragile]{Some Custom Layers for Feature Engineering}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+        \begin{minted}[
+            linenos,
+            frame=lines,
+            framesep=2mm,
+            bgcolor=pink!10,
+            fontsize=\tiny,
+            breaklines
+        ]{Python}
+        class SquareLayer(nn.Module):
+            """x -> x^2"""
+            def forward(self, x):
+                return x ** 2
+
+        class PolynomialLayer(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.a = nn.Parameter(torch.tensor(1.0))
+                self.b = nn.Parameter(torch.tensor(0.0))
+                self.c = nn.Parameter(torch.tensor(0.0))
+            
+            def forward(self, x):
+                return self.a * x**2 + self.b * x + self.c
+        \end{minted}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+        \begin{minted}[
+            linenos,
+            frame=lines,
+            framesep=2mm,
+            bgcolor=pink!10,
+            fontsize=\tiny,
+            breaklines
+        ]{Python}
+        class InteractionLayer(nn.Module):
+            """Creates interaction features"""
+            def forward(self, x):
+                batch_size, n_features = x.shape
+                interactions = []
+                for i in range(n_features):
+                    for j in range(i, n_features):
+                        interactions.append(
+                            x[:, i:i+1] * x[:, j:j+1]
+                        )
+                return torch.cat([x] + interactions, dim=1)
+        \end{minted}
+        \end{column}
+        \end{columns}
+
+    
+\end{frame}
+
+
+\begin{frame}[fragile]{Some Custom Layers for Feature Engineering}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+        \begin{minted}[
+            linenos,
+            frame=lines,
+            framesep=2mm,
+            bgcolor=pink!10,
+            fontsize=\tiny,
+            breaklines
+        ]{Python}
+        class ZScoreNormalization(nn.Module):
+            """Normalizes input to zero mean and unit variance along specified dimension"""
+            def __init__(self, dim=-1, eps=1e-5):
+                super().__init__()
+                self.dim = dim
+                self.eps = eps
+                
+            def forward(self, x):
+                mean = x.mean(dim=self.dim, keepdim=True)
+                std = x.std(dim=self.dim, keepdim=True)
+                return (x - mean) / (std + self.eps)
+        \end{minted}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+        \begin{minted}[
+            linenos,
+            frame=lines,
+            framesep=2mm,
+            bgcolor=pink!10,
+            fontsize=\tiny,
+            breaklines
+        ]{Python}
+            class LogTransform(nn.Module):
+                """Applies log transformation with offset for positive values: log(x + offset)"""
+                def __init__(self, offset=1.0):
+                    super().__init__()
+                    self.offset = offset
+                    
+                def forward(self, x):
+                    return torch.log(x + self.offset)
+        \end{minted}
+        \end{column}
+        \end{columns}
+
+    
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Module Hierarchy with Layers within a Module}
+
+    \begin{minted}[
+            linenos,
+            frame=lines,
+            framesep=2mm,
+            bgcolor=pink!10,
+            fontsize=\footnotesize,
+            breaklines
+        ]{Python}
+
+class Network(nn.Module):
+    def __init__(self):
+        super().__init__()
+        # Child modules are automatically registered
+        self.layer1 = nn.Linear(10, 20)
+        self.layer2 = nn.Linear(20, 5)
+
+    def forward(self, x):
+        return self.layer2(self.layer1(x))
+        
+# Accessing the hierarchy:
+model = Network()
+print(list(model.children()))  # [layer1, layer2]
+print(list(model.parameters()))  # All parameters from both layers
+
+    \end{minted}
+    
+\end{frame}
+
+
+\begin{frame}{Hooks in \texttt{nn.Module}}
+    
+    \begin{block}{What is a Hook?}
+
+        In PyTorch, a hook is simply a function that you attach to either a Tensor or a \texttt{nn.Module}, and it gets executed automatically when the forward (not the same as forward function, but literally forward operation in the computation graph) or backward pass happens.
+        
+    \end{block}
+
+    \begin{enumerate}
+        \item Forward Hooks: Executed during forward pass
+        \item Backward Hooks: Executed during backward pass
+    \end{enumerate}
+
+    A hook is a function with a specific signature. When we say a hook is executed, we are talking about this function being executed. Such functions are called \textbf{callbacks}.
+
+    \vspace{5pt}
+    They let us inspect, modify, or intercept the flow of data in our neural network without changing its source code.
+\end{frame}
+
+\begin{frame}[fragile]{Forward and Backward Hooks}
+
+
+    Forward hook signature:
+            \begin{minted}[
+            linenos,
+            frame=lines,
+            framesep=2mm,
+            bgcolor=pink!10,
+            fontsize=\tiny,
+            breaklines
+        ]{Python}
+    hook(module, input, output) - > None
+            \end{minted}
+
+            Backward hook signature:
+
+                \begin{minted}[
+                linenos,
+                frame=lines,
+                framesep=2mm,
+                bgcolor=pink!10,
+                fontsize=\tiny,
+                breaklines
+            ]{Python}
+hook(module, grad_input, grad_output) - > Tensor or None
+                \end{minted}
+    
+    
+\end{frame}
+
+
+\begin{frame}[fragile]{Forward Hook Example}
+          \begin{minted}[
+                linenos,
+                frame=lines,
+                framesep=2mm,
+                bgcolor=pink!10,
+                fontsize=\tiny,
+                breaklines
+            ]{Python}
+import torch
+import torch.nn as nn
+
+# Define a simple model
+model = nn.Linear(5, 3)
+
+# Define a hook function
+def print_output(module, input, output):
+    print(f"Output: {output}")
+
+# Register the hook
+handle = model.register_forward_hook(print_output)
+
+# Run the model
+x = torch.randn(1, 5)
+output = model(x)
+
+# Remove the hook
+handle.remove()
+\end{minted}
+
+Forward hooks can't modify the gradient.
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Backward Hook Example}
+          \begin{minted}[
+                linenos,
+                frame=lines,
+                framesep=2mm,
+                bgcolor=pink!10,
+                fontsize=\tiny,
+                breaklines
+            ]{Python}
+import torch
+import torch.nn as nn
+
+# Define a simple model
+model = nn.Linear(5, 3)
+
+# Define a hook function
+def print_output(module, input, output):
+    print(f"Output: {output}")
+
+# Register the hook
+handle = model.register_forward_hook(print_output)
+
+# Run the model
+x = torch.randn(1, 5)
+output = model(x)
+
+# Remove the hook
+handle.remove()
+\end{minted}
+
+\begin{enumerate}
+\item Can access input, output, and gradients of the module
+\item Can modify the gradient (be careful with this one!)
+\end{enumerate}
 \end{frame}
 
 
