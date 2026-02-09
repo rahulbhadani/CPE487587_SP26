@@ -1,0 +1,178 @@
+\documentclass[12pt, xcolor=dvipsnames,svgnames,x11names]{article}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage[colorlinks=true,bookmarks=false,linkcolor=black,urlcolor=blue,citecolor=black]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[top=1in,bottom=1.2in,left=1in,right=1in]{geometry}
+\usepackage{multicol}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{circuits.logic.US, patterns}
+\usepackage{mathpazo}
+\usepackage{biolinum} 
+\usepackage[all]{tcolorbox}
+\usepackage{derivative}
+\usepackage{../Lectures/rahul_math}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Custom Color Palette from Image ---
+\definecolor{headerRed}{HTML}{A3403D} % Dark red from image top
+\definecolor{patternBg}{HTML}{F2D9D7} % Light pinkish bg from image bottom
+\definecolor{binaryText}{HTML}{D1A7A4} % Muted color for binary digits
+
+% --- Background Pattern Setup ---
+\usepackage[pages=all]{background}
+\backgroundsetup{
+scale=1,
+color=black,
+opacity=1,
+angle=0,
+contents={%
+  \begin{tikzpicture}[remember picture,overlay]
+    % Top Header Bar
+    \fill[headerRed] (current page.north west) rectangle ([yshift=-1.2cm]current page.north east);
+    % Bottom Binary Background
+    \fill[patternBg] (current page.south west) rectangle ([yshift=3.5cm]current page.south east);
+    % Decorative Line (from image)
+    \draw[headerRed, line width=2pt] ([xshift=1in, yshift=-2.5cm]current page.north west) -- ([xshift=8in, yshift=-2.5cm]current page.north west);
+    % Binary Text Overlay (Sample)
+    \node[anchor=south, binaryText, font=\ttfamily\scriptsize, inner sep=0pt, yshift=1.5cm] at (current page.south) {
+        \begin{tabular}{c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c}
+        0 0 0 0 1 1 1 1 0 0 0 0 1 1 0 1 1 1 0 0 0 1 \\
+        1 0 0 1 0 1 0 0 0 1 0 0 1 1 0 0 1 0 1 1 \\
+        0 0 1 1 0 0 1 0 1 1 1 0 1 1 0 1 0 1 0 0 0 \\
+        \end{tabular}
+    };
+  \end{tikzpicture}
+}
+}
+
+% --- Header Styling ---
+\makeatletter
+\renewcommand{\maketitle}{%
+    \vspace*{0.2cm}
+    \begin{center}
+        \begin{tcolorbox}[
+            enhanced,
+            colback=white,
+            colframe=headerRed,
+            arc=0mm,
+            title={\textcolor{white}{\bfseries \@title}},
+            coltitle=white,
+            fonttitle=\bfseries\large,
+            attach boxed title to top left={xshift=10pt, yshift=-\tcboxedtitleheight/2},
+            boxed title style={sharp corners, colback=headerRed, frame hidden}
+        ]
+        \large
+        \vspace{10pt}
+        \noindent \textbf{Student Name:} \underline{\hspace{7cm}} \hfill \textbf{Points:} 30
+        
+        \vspace{10pt}
+        \noindent \textbf{A Number:} \underline{\hspace{11cm}}
+        \end{tcolorbox}
+    \end{center}
+    \vspace{10pt}
+}
+\makeatother
+
+\newcommand{\hw}{Classwork 01// Matrix Calculus: Jacobian}
+\newcommand{\duedate}{Jan 22, 2026}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small CPE 487/587, Spring 2026}
+\rhead{\small \textit{\hw}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+\begin{document}
+
+\title{\hw}
+\maketitle
+
+
+\begin{enumerate}
+\item Derive the Jacobian of identify function $\fbf(\xbf) = \xbf $, i.e. $f_i(\xbf) = x_i$ that has $n$ functions and each function has $n$ parameters held in a single vector $\xbf$. \hfill \textbf{(10 Points)}
+
+\item Under what conditions, are the off-diagonal elements of a Jacobian zero? \hfill \textbf{(10 Points)}
+
+\item Compute gradient of $y = sum(\xbf)$, i.e. $\nabla y $, considering the function inside the summation as $f_i(\xbf) =  x_i$. Is it a vertical vector or a horizontal vector as per convention used in the Lecture notes? \hfill \textbf{(10 Points)}
+
+\end{enumerate}
+
+
+\section*{Solution}
+
+\begin{enumerate}
+\item 
+
+Consider $\ybf = \fbf(\xbf)$ for shorthand notation. As the function given in the problem is an identity function, so
+
+\begin{align*}
+y_1 = f_1(\xbf) = x_1\\
+y_2 = f_2(\xbf) = x_2\\
+\vdots\\
+\end{align*}
+
+So we can write Jacobian as
+
+\begin{align*}
+\pdv{\ybf}{\xbf} = \begin{bmatrix}
+\pdv{f_1(\xbf)}{\xbf} \\\pdv{f_2(\xbf)}{\xbf}\\ \vdots \\ \pdv{f_m(\xbf)}{\xbf}
+\end{bmatrix} & = \begin{bmatrix}
+\pdv{f_1(\xbf)}{x_1} & \pdv{f_1(\xbf)}{x_2} & \cdots & \pdv{f_1(\xbf)}{x_n}\\
+\pdv{f_2(\xbf)}{x_1} & \pdv{f_2(\xbf)}{x_2} & \cdots & \pdv{f_2(\xbf)}{x_n}\\
+& & \cdots & \\
+\pdv{f_m(\xbf)}{x_1} & \pdv{f_m(\xbf)}{x_2} & \cdots & \pdv{f_m(\xbf)}{x_n}
+\end{bmatrix}
+\end{align*}
+
+
+
+
+
+since $\pdv{x_i}{x_j} = 0$ for $j \neq i$ because $f_1$ only has $x_1$ term, $f_2$ only has $x_2$ term and so on. Hence, 
+
+
+\begin{align*}
+\pdv{\ybf}{\xbf} = \begin{bmatrix}
+\pdv{x_1}{x_1} & 0  & \cdots & 0\\
+ 0 & \pdv{x_2}{x_2}  & \cdots & 0\\
+& & \cdots & \\
+ 0 & 0 & \cdots & \pdv{x_n}{x_n} 
+\end{bmatrix} =  \begin{bmatrix}
+1 & 0  & \cdots & 0\\
+ 0 & 1 & \cdots & 0\\
+& & \cdots & \\
+ 0 & 0 & \cdots & 1
+\end{bmatrix} = I
+\end{align*}
+$I$ is the identity matrix.
+
+
+\item When scalar functions are depenedent on one variable (feature) only such that $f_1$ only has $x_1$ term, $f_2$ only has $x_2$ term and so on, then the off diagonal elements of a Jacobian will be zero.
+
+\item $ y = sum( \xbf)$, and the function inside the summation is just $f_i(\xbf) = x_i$ and then the gradient is 
+
+\begin{align*}
+\nabla y & = \begin{bmatrix}
+\sum_i \pdv{f_i(\xbf)}{x_1} & \sum_i \pdv{f_i(\xbf)}{x_2} & \cdots & \sum_i \pdv{f_i(\xbf)}{x_n}
+\end{bmatrix} =  \begin{bmatrix}
+\sum_i \pdv{x_i}{x_1} & \sum_i \pdv{x_i}{x_2} & \cdots & \sum_i \pdv{x_i}{x_n}
+\end{bmatrix}\\
+& = \begin{bmatrix}
+\pdv{x_1}{x_1} & \pdv{x_2}{x_2} & \cdots & \pdv{x_n}{x_n}
+\end{bmatrix} = \begin{bmatrix}
+1 & 1 & \cdots & 1] 
+\end{bmatrix} = \vec{1}^\top
+\end{align*}
+
+which is a horizontal vector.
+
+\end{enumerate}
+
+
+
+
+\end{document}
