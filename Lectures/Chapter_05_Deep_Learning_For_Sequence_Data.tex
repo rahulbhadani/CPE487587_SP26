@@ -1,0 +1,1022 @@
+%%----------------------------------------------------------------------------------------
+%	PACKAGES AND THEMES
+%----------------------------------------------------------------------------------------
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[aspectratio=169,xcolor=dvipsnames,svgnames,x11names,fleqn]{beamer}
+% \documentclass[aspectratio=169,xcolor=dvipsnames,fleqn]{beamer}
+
+\usetheme{RedVelvet}
+
+\usefonttheme[onlymath]{serif}
+\newcommand{\showanswers}{yes}
+
+
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{color}
+\usepackage{physics}
+% \usepackage{mathbb}
+\usepackage{rahul_math}
+\usepackage{bigints}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{tikz,pgfplots}
+
+\usepackage{subfigure}
+\usetikzlibrary{arrows}
+\usepackage{minted}
+\definecolor{LightGray}{gray}{0.9}
+\definecolor{cream}{rgb}{0.92, 0.9, 0.55}
+\definecolor{lightblue}{rgb}{0.68, 0.85, 0.9}
+
+
+\usepackage{xcolor-material}
+\usetikzlibrary{fit}
+\usetikzlibrary{matrix}
+\tikzset{%
+apple/.pic={
+    \fill [MaterialBrown] (-1/8,0)  arc (180:120:1 and 3/2) coordinate [pos=3/5] (@)-- ++(1/6,-1/7)  arc (120:180:5/4 and 3/2) -- cycle;
+    \fill [MaterialLightGreen500] (0,-9/10)  .. controls ++(180:1/8) and ++(  0:1/4) .. (-1/3,  -1) .. controls ++(180:1/3) and ++(270:1/2) .. (  -1,   0) .. controls ++( 90:1/3) and ++(180:1/3) .. (-1/2, 3/4) .. controls ++(  0:1/8) and ++(135:1/8) .. (   0, 4/7)
+    }
+    }
+
+\newcommand{\leftdoublequote}{\textcolor{blue}{\scalebox{3}{``}}}
+
+\newcommand{\rightdoublequote}{\textcolor{blue}{\scalebox{3}{''}}}
+
+
+\usepackage{textcomp}
+\usepackage{fontawesome}
+\usepackage{tikz,pgfplots}
+\usetikzlibrary{shapes.callouts}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes.geometric, positioning}
+\usetikzlibrary{matrix,positioning,decorations.pathreplacing,calc}
+
+\pgfplotsset{compat=1.8} % or newest version
+
+\usetikzlibrary{positioning}
+
+
+\usepackage{bm}
+\usepackage{relsize}
+
+
+
+\tikzset{basic/.style={draw,fill=MediumBlue!20,text width=1em,text badly centered}}
+\tikzset{input/.style={basic,circle}}
+\tikzset{weights/.style={basic,rectangle}}
+\tikzset{functions/.style={basic,circle,fill=MediumBlue!10}}
+
+
+
+\usepackage{listofitems} % for \readlist to create arrays
+\tikzstyle{mynode}=[thick,draw=MediumBlue,fill=MediumBlue!20,circle,minimum size=22]
+
+
+\usepackage{overpic}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\usepackage{tikz-qtree,tikz-qtree-compat}
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{calc}
+
+\usetikzlibrary{fit}
+\tikzset{%
+apple/.pic={
+    \fill [MaterialBrown] (-1/8,0)  arc (180:120:1 and 3/2) coordinate [pos=3/5] (@)-- ++(1/6,-1/7)  arc (120:180:5/4 and 3/2) -- cycle;
+    \fill [MaterialLightGreen500] (0,-9/10)  .. controls ++(180:1/8) and ++(  0:1/4) .. (-1/3,  -1) .. controls ++(180:1/3) and ++(270:1/2) .. (  -1,   0) .. controls ++( 90:1/3) and ++(180:1/3) .. (-1/2, 3/4) .. controls ++(  0:1/8) and ++(135:1/8) .. (   0, 4/7)
+}
+}
+\usepackage{tikz-qtree,tikz-qtree-compat}
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{calc}
+
+\usetikzlibrary{positioning}
+
+% Define styles
+\tikzset{
+    box/.style={
+        rectangle,
+        draw=black,
+        fill=blue!20,
+        text width=2.2cm,
+        text centered,
+        minimum height=0.8cm,
+        font=\small
+    },
+    arrow/.style={
+        ->,
+        >=Stealth,
+        line width=1.5pt,
+        draw=black
+    }
+}
+
+
+\usepackage{bm}
+\usepackage{relsize}
+
+
+
+\tikzset{basic/.style={draw,fill=MediumBlue!20,text width=1em,text badly centered}}
+\tikzset{input/.style={basic,circle}}
+\tikzset{weights/.style={basic,rectangle}}
+\tikzset{functions/.style={basic,circle,fill=MediumBlue!10}}
+
+
+
+\usepackage{listofitems} % for \readlist to create arrays
+\tikzstyle{mynode}=[thick,draw=MediumBlue,fill=MediumBlue!20,circle,minimum size=22]
+
+
+\newmdenv[
+backgroundcolor=androidYellowLight,
+linecolor=androidYellow,
+linewidth=0.5pt,
+roundcorner=10pt,
+skipabove=\baselineskip,
+skipbelow=\baselineskip
+]{MintedFrame}
+
+% Set minted options
+\setminted{
+fontsize=\footnotesize,
+breaklines=true,
+autogobble,
+linenos,
+frame=none
+}
+
+
+\title[CPE 487/587: Deep Learning]{CPE 486/586: Deep Learning for Engineering Applications} % The short title appears at the bottom of every slide, the full title is only on the title page
+\subtitle{05 Deep Learning for Sequence Data}
+
+\author[Rahul Bhadani] {{\Large \textbf{Rahul Bhadani}}}
+
+\institute[UAH] % Your institution as it will appear on the bottom of every slide, maybe shorthand to save space
+{
+    Electrical \& Computer Engineering,  The University of Alabama in Huntsville
+}
+\date
+
+% \titlegraphic{
+%    \includegraphics[width=0.4\linewidth]{figures/UAH_primary.png}
+% }
+
+\begin{document}
+
+%-------------------------------------------------
+\begin{frame}
+    \titlepage
+\end{frame}
+
+%-------------------------------------------------
+\begin{frame}{Outline}
+    \backgroundtableofcontents
+\end{frame}
+
+
+\section{Motivation}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+\begin{frame}{Until Now ...}
+
+\begin{enumerate}
+
+\item Data modality: Non-sequential (tabular with no order for samples or features)
+
+\item Process modality: iterative refinement of solution, but not necessarily sequential (non-generative processes -- hence no notion of sequential)
+
+
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Sequential Data}
+
+
+\begin{columns}
+
+\column{0.33\linewidth}
+
+    \begin{center}
+        \includegraphics[width=1.0\textwidth]{figures/midjourney_2.png}
+        
+        Image/Video
+   
+        
+    \end{center}
+
+     
+        
+\column{0.33\linewidth}
+
+\begin{center}
+
+
+    \includegraphics[width=1.0\textwidth]{figures/recreated_signal_plot.png}
+    
+    Timeseries
+    
+    \end{center}
+    \column{0.33\linewidth}
+
+\begin{center}    
+{
+    % Set font size to 60pt with 72pt line spacing and make it bold
+    \fontsize{15}{15}\selectfont\bfseries
+
+    % Apply a different color to each word using \textcolor{colorname}{text}
+    \textcolor{Red}{Efficient}
+    \textcolor{Blue}{modelling}
+    \textcolor{ForestGreen}{of}
+    \textcolor{DarkOrange}{feature}
+    \textcolor{Purple}{interactions}
+    \textcolor{Teal}{underpins}
+}    
+
+\vspace{20pt}
+Texts/Natural Language/Computer Code
+\end{center}    
+
+
+        
+   
+\end{columns} 
+
+\end{frame}
+
+
+\begin{frame}{Can we use what we learnt so far on Sequential Data?}
+
+Short answer: \textbf{May be!} But not quite!
+
+\vspace{20pt}
+
+{{\textbf{So where is the problem?}}}
+
+\vspace{20pt}
+
+
+\textbf{\textcolor{DarkOrange}{Underlying Assumptions}}
+
+\vspace{20pt}
+
+
+
+\begin{enumerate}
+\item Core assumptions have been that data samples are iid (independent and identically distributed)
+
+\item There are also no temporal or spatial dependence (order of features in the tabular data didn't matter until now).
+
+\item Generally feature length (or number of features are fixed).
+
+\item Non stationarity assumption: data distribution didn't change.
+
+\end{enumerate}
+
+\end{frame}
+
+
+
+\begin{frame}{Learning on Sequential Data}
+
+
+\begin{enumerate}
+
+\item Images: Convolutional Neural Network (CNN)
+
+\item Texts/Natural language: Recurrent Neural Network (RNN), Long Short-Term Memory (LSTM) Network, Gated Recurrent Unit (GRU) Network, Transformer
+\item Videos: CNN + LSTM/GRU/Transformer
+
+\end{enumerate}
+
+\end{frame}
+
+
+\section{Convolutional Neural Network}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+
+
+\begin{frame}{Convolutional Neural Network}
+
+\begin{center}
+    \includegraphics[width=1.0\textwidth]{figures/cnn.jpg}
+    
+    Source: \url{https://www.mathworks.com/discovery/convolutional-neural-network.html}
+\end{center}
+
+\end{frame}
+
+\begin{frame}[fragile]{Motivation for CNN}
+\begin{itemize}
+        \item \textbf{(Fully-connected Neural Network, FNN Limitation:} Spatial data must be converted to a \textbf{1-D array} (Flattening).
+        
+        \vspace{0.6cm}
+        
+        \centering
+        \begin{tikzpicture}[
+            cell/.style={rectangle, draw=black!60, minimum size=8mm, font=\scriptsize},
+            m_matrix/.style={matrix of nodes, nodes={cell, fill=matrixBlue}, column sep=-\pgflinewidth, row sep=-\pgflinewidth},
+            % Wider cells for the 1D array to fit the equations
+            v_matrix/.style={matrix of nodes, nodes={cell, fill=arrayOrange, minimum width=1.8cm}, column sep=-\pgflinewidth}
+        ]
+            % 2D Matrix
+            \matrix (A) [m_matrix] {
+                $a_{11}$ & $a_{12}$ & $a_{13}$ \\
+                $a_{21}$ & $a_{22}$ & $a_{23}$ \\
+            };
+            
+            % Flattening Arrow
+            \draw[-{Stealth[scale=1.5]}, thick, gray] (A.east) ++(0.1,0) -- node[above, font=\tiny, black] {Flattening} ++(1.1,0);
+            
+            % 1D Vector with your specific requested labels
+            \matrix (B) [v_matrix, right=1.15cm of A, anchor=west] {
+                $b_1 = a_{11}$ & $b_2 = a_{12}$ & $b_3 = a_{13}$ & $b_4 = a_{21}$ & $b_5 = a_{22}$ & $b_6 = a_{23}$ \\
+            };
+            
+            % Linking specific elements with the highlight colors
+            \node[fill=highlightBlue!30, cell] at (A-1-1) {$a_{11}$};
+            \node[fill=highlightBlue!30, cell, minimum width=1.8cm] at (B-1-1) {$b_1 = a_{11}$};
+            
+            \node[fill=highlightOrange!30, cell] at (A-2-3) {$a_{23}$};
+            \node[fill=highlightOrange!30, cell, minimum width=1.8cm] at (B-1-6) {$b_6 = a_{23}$};
+
+        \end{tikzpicture}
+        
+        \vspace{0.6cm}
+        
+        \begin{itemize}
+            \item[\textcolor{red}{$\times$}] \textbf{Spatial Loss:} We lose the \textcolor{highlightBlue}{pixel-to-pixel relationship} and local geometry.
+            \item[\textcolor{red}{$\times$}] \textbf{RGB Complexity:} In addition, working with color images would mean we have at least three channels R, G, B.
+            \item[\textcolor{red}{$\times$}] \textbf{Parameter Explosion:} 
+            \begin{itemize}
+                \item $200 \times 200 \times 3 = \mathbf{120,000}$ features per image.
+                \item Just 100 images = \textcolor{red}{\textbf{12,000,000}} features to process!
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Limitations of FNN for Images}
+
+    \begin{columns}
+        \column{0.5\linewidth}
+        In that sense, FNN suffers from two conditions:
+\begin{itemize}
+    \item Unable to preserve spatial information
+    \item Curse of dimensionality
+\end{itemize}
+
+To preserve the pixel-to-pixel spatial relationship, we include two additional operations in the neural network:
+\begin{enumerate}
+    \item Convolution
+    \item Pooling
+\end{enumerate}
+\column{0.5\linewidth}
+\begin{center}
+    \includegraphics[width=1.0\textwidth]{figures/image_storing.png}
+\end{center}
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{What is a CNN?}
+    \begin{tcolorbox}[colback=mainBlue, colframe=neonBlue, fonttitle=\bfseries, title=Beyond Flattening]
+        \color{white}\small
+        A \textbf{Convolutional Neural Network (CNN)} is designed for grid-structured data. Unlike FNNs, it treats images as spatial volumes, preserving local relationships.
+    \end{tcolorbox}
+
+    \vspace{0.3cm}
+    
+    \textbf{The Architectural Edge:}
+    \begin{itemize}
+        \item \textcolor{mainBlue}{\textbf{Local Receptive Fields:}} Neurons only ``see" a small local region, mimicking the human visual cortex.
+        \item \textcolor{mainBlue}{\textbf{Spatial Hierarchy:}} Layers learn to recognize edges, then shapes, then objects.
+    \end{itemize}
+
+    \vfill
+    \centering
+    \begin{tikzpicture}[scale=0.6]
+        \draw[fill=mainBlue!10, draw=mainBlue] (0,0) grid (3,3);
+        \draw[fill=neonBlue!40, draw=neonBlue, line width=1pt] (0,1) rectangle (2,3);
+        \node[font=\tiny, text=mainBlue] at (1, 2) {Receptive Field};
+        \draw[-Stealth, thick, neonBlue] (2,2) -- (4,2) node[right, font=\tiny, black] {Filter Response};
+    \end{tikzpicture}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Weight Sharing \& Pooling}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[colback=white, colframe=neonBlue, title=\small Weight Sharing, left=1mm]
+                \scriptsize
+                Filters share weights across the entire image.
+                \begin{itemize}
+                    \item \textbf{Efficiency:} Drastically reduces parameters.
+                    \item \textbf{Feature Detection:} A vertical edge detector works everywhere!
+                \end{itemize}
+            \end{tcolorbox}
+        \end{column}
+        
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[colback=white, colframe=neonGreen!70!black, title=\small Pooling, left=1mm]
+                \scriptsize
+                Subsampling to reduce spatial dimensions.
+                \begin{itemize}
+                    \item \textbf{Invariance:} Stable against small translations/shifts.
+                    \item \textbf{Speed:} Lowers computational load \& memory.
+                \end{itemize}
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.4cm}
+
+    \begin{exampleblock}{}
+        \centering \small
+        \textbf{FNN:} 224x224 image $\approx$ 150k+ weights per neuron. \\
+        \textbf{CNN:} 3x3 filter = \textcolor{blue}{\textbf{9 weights}} per feature map.
+    \end{exampleblock}
+\end{frame}
+
+
+\begin{frame}{Building blocks: Convolution}
+
+  \begin{columns}
+        \column{0.4\linewidth}
+    \begin{tblock}{}
+        Convolution is an operation to reduce the number of pixels through some operation that in turn reduces the number of weights to learn.
+    \end{tblock}
+    In convolution, the reduction in number of features happens by sliding a kernel across an image performing the dot product.
+
+
+\column{0.6\linewidth}
+\textbf{Kernel}: It is an $n \times n$ matrix of some numbers whose dimension is usually smaller than the image size.
+
+\begin{center}
+    \includegraphics[width=1.0\textwidth]{figures/Kernel.png}
+\end{center}
+
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Convolution Using Kernel}
+\begin{tikzpicture}[
+    scale=0.7, % Change this value to scale everything
+    every node/.style={transform shape}, % This is the magic line
+    cell/.style={rectangle, draw=black, minimum size=8mm, anchor=center},
+    matrix style/.style={
+        matrix of nodes, 
+        nodes={cell}, 
+        column sep=-\pgflinewidth, 
+        row sep=-\pgflinewidth, 
+        nodes in empty cells
+    }
+]
+
+% 1. Input Matrix
+\matrix (input) [matrix style] {
+    3 & 3 & 2 & 1 & 0 \\
+    0 & 0 & 1 & 3 & 1 \\
+    3 & 1 & 2 & 2 & 3 \\
+    2 & 0 & 0 & 2 & 2 \\
+    2 & 0 & 0 & 0 & 1 \\
+};
+\node[below=1mm of input] {\textbf{5x5 Input Matrix}};
+
+% 2. Kernel - Note: I used a relative shift so it scales better
+\matrix (kernel) [matrix style, shift={(4,2)}, anchor=north west, draw=red, thick] {
+    0 & 1 & 2 \\
+    2 & 2 & 0 \\
+    0 & 1 & 2 \\
+};
+\node[above=1mm of kernel] {\textbf{3x3 Kernel}};
+
+% 3. Output Matrix
+\matrix (output) [matrix style, shift={(3,-3)}, anchor=north west] {
+    12 & 12 & 17 \\
+    10 & 17 & 19 \\
+    9 & 6 & 14 \\
+};
+\node[below=1mm of output] {\textbf{3x3 Output Map}};
+
+% 4. Connections
+\draw[orange, line width=2.5pt] (input-1-1.north west) rectangle (input-3-3.south east);
+\draw[orange, line width=1.5pt] (input-1-1.north west) -- (kernel-1-1.north west);
+\draw[orange, line width=1.5pt] (input-1-3.north east) -- (kernel-1-3.north east);
+\draw[orange, line width=1.5pt] (input-3-1.south west) -- (kernel-3-1.south west);
+\draw[orange, line width=1.5pt] (input-3-3.south east) -- (kernel-3-3.south east);
+\draw[->, >=stealth, thick, gray] (kernel.south) to [out=-90, in=90] (output-1-1.north);
+
+% 5. Math Annotation
+\node[right=1cm of kernel, text width=5cm] (math) {
+    $\sum \begin{bmatrix} 
+    3{\times}0 & 3{\times}1 & 2{\times}2 \\
+    0{\times}2 & 0{\times}2 & 1{\times}0 \\
+    3{\times}0 & 1{\times}1 & 2{\times}2 
+    \end{bmatrix}$ \\[2mm]
+    $= 0+3+4+0+0+0+0+1+4$ \\
+    $= \mathbf{12}$
+};
+
+\end{tikzpicture}
+
+\end{frame}
+
+
+\begin{frame}{Kernels}
+
+    \Large
+    \begin{tblock}{}
+    A particular kernel usually extracts certain features from an image, or basically it performs some sort of image processing.
+    \end{tblock}
+
+\end{frame}
+
+\begin{frame}{Examples of Kernels}
+
+
+    \begin{center}
+        Edges:  $\begin{bmatrix} 0 & 1 & 0 \\ 1 & -4 & 1 \\ 0 & 1 & 0 \end{bmatrix}$
+    \end{center}
+
+    \begin{center}
+        Sharpen:      $\begin{bmatrix} 0 & -1 & 0 \\ -1 & 5 & -1 \\ 0 & -1 & 0 \end{bmatrix}$
+    \end{center}    
+    \begin{center}
+        Box Blur:     $\frac{1}{9} \begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{bmatrix}$
+    \end{center}
+
+
+\end{frame}
+
+\begin{frame}{Edge-detection Example}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{figures/Edge_detection.pdf}
+    \end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]{Filter}
+    
+    % Header highlight for the introductory text
+    \begin{tcolorbox}[colback=bgLight, colframe=accentCyan, arc=2mm, boxrule=0.5pt, left=2mm]
+        \small
+        The window we use in kernel is called a \textcolor{accentCyan}{\textbf{filter}}. The window of a certain size is slid across the image. We can apply pooling to perform operations such as \textbf{minimum, median, maximum}.
+    \end{tcolorbox}
+
+    \vspace{0.4cm}
+
+    \begin{itemize}
+        \item \textbf{Images} can be represented as \textcolor{mainNavy}{\textbf{matrices}}, where each element corresponds to a pixel.
+        
+        \vspace{0.3cm}
+        
+        \item A \textbf{filter} is just a small matrix that is \textcolor{accentCyan}{\textbf{convolved}} with same-sized sections of the image matrix.
+    \end{itemize}
+
+    \vfill
+
+    % Small visual footer to represent the concept
+    \centering
+    \begin{tikzpicture}[scale=0.5]
+        % Background Image Matrix
+        \draw[fill=gray!10, draw=gray!40] (0,0) grid (4,3);
+        
+        % The "Sliding" Filter
+        \draw[fill=accentCyan!20, draw=accentCyan, line width=1pt] (1,1) rectangle (2,2);
+        
+        % Arrow representing sliding
+        \draw[-stealth, thick, accentCyan] (2.2, 1.5) -- (3.5, 1.5);
+        
+        \node[below, font=\tiny, gray] at (2,0) {Image Matrix};
+        \node[above, font=\tiny, accentCyan] at (1.5,2) {Filter (Window)};
+    \end{tikzpicture}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Convolutional Filters}
+    \vspace{0.2cm}
+    \begin{center}
+        \renewcommand{\arraystretch}{1.2}
+        % The Operation
+        $\begin{bmatrix}
+            \cellcolor{windowBlue!80}0 & \cellcolor{windowBlue!80}0 & \cellcolor{windowBlue!80}0 & 0 & 0 & 0 & 0 \\
+            \cellcolor{windowBlue!80}0 & \cellcolor{windowBlue!80}1 & \cellcolor{windowBlue!80}2 & 2 & 1 & 1 & 0 \\
+            \cellcolor{windowBlue!80}0 & \cellcolor{windowBlue!80}2 & \cellcolor{windowBlue!80}4 & 4 & 2 & 2 & 0 \\
+            0 & 1 & 3 & 3 & 1 & 1 & 0 \\
+            0 & 1 & 2 & 3 & 1 & 1 & 0 \\
+            0 & 0 & 1 & 1 & 0 & 0 & 0
+        \end{bmatrix}
+        \times 
+        \begin{bmatrix}
+            \rowcolor{filterGreen} 0 & 1 & 0 \\
+            \rowcolor{filterGreen} 1 & -4 & 1 \\
+            \rowcolor{filterGreen} 0 & 1 & 0
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            \cellcolor{windowBlue!80} \mathbf{0} & \dots & \dots \\
+            \vdots & \ddots & ~ \\
+            \vdots & ~ & \ddots
+        \end{bmatrix}$
+
+        \vspace{0.8cm}
+
+        % The Calculation Block
+        \begin{minipage}{0.8\textwidth}
+            \begin{tcolorbox}[colback=white, colframe=borderBlue!30, arc=1mm, boxrule=0.5pt]
+                \centering
+                \small
+                \textcolor{mathGray}{$(0 \times 0) + (0 \times 1) + (0 \times 0) +$} \\
+                \textcolor{mathGray}{$(0 \times 1) + (1 \times -4) + (2 \times 1) +$} \\
+                \textcolor{mathGray}{$(0 \times 0) + (2 \times 1) + (4 \times 0) =$} \textbf{\textcolor{borderBlue}{0}}
+            \end{tcolorbox}
+        \end{minipage}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Convolutional Filters}
+
+\begin{center}
+    \renewcommand{\arraystretch}{1.3} % More vertical breathing room
+    
+    % Input Matrix
+    $\begin{bmatrix}
+        0 & 0 & 0 & 0 & 0 & 0 \\
+       0 & 1 & 2 & 2 & 1 & 0 \\
+        0 & 2 & 4 & 4 & 2 & 0 \\
+        0 & 1 & 3 & 3 & 1 & 0 \\
+        0 & 1 & 2 & 3 & 1 & 0 \\
+        0 & 0 & 1 & 1 & 0 & 0
+    \end{bmatrix}$
+    $\times$ 
+    % Filter/Kernel
+    $\begin{bmatrix}
+       0 & 1 & 0 \\
+        1 & -4 & 1 \\
+         0 & 1 & 0
+    \end{bmatrix}$
+    $=$ 
+    % Output Matrix
+    $\begin{bmatrix}
+        \mathbf{\textcolor{resultBlue}{0}} & -1 & -1 & 0\\
+        -2 & -5 & -5 & -2\\
+        2 & -2 & -1 & 3\\
+        -1 & 0 & -5 & 0
+    \end{bmatrix}$
+    
+\end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]{Pooling}
+    
+    \vspace{0.5cm}
+    
+    % Use a tcolorbox to frame the definition elegantly
+    \begin{tcolorbox}[
+        colback=poolLight, 
+        colframe=poolGreen, 
+        arc=3mm, 
+        boxrule=1pt, 
+        left=5mm, 
+        right=5mm, 
+        top=4mm, 
+        bottom=4mm
+    ]
+        \centering
+        \color{textDark}
+        \large
+        \textbf{Pooling} does a mathematical operation to the output of the convolution image. But you can also apply pooling directly to the image.
+    \end{tcolorbox}
+
+    \vfill
+
+    % Subtle visual representation of pooling (4 cells into 1)
+    \centering
+    \begin{tikzpicture}[scale=0.8]
+        % Input 2x2
+        \draw[fill=gray!10, draw=gray!40] (0,0) grid (2,2);
+        \node at (0.5, 1.5) {\tiny 10}; \node at (1.5, 1.5) {\tiny 20};
+        \node at (0.5, 0.5) {\tiny 30}; \node at (1.5, 0.5) {\tiny 40};
+        
+        % Arrow
+        \draw[-stealth, thick, poolGreen] (2.5, 1) -- node[above, font=\tiny] {Max Pooling} (4, 1);
+        
+        % Output 1x1
+        \draw[fill=poolGreen!20, draw=poolGreen, line width=1pt] (4.5, 0.5) rectangle (5.5, 1.5);
+        \node[poolGreen] at (5, 1) {\small 40};
+        
+        \node[below=2mm, font=\tiny, gray] at (1,0) {Input Feature Map};
+        \node[below=2mm, font=\tiny, poolGreen] at (5,0.5) {Pooled Output};
+    \end{tikzpicture}
+    
+    \vspace{0.3cm}
+
+\end{frame}
+
+\begin{frame}{Building Blocks: Pooling}
+    Pooling does a mathematical operation to the output of the convolution image. But you can also apply pooling directly to the image.
+
+\vspace{10pt}
+
+\textbf{Pooling: Downsampling}
+
+\vspace{10pt}
+
+\footnotesize
+
+Combine multiple adjacent nodes into a single node: max-pooling
+\begin{multiequation}
+    \begin{bmatrix}
+        ~ & \cellcolor{blue!30}0 & \cellcolor{blue!30}-1 & -1 & 0\\
+        ~ & \cellcolor{blue!30}-2 & \cellcolor{blue!30}-5 & -5 & -2\\
+        ~ & 2 & -2 & -1 & 3 \\
+        ~ & -1 & 0 & -5 & 0
+    \end{bmatrix}
+    \to \textbf{max}\to
+    \begin{bmatrix}
+        ~ & \cellcolor{blue!30}0 & ~\\
+        ~ & & ~
+    \end{bmatrix}
+\end{multiequation}
+\begin{multiequation}
+    \begin{bmatrix}
+        ~ & 0 & 1 & \cellcolor{red!30}-1 & \cellcolor{red!30}-0 & ~\\
+        ~ & -2 & -5 & \cellcolor{red!30}-5 & \cellcolor{red!30}-2 & ~\\
+        ~ & 2 & -2 & -1 & 3 & ~\\
+        ~ & -1 & 0 & -5 & 0 & ~
+    \end{bmatrix}
+    \to \textbf{max}\to
+    \begin{bmatrix}
+        ~ & \cellcolor{blue!30}0 & \cellcolor{red!30}0 & ~\\
+        ~ & & ~ & ~
+    \end{bmatrix}
+\end{multiequation}
+
+\begin{itemize}
+    \item Reduces the dimensionality of the input to subsequent
+    layers and thus, the number of weights to be learned
+    \item Further, it protects the network from (slightly) noisy inputs
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Downsampling with Stride}
+\begin{itemize}
+    \item Only apply the convolution to some subset of the image
+    \item e.g., every other column and row = a \textcolor{roseRed}{\textbf{stride of 2}}
+\end{itemize}
+\vspace{0.3cm}
+\centering
+\renewcommand{\arraystretch}{1.2}
+$ \begin{bmatrix}
+    \cellcolor{roseRed!20}0 & \cellcolor{roseRed!20}0 & 0 & 0 & 0 & 0 \\
+    \cellcolor{roseRed!20}0 & \cellcolor{roseRed!20}1 & 2 & 2 & 1 & 0 \\
+    0 & 2 & 4 & 4 & 2 & 0 \\
+    0 & 1 & 3 & 3 & 1 & 0 \\
+    0 & 1 & 2 & 3 & 1 & 0 \\
+    0 & 0 & 1 & 1 & 0 & 0
+    \end{bmatrix} \times \begin{bmatrix} 0 & 1 \\ 1 & -2 \end{bmatrix} =  
+    \begin{bmatrix} 
+    \cellcolor{roseRed!20}-2 & \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} \\ 
+    \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} \\ 
+    \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} 
+    \end{bmatrix} $
+\end{frame}    
+
+% --- Slide 2 ---
+\begin{frame}[fragile]{Downsampling with Stride}
+\centering
+\vspace{0.5cm}
+\renewcommand{\arraystretch}{1.2}
+$ \begin{bmatrix}
+    0 & 0 & \cellcolor{pineGreen!20}0 & \cellcolor{pineGreen!20}0 & 0 & 0 \\
+    0 & 1 & \cellcolor{pineGreen!20}2 & \cellcolor{pineGreen!20}2 & 1 & 0 \\
+    0 & 2 & 4 & 4 & 2 & 0 \\
+    0 & 1 & 3 & 3 & 1 & 0 \\
+    0 & 1 & 2 & 3 & 1 & 0 \\
+    0 & 0 & 1 & 1 & 0 & 0
+    \end{bmatrix} \times \begin{bmatrix} 0 & 1 \\ 1 & -2 \end{bmatrix} =   
+    \begin{bmatrix} 
+    -2 & \cellcolor{pineGreen!20}-2 & \textcolor{gray}{\cdot} \\ 
+    \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} \\ 
+    \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} 
+    \end{bmatrix} $
+\end{frame}    
+    
+% --- Slide 3 ---
+\begin{frame}[fragile]{Downsampling with Stride}
+\centering
+\vspace{0.5cm}
+\renewcommand{\arraystretch}{1.2}
+$ \begin{bmatrix}
+    0 & 0 & 0 & 0 & \cellcolor{MediumBlue!20}0 & \cellcolor{MediumBlue!20}0 \\
+    0 & 1 & 2 & 2 & \cellcolor{MediumBlue!20}1 & \cellcolor{MediumBlue!20}0 \\
+    0 & 2 & 4 & 4 & 2 & 0 \\
+    0 & 1 & 3 & 3 & 1 & 0 \\
+    0 & 1 & 2 & 3 & 1 & 0 \\
+    0 & 0 & 1 & 1 & 0 & 0
+    \end{bmatrix} \times \begin{bmatrix} 0 & 1 \\ 1 & -2 \end{bmatrix} =   
+    \begin{bmatrix} 
+    -2 & -2 & \cellcolor{MediumBlue!20} 1 \\ 
+    \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} \\ 
+    \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} & \textcolor{gray}{\cdot} 
+    \end{bmatrix} $
+\end{frame}  
+        
+% --- Slide 4 ---
+\begin{frame}[fragile]{Downsampling with Stride}
+\centering
+\vspace{0.5cm}
+\begin{tcolorbox}[colback=white, colframe=gray!20, arc=2mm]
+\centering
+\renewcommand{\arraystretch}{1.2}
+$ \begin{bmatrix}
+    0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 1 & 2 & 2 & 1 & 0 \\
+    0 & 2 & 4 & 4 & 2 & 0 \\
+    0 & 1 & 3 & 3 & 1 & 0 \\
+    0 & 1 & 2 & 3 & 1 & 0 \\
+    0 & 0 & 1 & 1 & 0 & 0
+    \end{bmatrix} \times \begin{bmatrix} 0 & 1 \\ 1 & -2 \end{bmatrix} =   
+    \begin{bmatrix} 
+    -2 & -2 & 1 \\ 
+    0 & 1 & 1 \\ 
+    1 & 2 & 0 
+    \end{bmatrix} $
+\end{tcolorbox}
+\end{frame}  
+
+% --- Slide 5 ---
+\begin{frame}[fragile]{Operation after Pooling}
+    \begin{itemize}
+        \item After applying convolution and pooling, we apply a non-linear activation, \textcolor{MediumBlue}{\textbf{ReLU}}.
+        \item Then after that, you have more Convolution, more Pooling layers.
+        \item Finally, after several sequences of \textbf{Conv + Pool + ReLU}, we \textcolor{roseRed}{\textbf{flatten}} the output and feed it to the fully connected layer (ANN).
+    \end{itemize}
+
+    \vfill
+    \centering
+    \begin{tikzpicture}[node distance=0.4cm, every node/.style={draw, font=\scriptsize\bfseries, inner sep=5pt, rounded corners=1pt}]
+        \node[fill=pineGreen!10] (c) {Conv};
+        \node[fill=MediumBlue!10, right=of c] (p) {Pool};
+        \node[fill=roseRed!10, right=of p] (r) {ReLU};
+        \node[draw=none, fill=none, right=of r] (d) {...};
+        \node[fill=gray!10, right=of d] (f) {Flatten};
+        \node[fill=black, text=white, right=of f] (ann) {ANN};
+        
+        \foreach \from/\to in {c/p, p/r, r/d, d/f, f/ann}
+            \draw[->, >=stealth, thick, gray] (\from) -- (\to);
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Image Classification}
+Then, we apply a softmax activation if our goal is to do supervised image classification.
+
+\begin{center}
+    \includegraphics[width=0.52\textwidth]{figures/CNN_Classification_Pipeline.png}
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}{Lenet}
+        \begin{center}
+            \includegraphics[width=1.0\textwidth]{figures/Lenet.png}
+            Source: \url{http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf}
+        \end{center}
+        \begin{itemize}
+            \item One of the earliest, most famous deep learning models – achieved remarkable performance at handwritten digit recognition ($< 1$\% test error rate on MNIST dataset)
+            \item Used sigmoid (or logistic) activation functions between layers and mean-pooling, both of which are pretty uncommon in modern architectures
+        \end{itemize}
+        
+\end{frame}
+
+
+\begin{frame}[fragile]{A note on multi-dimensionality and vectorization}
+    \begin{itemize}
+        \item \textbf{High-Dimensionality:} Images are high-dimensional datasets. This is true even more for \textcolor{indigo}{\textbf{colored images}}.
+        \item Let $X \in \mathbb{R}^{H \times W}$ be a matrix (for a grayscale image of height $H$ and width $W$).
+        \item \textbf{Flattening:} After flattening, an image is represented as a column vector $X \in \mathbb{R}^{D}$:
+        \begin{itemize}
+            \item \textbf{Grayscale:} $D = H \times W$
+            \item \textbf{Color (3 channels):} $D = H \times W \times 3$
+        \end{itemize}
+    \end{itemize}
+    
+    \begin{center}
+    \begin{tikzpicture}[scale=0.5]
+        \draw[fill=indigo!10] (0,0) rectangle (2,1.5);
+        \node at (1, 0.75) {\tiny $H \times W$};
+        \draw[->, thick, gray] (2.5, 0.75) -- (4, 0.75);
+        \draw[fill=cyanAccent!20] (4.5, -0.5) rectangle (4.8, 2);
+        \node[right, font=\tiny] at (4.8, 0.75) {$D$ elements};
+    \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+% --- Slide 2 ---
+\begin{frame}[fragile]{Tensor}
+    We need a concept of higher-order matrices called a \textcolor{indigo}{\textbf{Tensor}}.
+
+    \begin{itemize}
+        \item $X \in \mathbb{R}^{H \times W \times D}$ is an \textbf{order-3 tensor}. Consider it as $D$ channels of matrices. (Note: $D=1$ reduces it to a standard matrix).
+    \end{itemize}
+
+    \begin{tcolorbox}[colback=indigo!5, colframe=indigo, title=Tensor Orders]
+        \small
+        \begin{itemize}
+            \item \textbf{Order-0:} A Scalar value.
+            \item \textbf{Order-1:} A Vector.
+            \item \textbf{Order-2:} A Matrix. \textit{(Corrected from your text)}
+            \item \textbf{Order-3:} A Cube (e.g., RGB Image).
+        \end{itemize}
+    \end{tcolorbox}
+    \small We can also have \textbf{4 dimensions} if we consider opacity (e.g., RGBA in PNG).
+\end{frame}
+
+% --- Slide 3 ---
+\begin{frame}[fragile]{Tensor to Vector}
+    Given a tensor, we can arrange all numbers into a long vector following a \textbf{prespecified order}.
+
+    \vspace{0.3cm}
+    \textbf{Example (Matrix Vectorization - Column First Order):}
+    \begin{center}
+        \renewcommand{\arraystretch}{1.2}
+        $A = \begin{bmatrix} \textcolor{indigo}{1} & \textcolor{cyanAccent}{2} \\ \textcolor{indigo}{3} & \textcolor{cyanAccent}{4} \end{bmatrix} \xrightarrow{\text{MATLAB } A(:)} \begin{bmatrix} \textcolor{indigo}{1} \\ \textcolor{indigo}{3} \\ \textcolor{cyanAccent}{2} \\ \textcolor{cyanAccent}{4} \end{bmatrix}$
+    \end{center}
+    
+    \begin{exampleblock}{Recursive Vectorization}
+        \small
+        To vectorize an \textbf{order-3 tensor}, we vectorize the first channel (matrix), then the second, and so on. This recursive process applies to tensors of any order $> 3$.
+    \end{exampleblock}
+\end{frame}
+
+% --- Slide 4 ---
+\begin{frame}[fragile]{Tensor in CNN}
+    In CNNs, the convolution kernel will form an \textcolor{amber!80!black}{\textbf{order-4 tensor}}.
+
+\begin{tcolorbox}[colback=white, colframe=cyanAccent, title=CNN Input Dimensions]
+\begin{enumerate}
+    \item \textbf{Depth:} Number of channels in a colored image.
+    \item \textbf{Filters:} Multiple filters learning specific features.
+    \item \textbf{Spatial Dimensions:} $H \times W$ of the image.
+\end{enumerate}
+\end{tcolorbox}
+
+\textbf{Tensor Orders (Examples):}
+\begin{itemize}
+    \item \textbf{Order 3:} A \textcolor{indigo}{batch} of grayscale images.
+    \item \textbf{Order 4:} A \textcolor{indigo}{batch} of colored images or a single colored movie.
+    \item \textbf{Order 5:} A \textcolor{indigo}{batch} of movies.
+\end{itemize}
+\end{frame}
+
+% --- Slide 5 ---
+\begin{frame}[fragile]{Tensors}
+    \begin{center}
+        \begin{tcolorbox}[colback=white, colframe=gray!20, boxrule=0.5pt]
+            \centering
+            \includegraphics[width=0.75\textwidth]{figures/TensorsRGB.png}
+        \end{tcolorbox}
+        \vfill
+        \tiny \textcolor{gray}{Source: \url{https://www.cs.cmu.edu/~mgormley/courses/10601//slides/lecture17-cnn.pdf}}
+    \end{center}
+\end{frame}
+
+% --- Slide 6 ---
+\begin{frame}[fragile]{Further Reading}
+    \begin{center}
+        \begin{tcolorbox}[colback=indigo!5, colframe=indigo, arc=0mm, center title]
+            \centering
+            \small
+            \url{https://www.cs.toronto.edu/~hinton/absps/NatureDeepReview.pdf} \\[0.3cm]
+            \url{http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf}
+        \end{tcolorbox}
+    \end{center}
+\end{frame}
+
+
+
+\end{document}
