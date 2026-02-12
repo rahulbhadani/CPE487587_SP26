@@ -277,11 +277,11 @@ Short answer: \textbf{May be!} But not quite!
 \begin{enumerate}
 \item Core assumptions have been that data samples are iid (independent and identically distributed)
 
-\item There are also no temporal or spatial dependence (order of features in the tabular data didn't matter until now).
+\item There are also no temporal or spatial dependencies (order of features in the tabular data didn't matter until now).
 
 \item Generally feature length (or number of features are fixed).
 
-\item Non stationarity assumption: data distribution didn't change.
+\item Non-stationarity assumption: data distribution didn't change.
 
 \end{enumerate}
 
@@ -362,7 +362,7 @@ Short answer: \textbf{May be!} But not quite!
         
         \begin{itemize}
             \item[\textcolor{red}{$\times$}] \textbf{Spatial Loss:} We lose the \textcolor{highlightBlue}{pixel-to-pixel relationship} and local geometry.
-            \item[\textcolor{red}{$\times$}] \textbf{RGB Complexity:} In addition, working with color images would mean we have at least three channels R, G, B.
+            \item[\textcolor{red}{$\times$}] \textbf{RGB Complexity:} In addition, working with color images would mean we have at least three channels, R, G, B.
             \item[\textcolor{red}{$\times$}] \textbf{Parameter Explosion:} 
             \begin{itemize}
                 \item $200 \times 200 \times 3 = \mathbf{120,000}$ features per image.
@@ -461,9 +461,9 @@ To preserve the pixel-to-pixel spatial relationship, we include two additional o
   \begin{columns}
         \column{0.4\linewidth}
     \begin{tblock}{}
-        Convolution is an operation to reduce the number of pixels through some operation that in turn reduces the number of weights to learn.
+        Convolution is an operation to reduce the number of pixels through some operation that, in turn, reduces the number of weights to learn.
     \end{tblock}
-    In convolution, the reduction in number of features happens by sliding a kernel across an image performing the dot product.
+    In convolution, the reduction in the number of features happens by sliding a kernel across an image, performing the dot product.
 
 
 \column{0.6\linewidth}
@@ -546,7 +546,7 @@ To preserve the pixel-to-pixel spatial relationship, we include two additional o
 
     \Large
     \begin{tblock}{}
-    A particular kernel usually extracts certain features from an image, or basically it performs some sort of image processing.
+    A particular kernel usually extracts certain features from an image, or basically, it performs some sort of image processing.
     \end{tblock}
 
 \end{frame}
@@ -707,7 +707,7 @@ To preserve the pixel-to-pixel spatial relationship, we include two additional o
         \centering
         \color{textDark}
         \large
-        \textbf{Pooling} does a mathematical operation to the output of the convolution image. But you can also apply pooling directly to the image.
+        \textbf{Pooling} does a mathematical operation on the output of the convolution image. But you can also apply pooling directly to the image.
     \end{tcolorbox}
 
     \vfill
@@ -736,7 +736,7 @@ To preserve the pixel-to-pixel spatial relationship, we include two additional o
 \end{frame}
 
 \begin{frame}{Building Blocks: Pooling}
-    Pooling does a mathematical operation to the output of the convolution image. But you can also apply pooling directly to the image.
+    Pooling is a mathematical operation on the output of the convolution image. But you can also apply pooling directly to the image.
 
 \vspace{10pt}
 
@@ -1018,5 +1018,495 @@ Then, we apply a softmax activation if our goal is to do supervised image classi
 \end{frame}
 
 
+\section{Modern Convolutional Neural Network}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+
+\begin{frame}[fragile]{Modern Days of CNN Had Arduous Path}
+    
+    \begin{tcolorbox}[colback=historyGray!5, colframe=historyGray, arc=0mm, leftrule=3pt, rightrule=0pt, toprule=0pt, bottomrule=0pt]
+        \small
+        \begin{enumerate}
+            \item CNN didn't find its popularity easily.
+            \item There was a \textbf{lack of good datasets}.
+            \item \textcolor{siftOrange!80!black}{\textbf{Kernel and ensemble methods}} were still better until 2012. 
+            \item Computer vision pipelines used methods such as \textit{SIFT, SURF, bag of visual words}.
+            \item Researchers were using \textbf{hand-crafted features}.
+        \end{enumerate}
+    \end{tcolorbox}
+
+    \vspace{0.4cm}
+
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[xshift=-2cm, yshift=-1.5cm] at (current page.center) {
+            \begin{tikzpicture}
+                \draw[thick, gray!30, ->] (0,0) -- (8,0);
+                \node[below, font=\tiny, gray] at (0,0) {Before 2012};
+                \node[below, font=\tiny, alexBlue] at (7.5,0) {2012+};
+                \filldraw[alexBlue] (7.5,0) circle (2pt);
+            \end{tikzpicture}
+        };
+    \end{tikzpicture}
+
+    \vspace{0.3cm}
+
+    \begin{tcolorbox}[colback=alexBlue!10, colframe=alexBlue, arc=2mm, title=\small The Paradigm Shift]
+        \small
+        However, \textbf{LeCun, Hinton, Ng}, and others thought features can be learnt too. \textcolor{alexBlue}{\textbf{AlexNet}} (after Alex Krizhevsky) proved that.
+    \end{tcolorbox}
+
+\end{frame}
+
+\begin{frame}[fragile]{Finally Some Interesting and Useful Datasets}
+    
+    \begin{itemize}
+        \item \textcolor{largeData}{\textbf{Large-Scale Benchmarks}}
+        \begin{enumerate}
+            \item \textbf{ImageNet (2009):} {\scriptsize \url{https://huggingface.co/datasets/ILSVRC/imagenet-1k}}
+            \item \textbf{CIFAR-10 \& CIFAR-100:} {\scriptsize \url{https://www.cs.toronto.edu/~kriz/cifar.html}}
+            \item \textbf{LAION Dataset:} {\scriptsize \url{https://laion.ai/projects/}} 
+        \end{enumerate}
+    \end{itemize}
+
+    \begin{tcolorbox}[colback=mnistPurple!5, colframe=mnistPurple!80, arc=2mm]
+        \small
+        In addition, Yan LeCun used \textbf{MNIST}: \\ 
+        {\scriptsize \url{https://github.com/rahulbhadani/CPE490_590_Sp2025/tree/master/Data/MNIST}}
+        
+        \vspace{5pt}
+        We also have \textbf{FashionMNIST}: \\
+        {\scriptsize \url{https://github.com/zalandoresearch/fashion-mnist}}
+        
+        \vspace{5pt}
+        \textit{\textcolor{mnistPurple!80!black}{Note: These two are smaller size datasets.}}
+    \end{tcolorbox}
+
+
+\end{frame}
+
+
+\begin{frame}[fragile]{AlexNet}
+
+\resizebox{!}{0.9\textheight}{
+\begin{tikzpicture}[
+    % --- Define Styles ---
+    base/.style = {rectangle, draw=black, thick, minimum width=3cm, minimum height=0.7cm, align=center, font=\sffamily\small},
+    conv/.style = {base, fill=blue!20},   % Light blue for convolution layers
+    pool/.style = {base, fill=cyan!40},   % Darker blue/cyan for pooling layers
+    fc/.style   = {base, fill=white},     % White for fully connected layers
+    arrow/.style = {-{Stealth[scale=1.0]}, thick}
+]
+
+% ==========================================
+% LEFT ARCHITECTURE: LeNet
+% ==========================================
+\node[fc] (l_img) {Image ($28 \times 28$)};
+\node[conv, above=0.4cm of l_img] (l_c1) {$5 \times 5$ Conv (6), pad 2};
+\node[pool, above=0.4cm of l_c1] (l_p1) {$2 \times 2$ AvgPool, stride 2};
+\node[conv, above=0.4cm of l_p1] (l_c2) {$5 \times 5$ Conv (16)};
+\node[pool, above=0.4cm of l_c2] (l_p2) {$2 \times 2$ AvgPool, stride 2};
+\node[fc, above=0.4cm of l_p2] (l_f1) {FC (120)};
+\node[fc, above=0.4cm of l_f1] (l_f2) {FC (84)};
+\node[fc, above=0.4cm of l_f2] (l_f3) {FC (10)};
+
+% Draw arrows for LeNet
+\foreach \source/\dest in {l_img/l_c1, l_c1/l_p1, l_p1/l_c2, l_c2/l_p2, l_p2/l_f1, l_f1/l_f2, l_f2/l_f3}
+    \draw[arrow] (\source) -- (\dest);
+
+% ==========================================
+% RIGHT ARCHITECTURE: AlexNet
+% ==========================================
+% Shifted to the right of LeNet
+\node[fc, right=2.5cm of l_img] (r_img) {Image ($3 \times 224 \times 224$)};
+\node[conv, above=0.4cm of r_img] (r_c1) {$11 \times 11$ Conv (96), stride 4};
+\node[pool, above=0.4cm of r_c1] (r_p1) {$3 \times 3$ MaxPool, stride 2};
+\node[conv, above=0.4cm of r_p1] (r_c2) {$5 \times 5$ Conv (256), pad 2};
+\node[pool, above=0.4cm of r_c2] (r_p2) {$3 \times 3$ MaxPool, stride 2};
+\node[conv, above=0.4cm of r_p2] (r_c3) {$3 \times 3$ Conv (384), pad 1};
+\node[conv, above=0.4cm of r_c3] (r_c4) {$3 \times 3$ Conv (384), pad 1};
+\node[conv, above=0.4cm of r_c4] (r_c5) {$3 \times 3$ Conv (256), pad 1};
+\node[pool, above=0.4cm of r_c5] (r_p3) {$3 \times 3$ MaxPool, stride 2};
+\node[fc, above=0.4cm of r_p3] (r_f1) {FC (4096)};
+\node[fc, above=0.4cm of r_f1] (r_f2) {FC (4096)};
+\node[fc, above=0.4cm of r_f2] (r_f3) {FC (1000)};
+
+% Draw arrows for AlexNet
+\foreach \source/\dest in {r_img/r_c1, r_c1/r_p1, r_p1/r_c2, r_c2/r_p2, r_p2/r_c3, r_c3/r_c4, r_c4/r_c5, r_c5/r_p3, r_p3/r_f1, r_f1/r_f2, r_f2/r_f3}
+    \draw[arrow] (\source) -- (\dest);
+
+% ==========================================
+% CAPTION
+% ==========================================
+\node[below=0.6cm of $(l_img.south)!0.5!(r_img.south)$, font=\sffamily\itshape] 
+    {From LeNet (left), AlexNet (right).};
+
+\end{tikzpicture}
+}
+
+\end{frame}
+
+\begin{frame}{AlexNet Architecture}
+
+\begin{enumerate}
+\item Convolution window shape: $11\times 11$, then $5\times 5$, and then $3\times 3$.
+\item Network adds maxpooling of $3\times 3$ with a stride of 2.
+\item At the end,  two huge fully connected layers with 4096 outputs.
+\item ReLU activation function.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]{Block Thinking}
+
+\footnotesize
+
+% Hierarchy Header
+\centering
+\begin{tikzpicture}[node distance=0.5cm]
+    \node[draw, fill=blockBlue!10, rounded corners] (n) {Neurons};
+    \node[right=of n] (a1) {$\to$};
+    \node[draw, fill=blockBlue!20, rounded corners, right=of a1] (l) {Layers};
+    \node[right=of l] (a2) {$\to$};
+    \node[draw, fill=blockBlue!40, text=white, rounded corners, right=of a2, font=\bfseries] (b) {Blocks};
+\end{tikzpicture}
+
+\vspace{10pt}
+
+\begin{tcolorbox}[colback=white, colframe=blockBlue, arc=1mm, boxrule=0.5pt]
+    Basic building blocks of CNN are sequence of \textbf{(i)} Convolutional layer with padding \textbf{(ii)} a nonlinearity such as a ReLU \textbf{(iii)} a pooling layer such as max-pooling to reduce the resolution.
+\end{tcolorbox}
+
+\textcolor{red!80!black}{But pooling layer reduces dimension by $\log_2 d$ for $d$ dimension input, and it can happen fast exponentially.}
+
+\begin{enumerate}
+    \item \textbf{Simonyan and Zisserman (2014)} used multiple convolutional layer in between downsampling via max-pooling in the form of block.
+    \item \textbf{Two $3 \times 3$ convolution} have same effect as one $5\times 5$ convolution layer: \textcolor{logicGreen!70!black}{\textbf{deep and narrow networks significantly outperform their shallow counterparts.}}
+\end{enumerate}
+
+\vspace{5pt}
+\begin{tcolorbox}[colback=gray!5, colframe=citeGray, title=\scriptsize Three important papers in that area:, fonttitle=\bfseries]
+    \tiny
+    \begin{enumerate}
+        \item Simonyan, K. \& Zisserman, A. "Very deep convolutional networks for large-scale image recognition." (2014).
+        \item Lavin, A. \& Gray, S. "Fast algorithms for convolutional neural networks." (2016).
+        \item Liu, Z. et al. "A convnet for the 2020s." (2022).
+    \end{enumerate}
+\end{tcolorbox}
+
+\end{frame}
+
+\begin{frame}{VGG Block}
+\begin{columns}[T]
+    % --- Left Column: Text Content ---
+    \begin{column}{0.48\textwidth}
+        \footnotesize
+        \begin{tcolorbox}[colback=vggLightBlue!10, colframe=vggDeepBlue, arc=1mm, boxrule=0.5pt, left=2pt, right=2pt, top=2pt, bottom=2pt]
+        VGG Block (\textbf{Simonyan and Zisserman (2014)}), consists of a sequence of convolutions with $3 \times 3$ kernels with padding of 1 (keeping height and width) followed by a $ 2\times 2$ max-pooling layer with stride of 2 (halving height and width after each block). 
+        \end{tcolorbox}
+
+        \vspace{5pt}
+
+        \begin{itemize}
+            \item VGG Network can be partitioned into two parts: the first consisting mostly of convolutional and pooling layers and the second consisting of fully connected layers that are identical to those in AlexNet. 
+            \item But the convolutional layers are grouped in nonlinear transformations that leave the dimensonality unchanged, followed by a resolution-reduction step.
+        \end{itemize}
+    \end{column}
+
+    % --- Right Column: TikZ Figure ---
+    \begin{column}{0.48\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{
+            \begin{tikzpicture}[
+                node distance=0.4cm,
+                layer/.style={rectangle, draw=black, thick, minimum width=4.5cm, minimum height=0.6cm, font=\sffamily\small, align=center},
+                conv/.style={layer, fill=vggLightBlue},
+                pool/.style={layer, fill=vggDeepBlue},
+                fc/.style={layer, fill=white},
+                container/.style={rectangle, draw=black, thick, inner sep=0.3cm, rounded corners=2pt},
+                arrow/.style={-Stealth, thick}
+            ]
+
+                % --- VGG BLOCK (LEFT) ---
+                \node[conv] (b_c1) {$3 \times 3$ Conv, pad 1};
+                \node[draw=none, above=0.3cm of b_c1] (b_dots) {\dots};
+                \node[conv, above=0.3cm of b_dots] (b_c2) {$3 \times 3$ Conv, pad 1};
+                \node[pool, above=0.3cm of b_c2] (b_p1) {$2 \times 2$ MaxPool, stride 2};
+                
+                % Container for VGG Block
+                \node[container, fit=(b_c1) (b_p1), label={[font=\sffamily]above:VGG block}] (block_box) {};
+                
+                % Arrows for Block
+                \draw[arrow] (b_c1) -- (b_dots);
+                \draw[arrow] (b_dots) -- (b_c2);
+                \draw[arrow] (b_c2) -- (b_p1);
+
+
+                % --- VGG FULL ARCHITECTURE (RIGHT) ---
+                \coordinate[right=3cm of b_c1] (vgg_start);
+                
+                % Bottom Block Segment
+                \node[conv, right=3cm of b_c1, minimum width=4cm] (v1_1) {};
+                \node[draw=none, above=0.1cm of v1_1] (v1_dots) {\tiny \dots};
+                \node[conv, above=0.1cm of v1_dots, minimum width=4cm] (v1_2) {};
+                \node[pool, above=0.1cm of v1_2, minimum width=4cm] (v1_p) {};
+                \node[container, fit=(v1_1) (v1_p)] (v_box1) {};
+
+                % Middle Dots
+                \node[draw=none, above=0.6cm of v_box1] (v_mid_dots) {\dots};
+
+                % Top Block Segment
+                \node[conv, above=0.6cm of v_mid_dots, minimum width=4cm] (v2_1) {};
+                \node[draw=none, above=0.1cm of v2_1] (v2_dots) {\tiny \dots};
+                \node[conv, above=0.1cm of v2_dots, minimum width=4cm] (v2_2) {};
+                \node[pool, above=0.1cm of v2_2, minimum width=4cm] (v2_p) {};
+                \node[container, fit=(v2_1) (v2_p)] (v_box2) {};
+
+                % Fully Connected Layers
+                \node[fc, above=0.8cm of v_box2, minimum width=4cm] (fc1) {FC (4096)};
+                \node[fc, above=0.4cm of fc1, minimum width=4cm] (fc2) {FC (4096)};
+                \node[fc, above=0.4cm of fc2, minimum width=4cm] (fc3) {FC (1000)};
+	            \node[above=0.2cm of fc3] (fc4) {VGG};
+                
+                
+
+                % --- DRAW ARROWS FOR VGG ---
+                \draw[arrow] (v_box1) -- (v_mid_dots);
+                \draw[arrow] (v_mid_dots) -- (v_box2);
+                \draw[arrow] (v_box2) -- (fc1);
+                \draw[arrow] (fc1) -- (fc2);
+                \draw[arrow] (fc2) -- (fc3);
+            \end{tikzpicture}
+        }
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Network in Network (NiN)}
+
+Two main problems with AlexNet and VGGNet:
+\begin{enumerate}
+\item FCN at the end of the network has tremendous number of parameters.
+\item Cannot add FCN earlier in the network otherwise it can destroy spatial information.
+\end{enumerate}
+NiN:
+
+\begin{enumerate}
+\item use  $1\times 1$ convolutions to add local nonlinearities across the channel activations
+\item use global average pooling to integrate across all locations in the last representation layer
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]{NiN Block}
+\begin{columns}[T]
+    % --- Left Column: Text Content ---
+    \begin{column}{0.55\textwidth}
+        \footnotesize
+        
+        Input/Output of Convolutional layer is 4-d Tensor with no. of samples $\times$ channel $\times$ height $\times$ width. 
+        
+        \vspace{5pt}
+        Input/output of FC layer are 2-D Tensor: no. of samples $\times$ features.
+
+        \vspace{10pt}
+        \begin{tcolorbox}[colback=vggLightBlue!10, colframe=vggDeepBlue, arc=1mm, boxrule=0.5pt, left=3pt, right=3pt, top=3pt, bottom=3pt]
+        The idea behind NiN is to apply a fully connected layer at each pixel location (for each height and width). The resulting $1 \times 1$ convolution can be thought of as a fully connected layer acting independently on each pixel location.
+        \end{tcolorbox}
+    \end{column}
+
+    % --- Right Column: TikZ Diagram ---
+    \begin{column}{0.4\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{
+            \begin{tikzpicture}[
+                node distance=0.6cm,
+                layer/.style={rectangle, draw=black, thick, minimum width=3.8cm, minimum height=0.8cm, font=\sffamily\bfseries, align=center},
+                conv/.style={layer, fill=vggLightBlue},
+                container/.style={rectangle, draw=black, thick, inner sep=0.4cm, rounded corners=3pt},
+                arrow/.style={-Stealth, thick}
+            ]
+
+                % --- NiN Block Components ---
+                \node[conv] (base_conv) {Conv};
+                \node[conv, above=of base_conv] (1x1_a) {$1 \times 1$ Conv};
+                \node[conv, above=of 1x1_a] (1x1_b) {$1 \times 1$ Conv};
+                
+                % --- Container Box ---
+                \node[container, fit=(base_conv) (1x1_b), label={[font=\sffamily\large\bfseries]above:NiN block}] (nin_box) {};
+                
+                % --- Arrows ---
+                \draw[arrow] (base_conv) -- (1x1_a);
+                \draw[arrow] (1x1_a) -- (1x1_b);
+            \end{tikzpicture}
+        }
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{NiN Model}
+    \begin{columns}[T]
+        % --- Left Column: Structured Text ---
+        \begin{column}{0.58\textwidth}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{Initial Convolution Sizes:} NiN uses the same initial convolution sizes as AlexNet: 
+                \begin{itemize}
+                    \item Kernel sizes are $11\times 11$, $5\times 5$ and $3\times 3$ respectively.
+                    \item The numbers of output channels match those of AlexNet.
+                \end{itemize}
+                \item \textbf{Downsampling:} Each NiN block is followed by a max-pooling layer with a stride of 2 and a window shape of $3\times 3$.
+                \item \textbf{Architectural Shift:} 
+                \begin{itemize}
+                    \item NiN avoids fully connected layers altogether.
+                    \item Instead, NiN uses a NiN block with a number of output channels equal to the number of label classes.
+                    \item Followed by a global average pooling layer, yielding a vector of logits.
+                \end{itemize}
+            \end{itemize}
+            
+            \begin{tcolorbox}[colback=vggLightBlue!10, colframe=vggDeepBlue, arc=1mm, boxrule=0.5pt, left=2pt, right=2pt, top=2pt, bottom=2pt]
+                \scriptsize
+                This design significantly reduces the number of required model parameters, albeit at the expense of a potential increase in training time.
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: TikZ Diagram ---
+        \begin{column}{0.38\textwidth}
+            \centering
+            \resizebox{!}{0.85\textheight}{
+                \begin{tikzpicture}[
+                    node distance=0.6cm,
+                    layer/.style={rectangle, draw=black, thick, minimum width=4cm, minimum height=0.45cm, font=\sffamily\scriptsize},
+                    conv/.style={layer, fill=vggLightBlue},
+                    pool/.style={layer, fill=vggDeepBlue},
+                    container/.style={rectangle, draw=black, thick, inner sep=0.15cm},
+                    arrow/.style={-Stealth, thick}
+                ]
+                    % Block 1
+                    \node[conv] (b1_1) {$11 \times 11$ Conv (96), stride 4};
+                    \node[conv, above=0.1cm of b1_1] (b1_2) {};
+                    \node[conv, above=0.1cm of b1_2] (b1_3) {};
+                    \node[container, fit=(b1_1) (b1_3)] (c1) {};
+                    
+                    % Pool 1
+                    \node[pool, above=of c1] (p1) {$3 \times 3$ MaxPool, stride 2};
+                    
+                    % Block 2
+                    \node[conv, above=of p1] (b2_1) {$5 \times 5$ Conv (256), pad 2};
+                    \node[conv, above=0.1cm of b2_1] (b2_2) {};
+                    \node[conv, above=0.1cm of b2_2] (b2_3) {};
+                    \node[container, fit=(b2_1) (b2_3)] (c2) {};
+                    
+                    % Pool 2
+                    \node[pool, above=of c2] (p2) {$3 \times 3$ MaxPool, stride 2};
+                    
+                    % Block 3
+                    \node[conv, above=of p2] (b3_1) {$3 \times 3$ Conv (384), pad 1};
+                    \node[conv, above=0.1cm of b3_1] (b3_2) {};
+                    \node[conv, above=0.1cm of b3_2] (b3_3) {};
+                    \node[container, fit=(b3_1) (b3_3)] (c3) {};
+                    
+                    % Pool 3
+                    \node[pool, above=of c3] (p3) {$3 \times 3$ MaxPool, stride 2};
+                    
+                    % Block 4
+                    \node[conv, above=of p3] (b4_1) {$3 \times 3$ Conv (10), pad 1};
+                    \node[conv, above=0.1cm of b4_1] (b4_2) {};
+                    \node[conv, above=0.1cm of b4_2] (b4_3) {};
+                    \node[container, fit=(b4_1) (b4_3)] (c4) {};
+                    
+                    % Global AvgPool
+                    \node[pool, above=of c4] (gap) {Global AvgPool};
+                    
+                    % Arrows
+                    \foreach \x/\y in {c1/p1, p1/c2, c2/p2, p2/c3, c3/p3, p3/c4, c4/gap}
+                        \draw[arrow] (\x) -- (\y);
+                \end{tikzpicture}
+            }
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{GoogLeNet: Multi-Branch Networks}
+\footnotesize
+\begin{columns}[T]
+    % --- Left Column: Text Content ---
+    \begin{column}{0.45\textwidth}
+        \scriptsize
+        \textit{Szegedy, C. et al. (2015). Going deeper with convolutions. Proceedings of the CVPR (pp. 1–9).}
+        
+        \vspace{4pt}
+        \textbf{Network Structure:}
+        \begin{itemize}
+            \item \textbf{Stem for data ingestion:} 
+            \begin{itemize}
+                \item First two or three convolutions.
+                \item Operate directly on the image.
+            \end{itemize}
+            \item \textbf{Body for data processing:} 
+            \begin{itemize}
+                \item Contains convolution blocks.
+                \item It has concatenated multi-branch convolutions.
+            \end{itemize}
+            \item \textbf{Head for prediction:} 
+            \begin{itemize}
+                \item Maps features to the required problem.
+                \item Handles classification, segmentation, detection, or tracking.
+            \end{itemize}
+        \end{itemize}
+
+    \end{column}
+
+    % --- Right Column: TikZ Figure ---
+    \begin{column}{0.55\textwidth}
+        \centering
+\begin{figure}
+\includegraphics[width=0.99\linewidth]{figures/inception_block.png}
+\end{figure}
+     \begin{tcolorbox}[colback=vggLightBlue!10, colframe=blockBlue, arc=1mm, boxrule=0.5pt, left=2pt, right=2pt, top=2pt, bottom=2pt]
+            \footnotesize
+            Convolution block in GoogLeNet is the \textbf{Inception Block}.
+        \end{tcolorbox}
+
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{GoogLeNet Model}
+
+GoogLeNet uses a stack of a total of 9 inception blocks, arranged into three groups with max-pooling in between, and global average pooling in its head to generate its estimates. Max-pooling between inception blocks reduces the dimensionality. At its stem, the first module is similar to AlexNet and LeNet.
+
+\begin{figure}
+\includegraphics[width=0.79\linewidth]{figures/googlenet.png}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Applying Batch Normalization in CNN}
+
+\begin{itemize}
+    \item \textcolor{blockBlue}{\textbf{Placement:}} With convolutional layers, we can apply batch normalization after the convolution but before the nonlinear activation function.
+    
+    \item \textcolor{logicGreen!70!black}{\textbf{Per-Channel Logic:}} The key difference from batch normalization in fully connected layers is that we apply the operation on a per-channel basis across all locations.
+    
+    \item \textcolor{vggDeepBlue}{\textbf{Dimensions:}} 
+    \begin{itemize}
+        \item Assume minibatches contain $m$ training samples.
+        \item For each channel, output height is $p$ and width is $q$.
+        \item Normalization is carried out over the \textbf{$m \cdot p \cdot q$} elements per output channel simultaneously.
+    \end{itemize}
+
+    \item \textcolor{red!80!black}{\textbf{Spatial Normalization:}} 
+    \begin{itemize}
+        \item Collect values over all spatial locations to compute mean and variance.
+        \item Apply the same mean/variance within a given channel to every spatial location.
+    \end{itemize}
+
+    \item \textcolor{citeGray}{\textbf{Parameters:}} Each channel has its own scale and shift parameters, both of which are scalars.
+\end{itemize}
+
+\end{frame}
 
 \end{document}
