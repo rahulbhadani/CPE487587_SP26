@@ -2753,6 +2753,77 @@ forget gate and new memory via the input gate)
     \sectionpage
 \end{frame}
 
+\begin{frame}[fragile]{It Started with Attention!}
+    
+    \footnotesize
+    
+    \begin{columns}[T]
+        % --- Left Column: History and Context ---
+        \begin{column}{0.4\textwidth}
+            \vspace{10pt}
+            \begin{itemize}
+                \item[\textcolor{genAIGold}{\faRobot}] \textbf{Behind modern genAI chatbots.}
+                \item[\textcolor{genAIGold}{\faKeyboard}] \textbf{Generative AI text-based tools}
+                \item[\textcolor{genAIGold}{\faFileText}] First proposed in 2017 in the paper \textbf{Attention is All You Need}
+            \end{itemize}
+            
+            \vspace{20pt}
+            % High-level Logic flow simplified
+            \centering
+            \begin{tikzpicture}[node distance=0.8cm, every node/.style={font=\tiny\bfseries}]
+                \node (input) [draw=gray, rounded corners=2pt, fill=white] {Input};
+                \node (transformer) [draw=genAIGold, thick, fill=genAIGold!10, right=of input] {Transformer};
+                \node (output) [draw=gray, rounded corners=2pt, fill=white, right=of transformer] {Output};
+                \draw[->, >=stealth] (input) -- (transformer);
+                \draw[->, >=stealth] (transformer) -- (output);
+            \end{tikzpicture}
+        \end{column}
+
+        % --- Right Column: The Architecture ---
+        \begin{column}{0.58\textwidth}
+            \centering
+            \resizebox{\textwidth}{!}{
+                \begin{tikzpicture}[
+                    >=stealth, thick,
+                    block/.style={rectangle, draw=gray!40, fill=white, minimum width=2cm, minimum height=3cm, rounded corners=2pt},
+                    encoderBlock/.style={block, draw=encoderBlue, text=encoderBlue, line width=1.2pt},
+                    decoderBlock/.style={block, draw=decoderPurple, text=decoderPurple, line width=1.2pt},
+                    labelFont/.style={font=\bfseries\footnotesize},
+                    arrowLine/.style={->, draw=frameNavy, line width=1pt}
+                ]
+
+                % Outer Container Frame
+                \draw[draw=frameNavy!20, fill=frameNavy!2, rounded corners=10pt] (-2.2, -2.5) rectangle (8.2, 2.5);
+
+                % --- ENCODER STACK ---
+                \node[block] at (0.2, 0.2) {};
+                \node[block] at (0.1, 0.1) {};
+                \node[encoderBlock, labelFont] (Enc) at (0,0) {ENCODERS};
+
+                % --- DECODER STACK ---
+                \node[block] at (5.2, 0.2) {};
+                \node[block] at (5.1, 0.1) {};
+                \node[decoderBlock, labelFont] (Dec) at (5,0) {DECODERS};
+
+                % --- INPUT/OUTPUT ---
+                \node[labelFont] (input_arch) at (-3.5, 0) {Input};
+                \node[labelFont] (output_arch) at (9.5, 0) {Output};
+
+                % --- CONNECTIONS ---
+                \draw[arrowLine] (input_arch) -- (Enc);
+                \foreach \y in {0.7, 0, -0.7} {
+                    \draw[arrowLine] ($(Enc.east) + (0,\y)$) -- ($(Dec.west) + (0,\y)$);
+                }
+                \draw[arrowLine] (Dec) -- (output_arch);
+
+                % Layer Labels
+                \node[below=0.2cm of Enc, font=\tiny\itshape, text=gray] {$N \times$ Layers};
+                \node[below=0.2cm of Dec, font=\tiny\itshape, text=gray] {$N \times$ Layers};
+                \end{tikzpicture}
+            }
+        \end{column}
+    \end{columns}
+\end{frame}
 
 \begin{frame}{References}
 
