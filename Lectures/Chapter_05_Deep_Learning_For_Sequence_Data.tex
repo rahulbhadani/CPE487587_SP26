@@ -1812,40 +1812,7 @@ because the sum of all 2-gram counts that start with a given word $w_{n-1}$ is e
 
 \end{frame}
 
-%\begin{frame}{How to estimate probabilities}
-%\begin{columns}[T]
-%    % --- Left Column: Method and Logic ---
-%    \begin{column}{0.5\textwidth}
-%        \textcolor{blockBlue}{\textbf{Maximum Likelihood Estimation method:}}
-%        
-%        \vspace{5pt}
-%        \begin{itemize}
-%            \item \textbf{Process:} Count words from a corpus, and normalize the counts so they fall between 0 and 1.
-%            
-%            \vspace{10pt}
-%            \item \textbf{Logic:} The sum of all 2-gram counts that start with a given word $w_{n-1}$ is equal to the 1-gram count for that word $w_{n-1}$.
-%        \end{itemize}
-%    \end{column}
-%
-%    % --- Right Column: Formula ---
-%    \begin{column}{0.48\textwidth}
-%        \centering
-%        \textbf{Computing 2-gram probability:}
-%        
-%        \vspace{10pt}
-%        \begin{tcolorbox}[colback=vggDeepBlue!5, colframe=vggDeepBlue, arc=1mm, boxrule=0.8pt]
-%            \small
-%            \begin{align*}
-%            p(w_n|w_{n-1}) &= \frac{C(w_{n-1}w_n)}{\sum_w C(w_{n-1} w)} \\
-%            &= \frac{C(w_{n-1}w_n)}{ C(w_{n-1})} 
-%            \end{align*}
-%        \end{tcolorbox}
-%        
-%        \vspace{5pt}
-%        \scriptsize \textcolor{citeGray}{Normalization ensures valid probabilities.}
-%    \end{column}
-%\end{columns}
-%\end{frame}
+
 
 \begin{frame}[fragile]{Example}
 
@@ -1861,13 +1828,238 @@ because the sum of all 2-gram counts that start with a given word $w_{n-1}$ is e
             
             <s> I am Sam </s>
             <s> Sam I am </s>
-            <s>I do not  like green peas and cheese</s>
-\end{minted}
+            <s> I do not  like green peas and cheese</s>
+		 \end{minted}
+	
 
-$P(I|<s>) = 2/3 = 0.67, P(<s>|Sam) = 1/2 = 0.5, P(Sam|<s>) = 1/3 = 0.33, P(Sam|am) = 1/2 = 0.5, P(am|I) = 2/3 = 0.67, = 0.5 P(do|I) = 1/3 = 0.33$
+          \begin{minted}[
+                linenos,
+                framesep=2mm,
+                bgcolor=pink!30,
+                fontsize=\small,
+                breaklines
+            ]{html}
+            
+            P(I|<s>) = 2/3 = 0.67, P(<s>|Sam) = 1/2 = 0.5
+            P(Sam|<s>) = 1/3 = 0.33,  P(Sam|am) = 1/2 = 0.5
+            P(am|I) = 2/3 = 0.67, = 0.5,  P(do|I) = 1/3 = 0.33
+		 \end{minted}
+	
+
+
+\end{frame}
+
+\begin{frame}[fragile]{Probability Estimation for n-gram parameter estimation}
+\begin{columns}[T]
+    % --- Left Column: Concept and Terminology ---
+    \begin{column}{0.5\textwidth}
+        \textcolor{blockBlue}{\textbf{Relative Frequency Estimation:}}
+        
+        \vspace{10pt}
+        \begin{itemize}
+            \item \textbf{Definition:} $n$-gram probability is obtained by dividing the observed frequency of a particular sequence by the observed frequency. 
+            
+            \vspace{10pt}
+            \item \textbf{Terminology:} This approach is called \textcolor{logicGreen!70!black}{\textbf{relative frequency}}.
+        \end{itemize}
+    \end{column}
+
+    % --- Right Column: General Equation ---
+    \begin{column}{0.48\textwidth}
+        \centering
+        \textbf{General Equation:}
+        
+        \vspace{10pt}
+        \begin{tcolorbox}[colback=vggDeepBlue!5, colframe=vggDeepBlue, arc=1mm, boxrule=0.8pt]
+            \small
+            \begin{align*}
+            P(w_n | w_{n-N + 1: n-1}) = \frac{C(w_{n-N+1:n-1} w_n)}{C(w_{n-N+1:n-1})}
+            \end{align*}
+        \end{tcolorbox}
+        
+        \vspace{5pt}
+        \scriptsize \textcolor{citeGray}{Estimating the probability of a word given its $N-1$ previous words.}
+    \end{column}
+\end{columns}
+\end{frame}
 
 
 
+\begin{frame}[fragile]{Question}
+
+How to get probaility 
+
+ \begin{minted}[
+                linenos,
+                framesep=2mm,
+                bgcolor=pink!30,
+                fontsize=\small,
+                breaklines
+            ]{html}
+            P(<s> I want English food </s>) = ?
+		 \end{minted}
+		 
+using 2-gram model?
+		 
+
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Dealing with Large n-gram Models}
+    \begin{columns}[T]
+        % --- Left Column: Probabilities & Underflow ---
+        \begin{column}{0.5\textwidth}
+            \small
+            \begin{tcolorbox}[colback=uiRose!5, colframe=uiRose, arc=1mm, title=\scriptsize The Multiplication Problem, fonttitle=\bfseries]
+                What would happen if you multiply enough n-grams together?
+            \end{tcolorbox}
+            
+            \pause
+            \begin{itemize}
+                \item[\textcolor{uiRose}{\faArrowRight}] How would you deal with it? \pause \textbf{We can instead do} \textcolor{uiRose}{\textbf{log probabilities}}.
+            \end{itemize}
+            
+            \vspace{10pt}
+            \pause
+            
+            \begin{tcolorbox}[colback=uiTeal!5, colframe=uiTeal, arc=1mm, title=\scriptsize Context Expansion, fonttitle=\bfseries]
+                How do we deal with longer context, like 3-gram, 4-gram?
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: Implementation ---
+        \begin{column}{0.48\textwidth}
+            \pause
+            \scriptsize
+            \textbf{For 3-gram}, we can use two pseudo initial words e.g.
+            
+            \vspace{5pt}
+            \begin{minted}[
+                framesep=3mm,
+                bgcolor=uiRose!10,
+                fontsize=\footnotesize,
+                breaklines
+            ]{text}
+            P(I | <s> <s>)
+            \end{minted}
+
+            \vspace{10pt}
+            \pause
+            \textcolor{uiCharcoal}{\textbf{Efficient Computation Points:}}
+            \begin{itemize}
+                \item[\textcolor{uiTeal}{\textbullet}] \textbf{Quantize probabilities} using only 4-8 bits (instead of 8-byte floats).
+                \item[\textcolor{uiTeal}{\textbullet}] Use \textbf{sorted arrays and merge sorts} to efficiently build the probability tables in a minimal number of passes through a large corpus.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}{Evaluating LMs}
+\vspace{-5pt}
+    \begin{columns}[T]
+        % --- Left Column: Evaluation Types ---
+        \begin{column}{0.48\textwidth}
+            \small
+            \begin{tcolorbox}[colback=evalSlate!5, colframe=evalSlate, arc=1mm, title=\scriptsize Extrinsic Evaluation, fonttitle=\bfseries]
+                Embed into an application and evaluate how much the application improves.
+            \end{tcolorbox}
+            
+            \vspace{2pt}
+            \textit{\scriptsize It is comparative: compare two candidate LMs on tasks such as speed recognizer and machine translation.}
+
+            \vspace{8pt}
+            
+            \begin{tcolorbox}[colback=evalAzure!5, colframe=evalAzure, arc=1mm, title=\scriptsize Intrinsic Evaluation, fonttitle=\bfseries]
+                Measuring quality of model independent of application. 
+                \vspace{2pt}
+                \newline \textbf{Example:} \textcolor{evalAzure}{perplexity}.
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: Perplexity Math ---
+        \begin{column}{0.48\textwidth}
+            \scriptsize
+            \textcolor{evalSlate}{\textbf{Perplexity of N-gram Model:}}
+            The perplexity of an LM on a test set is the inverse probability of the test set normalized by the number of words or tokens. 
+            
+            \vspace{4pt}
+            We normalize by taking the N-th root. If we have test set $W = w_1 w_2, \cdots w_N$:
+
+            \begin{tcolorbox}[colback=white, colframe=evalSlate!30, arc=1mm]
+                \begin{align*}
+                perplexity(W) & = \sqrt[N]{\frac{1}{P(w_1 w_2 \cdots w_N)}}\\
+                & = \sqrt[N]{\prod_{i=1}^N \frac{1}{P(w_i | w_1  \cdots w_{i-1})}}
+                \end{align*}
+            \end{tcolorbox}
+            \centering \tiny \textit{Using chain rule of probabilities}
+        \end{column}
+    \end{columns}
+
+
+    \begin{beamercolorbox}[wd=\textwidth, sep=5pt, rounded=true]{block body}
+        \footnotesize \textcolor{evalGold!80!black}{\faExclamationTriangle} \textbf{Caveat:} An intrinsic improvement in perplexity doesn't guarantee an extrinsic improvement in performance.
+    \end{beamercolorbox}
+\end{frame}
+
+\begin{frame}[fragile]{Perplexity: Weighted Average Branching Factor}
+
+
+    \begin{columns}[T]
+        % --- Left Column: Definitions ---
+        \begin{column}{0.47\textwidth}
+            \footnotesize
+            \begin{beamercolorbox}[wd=\textwidth, sep=4pt, rounded=true]{block body}
+                \footnotesize \textcolor{branchEmerald}{\faCheckCircle} Lower perplexity means the model is more confident and accurate.
+            \end{beamercolorbox}
+
+            \vspace{5pt}
+            \textcolor{branchEmerald}{\textbf{Branching factor of a language:}} 
+            The number of possible words that can follow any word. 
+            
+            \begin{itemize}
+                \item \textbf{Deterministic:} Only 1 word follows; factor is 1.
+                \item \textbf{Uniform:} $V$ words equally likely; factor is $V$.
+                \item \textbf{General:} Average number of possible next words, weighted by their probabilities.
+            \end{itemize}
+
+            \vspace{5pt}
+            \begin{tcolorbox}[colback=branchEmerald!5, colframe=branchEmerald, arc=1mm, title=\scriptsize Uniform Case, fonttitle=\bfseries]
+                If $P(w_i) = \frac{1}{V}$, then:
+                \begin{equation*}
+                Perplexity = (V^N)^{\frac{1}{N}} = V
+                \end{equation*}
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: Worked Example ---
+        \begin{column}{0.51\textwidth}
+            \scriptsize
+            \textcolor{branchGold}{\textbf{Example: Bigram Model}} \\
+            Test seq: $\text{I} \rightarrow \text{love} \rightarrow \text{NLP}$ ($N=3$) \\
+            $P(\text{I}|\langle s \rangle)=1.0, P(\text{love}|\text{I})=0.5, P(\text{NLP}|\text{love})=0.8$
+
+            \vspace{8pt}
+            \textbf{\textcolor{branchGold}{Step 1:}} \textbf{Local Branching Factors} \\
+            $B_1 = 1/1.0 = 1$ \\
+            $B_2 = 1/0.5 = 2$ \\
+            $B_3 = 1/0.8 = 1.25$
+
+            \vspace{8pt}
+            \textbf{\textcolor{branchGold}{Step 2:}} \textbf{Perplexity (Weighted Avg)} \\
+            \begin{tcolorbox}[colback=white, colframe=branchGold!40, arc=1mm]
+                \centering
+                $\text{PPL} = \sqrt[3]{B_1 \times B_2 \times B_3}$ \\
+                $= \sqrt[3]{1 \times 2 \times 1.25} = \sqrt[3]{2.5} \approx \mathbf{1.357}$
+            \end{tcolorbox}
+
+            \vspace{5pt}
+            \textbf{Interpretation:} \\
+            \textit{Avg meaningful next-word choices = 1.357 (not naive vocab size)}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Sampling from a Language Model}
@@ -1876,7 +2068,8 @@ $P(I|<s>) = 2/3 = 0.67, P(<s>|Sam) = 1/2 = 0.5, P(Sam|<s>) = 1/3 = 0.33, P(Sam|a
 \textbf{Process}:
 \begin{enumerate}
 \item Start with initial context (n-1 words)
-\item Roll weighted die for next word
+\item Roll weighted die for next word or choose a random number between 0 and 1.
+%\item Choose the word whose inerval includes this value on the number line.
 \item Slide window and repeat
 \end{enumerate}
 
@@ -1915,49 +2108,141 @@ Sampling introduces diversity but preserves local coherence through n-gram const
 
 \end{frame}
 
-\begin{frame}{Recurrent Connections and Recurrent Neural Networks}
-  \textbf{Recurrent Connection:}
-  Introduction of a cycle in a network.
 
+\begin{frame}{N-gram Language Models Don't Work Well}
+    \vspace{5pt}
+    
+    \begin{itemize}
+        \item \textbf{Data Sparsity:} 
+        As $n$ increases, the number of possible $n$-grams grows exponentially, but they might never appear in a training corpus.
+        
+        \vspace{8pt}
+        
+        \item  \textbf{The Zero-Probability Problem:} 
+        Unseen n-grams receive zero probability, which is problematic. 
+        
+        \vspace{8pt}
+        
+        \item  \textbf{Context Limitations:} 
+        Long-range dependencies are impossible, or computationally intractable to capture.
+        
+        \vspace{8pt}
+        
+        \item 
+         \textbf{Lack of Semantic Generalization:} 
+        N-grams treat words as discrete symbols and fail to generalize.
+    \end{itemize}
 
-  \textbf{Recurrent Neural Network (RNN):}
-  Any neural network that contains a cycle within its network connection.
+    \vfill
 
-  There are many types of RNN. We will see the \textbf{Elman network} (1990, Elman).
+%    \begin{tcolorbox}[colback=warnCrimson!5, colframe=warnCrimson, arc=1mm, boxrule=0.5pt]
+%        \centering \scriptsize \textbf{Conclusion:} These fundamental flaws necessitate the move toward Neural Language Models and Smoothing techniques.
+%    \end{tcolorbox}
+\end{frame}
 
-  \begin{center}
-    \tikzstyle{neuron}=[circle,draw,fill=red!20,minimum size=3.5em,inner sep=0, node distance=2cm]
-    \tikzstyle{input}=[rectangle,draw,fill=blue!20,minimum size=3em,inner sep=5pt]
+\begin{frame}[fragile]{Recurrent Connections and Recurrent Neural Networks}
+    
+    \begin{columns}[T]
+        % --- Left Column: Definitions ---
+        \begin{column}{0.45\textwidth}
+            \vspace{10pt}
+            \begin{tcolorbox}[colback=rnnNavy!5, colframe=rnnNavy, arc=1.5mm, title=\small \textbf{Recurrent Connection}, fonttitle=\bfseries]
+                Introduction of a cycle in a network.
+            \end{tcolorbox}
 
-    \begin{tikzpicture}[>=stealth]
-      \node[input] (xt) {$x_t$};
-      \node[neuron, right=of xt] (ht) {$h_t$};
-      \node[neuron, right=of ht] (yt) {$y_t$};
+            \vspace{5pt}
 
-      \draw[->] (xt) -- (ht);
-      \draw[->] (ht) -- (yt);
-      \draw[->] (ht) to[out=45,in=135,loop] (ht);
-    \end{tikzpicture}
-  \end{center}
+            \begin{tcolorbox}[colback=rnnCoral!5, colframe=rnnCoral, arc=1.5mm, title=\small \textbf{Recurrent Neural Network (RNN)}, fonttitle=\bfseries]
+                Any neural network that contains a cycle within its network connection.
+            \end{tcolorbox}
+
+            \vspace{10pt}
+            \small
+            There are many types of RNN. We will see the \textbf{Elman network} (1990, Elman).
+        \end{column}
+
+        % --- Right Column: Diagram ---
+        \begin{column}{0.55\textwidth}
+            \centering
+            \vspace{20pt}
+            \begin{tikzpicture}[
+                >=stealth, 
+                node distance=1.8cm,
+                neuron/.style={circle, draw=rnnCoral, fill=rnnCoral!20, thick, minimum size=1.2cm, font=\bfseries},
+                input/.style={rectangle, draw=rnnBlue, fill=rnnBlue!20, thick, rounded corners=2pt, minimum size=1cm, font=\bfseries}
+            ]
+                % Nodes
+                \node[input] (xt) {$x_t$};
+                \node[neuron, right=of xt] (ht) {$h_t$};
+                \node[neuron, right=of ht] (yt) {$y_t$};
+
+                % Path connections
+                \draw[->, thick] (xt) -- (ht);
+                \draw[->, thick] (ht) -- (yt);
+                
+                % Recurrent Loop
+                \draw[->, thick, rnnCoral] (ht.north) .. controls +(0.5,0.8) and +(-0.5,0.8) .. (ht.north) 
+                    node[midway, above, font=\scriptsize] {$W_{hh}$};
+                
+                % Label for context
+                \node[below=0.3cm of ht, font=\scriptsize\itshape] {Hidden State};
+            \end{tikzpicture}
+            
+            \vspace{10pt}
+            \scriptsize \textcolor{gray}{Folded representation of a cycle in an RNN.}
+        \end{column}
+    \end{columns}
 
 \end{frame}
-\begin{frame}{Elman Network}
 
-  The equations for the Elman network are:
-  \begin{multiequation}
-    h_t &= g(Uh_{t-1} + Wx_t) \\
-    y_t &= f(Vh_t)
-  \end{multiequation}
-  where $g$ is an activation function (e.g., tanh or sigmoid).
-  
-  At the end, output layer also contains softmax: $y_t = \text{softmax}(Vh_t)$.
 
-  \bigskip
-  The goal is to learn the weights $U$, $W$, and $V$.
+\begin{frame}[fragile]{Elman Network}
+    \begin{columns}[T]
+        % --- Left Column: Equations ---
+        \begin{column}{0.55\textwidth}
+            \small
+            The equations for the Elman network are:
+            
+            \vspace{10pt}
+            \begin{tcolorbox}[colback=rnnNavy!5, colframe=rnnNavy, arc=1mm, boxrule=0.8pt]
+                \begin{align*}
+                    h_t &= g(Uh_{t-1} + Wx_t) \\
+                    y_t &= f(Vh_t)
+                \end{align*}
+            \end{tcolorbox}
+            
+            \vspace{5pt}
+            where $g$ is an activation function (e.g., tanh or sigmoid).
+            
+            \vspace{10pt}
+            At the end, output layer also contains softmax: 
+            \begin{equation*}
+                \textcolor{rnnCoral}{y_t = \text{softmax}(Vh_t)}
+            \end{equation*}
+        \end{column}
 
-  \bigskip
-  At the end output layer, softmax is often used.
+        % --- Right Column: Details & Parameters ---
+        \begin{column}{0.4\textwidth}
+            \vspace{10pt}
+            \begin{itemize}
+                \item[\textcolor{rnnCoral}{\faBullseye}] 
+                \small
+                The goal is to learn the weights:
+                \begin{itemize}
+                    \item \textcolor{rnnNavy}{\textbf{$U$}} (Recurrent)
+                    \item \textcolor{rnnNavy}{\textbf{$W$}} (Input)
+                    \item \textcolor{rnnNavy}{\textbf{$V$}} (Output)
+                \end{itemize}
+                
+                \vspace{15pt}
+                \item[\textcolor{rnnBlue}{\faInfoCircle}] 
+                \small
+                At the end output layer, softmax is often used.
+            \end{itemize}
+        \end{column}
+    \end{columns}
 \end{frame}
+
 
 \begin{frame}{See an Example RNN Network}
   The feedback loop in Recurrent Neural Networks (RNNs) networks makes it possible to establish long-range dependence on sequential data.
