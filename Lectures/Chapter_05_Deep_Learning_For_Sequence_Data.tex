@@ -1519,7 +1519,7 @@ GoogLeNet uses a stack of a total of 9 inception blocks, arranged into three gro
     \end{enumerate}
 \end{frame}
 
-\section{Recurrent Neural Network}
+\section{N-Gram Language Model}
 
 \begin{frame}
     \sectionpage
@@ -2140,6 +2140,13 @@ Sampling introduces diversity but preserves local coherence through n-gram const
 %    \end{tcolorbox}
 \end{frame}
 
+
+\section{Recurrent Neural Network}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
 \begin{frame}[fragile]{Recurrent Connections and Recurrent Neural Networks}
     
     \begin{columns}[T]
@@ -2248,7 +2255,7 @@ Sampling introduces diversity but preserves local coherence through n-gram const
   The feedback loop in Recurrent Neural Networks (RNNs) networks makes it possible to establish long-range dependence on sequential data.
 
   \bigskip
-  To understand how these networks process sequential data over time, we can "unroll" the network.
+  To understand how these networks process sequential data over time, we can "unroll" the network and use numeric timeseries as an example.
   
   \centering
     \begin{tikzpicture}[scale=0.8, transform shape, node distance=1cm, auto]
@@ -2424,11 +2431,13 @@ Sampling introduces diversity but preserves local coherence through n-gram const
 \end{frame}
 
 \begin{frame}{}
+
+RNN Cell enforces the recurrent connection.
 %  \begin{center}
 %   \includegraphics[width=0.6\textwidth]{figures/unrolled_RNN.pdf}
 %  \end{center}
 \begin{center}
-   \includegraphics[width=1.0\textwidth]{figures/RNNfull.png}
+   \includegraphics[width=0.8\textwidth]{figures/RNNfull.png}
   \end{center}
   
   Source: \url{https://github.com/dvgodoy/dl-visuals}
@@ -2492,29 +2501,131 @@ Consider an RNN with ReLU activation:
   If $|W_2| < 1$, then the gradient vanishes.
 \end{frame}
 
-\begin{frame}{Long Short-Term Memory(LSTM)}
-  In LSTM, we modify connections, so that there are two separate paths for long-term dependencies and short-term dependencies.
 
-\begin{columns}
-\column{0.3\linewidth}
-\begin{itemize}
-\item LSTM specifically uses the tanh and sigmoid activation functions:
+\begin{frame}[fragile]{Long-term Dependency Problem in RNN}
+    \small
+    \begin{beamercolorbox}[wd=\textwidth, sep=6pt, rounded=true]{block body}
+         RNN also suffers from \textbf{long-term dependency problem}. When the gap between the relevant information and the point where it is need becomes very large, prediction becomes poorer.
+    \end{beamercolorbox}
 
-\end{itemize}
-  $$
-  \tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
-  $$
-  $$
-  \text{sigmoid}(x) = \frac{1}{1 + e^{-x}}
-  $$
-  \column{0.7\linewidth}
-    \begin{center}
-   \includegraphics[width=1.0\textwidth]{figures/LSTM.pdf}
-  \end{center}
-\end{columns}
+    \vspace{10pt}
 
+    \begin{columns}[T]
+        % --- Left Column: Simple Context ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[colback=dependencyCharcoal!5, colframe=dependencyCharcoal, arc=1mm, title=\scriptsize Short Gap (Success), fonttitle=\bfseries]
+                \footnotesize
+                Consider an example: \textit{"The clouds are in the sky"}. 
+                \vspace{5pt}
+                
+                Next word in the sequence \textit{"The clouds are in the"}, is definitely \textbf{"sky"}, no further context is needed.
+            \end{tcolorbox}
+        \end{column}
 
+        % --- Right Column: Long Context ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[colback=dependencyAmber!5, colframe=dependencyAmber, arc=1mm, title=\scriptsize Long Gap (Problem), fonttitle=\bfseries]
+                \footnotesize
+                But if you consider \textit{"I speak fluent French"}, then the next word in the sequence \textit{"I speak fluent"}, may or may not be French. 
+
+                \vspace{5pt}
+                
+                We need additional context. In such a case, \textbf{RNN is not a useful model}.
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+
+    \vspace{10pt}
+    
+    \centering
+    \begin{tikzpicture}[>=stealth, thick]
+        \node (start) [circle, fill=dependencyAmber!20, draw=dependencyAmber] at (0,0) {\tiny Context};
+        \node (end) [circle, fill=dependencyRed!20, draw=dependencyRed] at (5,0) {\tiny Need};
+        \draw [->, dashed, dependencyRed] (start) -- node[above, font=\tiny] {Gap grows too large for gradient} (end);
+    \end{tikzpicture}
 \end{frame}
+
+
+\section{Long Short-Term Memory (LSTM)}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+
+\begin{frame}[fragile]{Long Short-Term Memory (LSTM)}
+    
+    \small In LSTM, we modify connections so that there are \textbf{two separate paths} for long-term and short-term dependencies.
+
+    \vspace{10pt}
+
+    \begin{columns}[T]
+        % --- Left Column: Core Idea & Math ---
+        \begin{column}{0.45\textwidth}
+            \begin{itemize}
+                \item[\textcolor{techBlue}{\faBolt}] LSTM specifically uses the \textbf{tanh} and \textbf{sigmoid} activation functions:
+            \end{itemize}
+
+            \begin{tcolorbox}[colback=white, colframe=techBlue!30, arc=2mm, boxrule=0.5pt]
+               
+                \textcolor{shortTermOrange}{$\tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$}
+                
+                \vspace{8pt}
+                \textcolor{techBlue!80!black}{$\sigma(x) = \frac{1}{1 + e^{-x}}$}
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: TikZ Dependency Diagram ---
+        \begin{column}{0.5\textwidth}
+            \centering
+            \begin{tikzpicture}[
+                node distance=0.8cm and 0.5cm,
+                cell/.style={rectangle, draw=techBlue!60, fill=boxCream, thick, minimum width=1.4cm, minimum height=0.7cm, rounded corners=1pt},
+                io/.style={rectangle, draw=slateGray!50, fill=slateGray!10, minimum width=1.2cm, minimum height=0.6cm, font=\tiny\bfseries},
+                arrow/.style={-Stealth, thick}
+            ]
+                % Nodes
+                \node[io] (long) {Long Time Ago};
+                \node[cell, right=0.6cm of long] (c1) {};
+                \node[cell, below=of c1] (c2) {};
+                \node[cell, below=1.2cm of c2] (c3) {};
+                \node[io, left=0.6cm of c3] (today) {Today};
+                \node[io, right=0.8cm of c3] (tmrw) {Tomorrow};
+
+                % Activation Symbols in Cells
+                \foreach \n in {c1, c2, c3}{
+                    \draw[shortTermOrange, thick] ([xshift=-4pt, yshift=-4pt]\n.center) -- ([xshift=4pt, yshift=4pt]\n.center);
+					\draw[shortTermOrange, thick] ([xshift=-16pt, yshift=-4pt]\n.center) -- ([xshift=-4pt, yshift=-4pt]\n.center);
+    }
+    
+                % Paths
+                \draw[arrow, slateGray] (long) -- (c1);
+                \draw[arrow, slateGray] (today) -- (c3);
+                \draw[arrow, slateGray] (c3) -- (tmrw);
+
+                % Short Term Path (Recurrent)
+                \draw[arrow, techBlue!80!black, bend right=45] (c1.south west) to (c2.north west);
+                \draw[arrow, techBlue!80!black, bend right=45] (c2.south west) to (c3.north west);
+                \node[left=0.1cm of c2, font=\tiny, text width=1.2cm, align=center] {Path for Short Term};
+
+                % Long Term Path (The "Cell State" bypass)
+                \draw[arrow, longTermBlue, bend left=50] (c1.north east) to (tmrw.north);
+                \draw[arrow, longTermBlue, bend left=40] (c2.north east) to (tmrw.north);
+                
+                % New Path Label
+                \node[right=0.4cm of c2, font=\footnotesize, text=shortTermOrange, text width=1.5cm] {Path for Long Term Memory\\ \textbf{(New in LSTM)}};
+                \draw[arrow, shortTermOrange, thin] (c2.east) -- ++(0.3, 0.2);
+
+                % Vertical dots to show distance
+                \draw[dotted, thick, red!50] (c2.south) -- (c3.north);
+
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+
+    \vfill
+\end{frame}
+
 
 \begin{frame}{LSTM}
     \begin{center}
@@ -2543,7 +2654,7 @@ LSTM Introduces cell state and gating mechanisms to preserve long-term informati
 
 \begin{frame}{LSTM Memory Cell}
  \begin{center}
-   \includegraphics[width=0.7\textwidth]{figures/LSTMMemoryCell.png}
+   \includegraphics[width=0.85\textwidth]{figures/LSTMMemoryCell.png}
   \end{center}
   \tiny
   Source: \url{https://pages.cs.wisc.edu/~shavlik/cs638/lectureNotes/Long\%20Short-Term\%20Memory\%20Networks.pdf}
@@ -2552,7 +2663,7 @@ LSTM Introduces cell state and gating mechanisms to preserve long-term informati
 
 \begin{frame}{Forget Gate}
 \begin{center}
-   \includegraphics[width=0.8\textwidth]{figures/forgetgate.png}
+   \includegraphics[width=0.99\textwidth]{figures/forgetgate.png}
   \end{center}
   \tiny
   Source: \url{https://pages.cs.wisc.edu/~shavlik/cs638/lectureNotes/Long\%20Short-Term\%20Memory\%20Networks.pdf}
@@ -2561,7 +2672,7 @@ LSTM Introduces cell state and gating mechanisms to preserve long-term informati
 
 \begin{frame}{Input Gate}
 \begin{center}
-   \includegraphics[width=0.8\textwidth]{figures/inputgate.png}
+   \includegraphics[width=0.99\textwidth]{figures/inputgate.png}
   \end{center}
   \tiny
   Source: \url{https://pages.cs.wisc.edu/~shavlik/cs638/lectureNotes/Long\%20Short-Term\%20Memory\%20Networks.pdf}
@@ -2573,7 +2684,7 @@ LSTM Introduces cell state and gating mechanisms to preserve long-term informati
 The cell state vector aggregates the two components (old memory via the
 forget gate and new memory via the input gate)
 \begin{center}
-   \includegraphics[width=0.8\textwidth]{figures/memoryupdate.png}
+   \includegraphics[width=0.99\textwidth]{figures/memoryupdate.png}
   \end{center}
   \tiny
   Source: \url{https://pages.cs.wisc.edu/~shavlik/cs638/lectureNotes/Long\%20Short-Term\%20Memory\%20Networks.pdf}
@@ -2582,7 +2693,7 @@ forget gate and new memory via the input gate)
 
 \begin{frame}{Output Gate}
 \begin{center}
-   \includegraphics[width=0.8\textwidth]{figures/outputgate.png}
+   \includegraphics[width=0.99\textwidth]{figures/outputgate.png}
   \end{center}
   \tiny
   Source: \url{https://pages.cs.wisc.edu/~shavlik/cs638/lectureNotes/Long\%20Short-Term\%20Memory\%20Networks.pdf}
@@ -2590,10 +2701,65 @@ forget gate and new memory via the input gate)
 \end{frame}
 
 
+\begin{frame}[fragile]{Gating Mechanism in LSTM}
+
+\footnotesize 
+    \begin{columns}[T]
+        % --- Left Column: Forget Gate Logic ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[colback=gateKeep!5, colframe=gateKeep, arc=1.5mm, title=\small \textbf{1. Forget Gate} ($f_t$), fonttitle=\bfseries]
+                \footnotesize
+                Output of $f_t$ tells the percentage the previous cell state will be kept in calculating the updated cell state.
+                
+                \vspace{2pt}
+                \begin{itemize}
+                    \item \textbf{0} = forget everything
+                    \item \textbf{1} = keep everything
+                \end{itemize}
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: Input Gate Logic ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[colback=gateAdd!5, colframe=gateAdd, arc=1.5mm, title=\small \textbf{2. Input Gate} ($i_t$), fonttitle=\bfseries]
+                \footnotesize
+                Output if $i_t$ tell the percentage of the new candidate that will be used in calculating the updated cell state.
+                
+                \vspace{2pt}
+                \begin{itemize}
+                    \item \textbf{0} = ignore new info
+                    \item \textbf{1} = accept fully
+                \end{itemize}
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+
+    \vspace{10pt}
+
+    \begin{figure}
+        \centering
+        % If you want to use the TikZ code generated earlier instead of an image:
+        % \resizebox{0.7\linewidth}{!}{\input{your_tikz_file.tex}}
+        \includegraphics[width=0.35\linewidth]{figures/LSTM_Stanford.png}
+        \caption*{\scriptsize \textcolor{gateGray}{Internal gating operations for state updates.}}
+        Image source: \url{https://web.stanford.edu/~jurafsky/slp3/13.pdf}
+    \end{figure}
+\end{frame}
+
+
+\section{Transformer}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+
 \begin{frame}{References}
 
 \begin{enumerate}
 \item \url{https://web.stanford.edu/~jurafsky/slp3/3.pdf}
+\item \url{https://pages.cs.wisc.edu/~shavlik/cs638/lectureNotes/Long\%20Short-Term\%20Memory\%20Networks.pdf}
+\item \url{https://web.stanford.edu/~jurafsky/slp3/13.pdf}
 \end{enumerate}
 
 \end{frame}
