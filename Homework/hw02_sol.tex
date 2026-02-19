@@ -1,0 +1,563 @@
+\documentclass[12pt, xcolor=dvipsnames,svgnames,x11names]{article}
+
+
+
+\input{common}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+
+% Redefine \maketitle to include tcolorbox
+\makeatletter
+\renewcommand{\maketitle}{%
+      \begin{center}
+         \begin{tcolorbox}[
+               enhanced,
+               colback=white,
+               colframe=goldenrod,
+               boxrule=1pt,
+               arc=3pt,
+               left=0pt,
+               right=0pt,
+               top=0pt,
+               bottom=0pt,
+               drop shadow={goldenrod!25!white},
+         ]
+               % Header section
+               \begin{tcolorbox}[
+                  enhanced,
+                  colback=stormblue!85!white,
+                  colframe=stormblue!25!white,
+                  boxrule=0pt,
+                  arc=3pt,
+                  sharp corners=south,
+                  left=2em,
+                  right=2em,
+                  top=1em,
+                  bottom=1em
+               ]
+                  \centering
+                  {\large\bfseries\textcolor{white}{\@title}}
+               \end{tcolorbox}
+               
+               % Content section
+               \vspace{1em}
+               \centering
+               {\large\textcolor{darkgray}{\@author}} \\[0.8em]
+               {\normalsize\textcolor{darkgray}{\@date}}
+               \vspace{1em}
+         \end{tcolorbox}
+      \end{center}
+      \vspace{2em}
+}
+\makeatother
+
+
+
+\newcommand{\hw}{Homework 2: Training a Neural Network}
+\newcommand{\duedate}{Feb 09, 2026, 11:59 PM}
+\newcommand{\hwturnin}{hw02}
+
+\newenvironment{multiequation}[1][]{%
+\begin{equation}%
+   \begin{aligned}%
+   \ifx#1\@empty\else\label{#1}\fi%
+}{%
+   \end{aligned}%
+\end{equation}%
+}
+\pagestyle{fancy}
+
+\lhead{\footnotesize{\coursenumber, \courseterm}, \footnotesize{UAH}}
+\chead{}
+\rhead{\footnotesize{\emph{\hw}}}
+\lfoot{\footnotesize{\instructorname}}
+\cfoot{\footnotesize{\thepage}}
+\rfoot{\footnotesize{\textit{Last Revised:~\today}}}
+\renewcommand{\headrulewidth}{0.1pt}
+\renewcommand{\footrulewidth}{0.1pt}
+\newcommand{\minipagewidth}{0.8\columnwidth}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+
+\renewcommand{\headrulewidth}{0.1pt}
+\renewcommand{\footrulewidth}{0.1pt}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\definecolor{faintOrangeYellow}{HTML}{FFF9E6}
+
+\begin{document}
+
+
+\title{\textsc{\hw\\
+\coursenumber}}
+\author{Instructor: \instructorname}
+\date{Due: \duedate\\ 116 Points}
+
+\maketitle
+
+\setlength{\unitlength}{1in}
+You are allowed to use a generative model-based AI tool for your assignment. However, you must submit an accompanying reflection report detailing how you used the AI tool, the specific query you made, and how it improved your understanding of the subject. You are also required to submit screenshots of your conversation with any large language model (LLM) or equivalent conversational AI, clearly showing the prompts and your login avatar. Some conversational AIs provide a way to share a conversation link, and such a link is desirable for authenticity. Failure to do so may result in actions taken in compliance with the plagiarism policy.
+
+Additionally, you must include your thoughts on how you would approach the assignment if such a tool were not available. Failure to provide a reflection report for every assignment where an AI tool is used may result in a penalty, and subsequent actions will be taken in line with the plagiarism policy.
+
+\subsection*{Submission instruction:}
+Upload a .pdf on Canvas with the format  \texttt{CPE487587-LastFirst-HW-XX}. For example, if your name is Sam Wells, your file name should be \texttt{CPE487587-LastFirst-HW-XX.pdf}.  If there is a programming assignment, then you should include your source code along with your PDF files in a zip file \texttt{CPE487587-LastFirst-HW-XX.zip}. 
+Your submission must contain your name and UAH Charger ID or your UAH email address.  Please number your pages as well.
+
+All CPE 587 students are required to submit their response in a Latex-generated PDF.
+\vskip 1em
+\hrule
+\vskip 1em
+
+\newpage
+
+
+Provide a PDF with a solution to your theory portion and github commit hash and GitHub repo URL for your practice portion. In addition, include any plots in the PDF for practice portion if asked.
+
+
+\section*{Theory}
+
+\section{Vector Sum Reduction of Vector with a Scalar Multiplier (10 Points)}
+Consider $y = \sum_{i=1}^n f_i(\xbf, z)$ where $f_i(\xbf, z) = x_i z$ and $z$ is a scalar. $\xbf$ has $n$ elements.
+
+\begin{enumerate}
+
+\item Compute the gradient $\nabla_\xbf y$. What's its dimension?  \hfill \textbf{(4 + 1) Points}
+
+\item Compute the gradient $\nabla_z y$. What's its dimension?  \hfill \textbf{(4 + 1) Points}
+\end{enumerate}
+
+
+\subsection{Solution}
+
+\begin{enumerate}
+\item
+\begin{align*}
+\nabla_\xbf y = [ \pdv{y}{x_1} ,  \pdv{y}{x_2}, \cdots,  \pdv{y}{x_n}] = [z, z, \cdots, z]
+\end{align*}
+The dimension is $1 \times n$.
+
+\item 
+
+\begin{align*}
+\nabla_z y = \sum x_i
+\end{align*}
+The dimension is $1 \times 1$.
+
+
+
+\end{enumerate}
+
+
+\section{Chain Rule For Univariate Functions (5 Points)}
+
+Consider $ y = f(x) = \ln (\sin(x^3)^2)$. Introduce intermediate variables,  compute intermediate derivatives and apply chain rule to determine $\frac{dy}{dx}$\hfill \textbf{(5 Points)}
+
+\subsection{Solution}
+
+Let $u = x^3$, then $ y = \ln( sin(u)^2 ) $
+
+Let $v = sin(u)$, then $y = \ln(v^2)$
+
+Let $w   = v^2$, then $y = \ln(w)$.
+
+Hence, by the chain rule:
+
+\begin{align*}
+\frac{dy}{dx} & = \pdv{y}{w} \times \pdv{w}{v} \times \pdv{v}{u} \pdv{u}{x} = \frac{1}{w} \times 2v \times \cos(u) \times 3 x^2\\
+& = \frac{1}{sin(x^3)^2} \times 2 \sin(x^3) \cos(x^3) 3x^2
+\end{align*}
+
+
+
+
+\section{Vector and Matrix Equivalent (6 Points)}
+Consider a feature matrix $X \in \Rbb^{n\times d}$ where $n$ is the number of samples and $d$ is number of features. $X$ can be written in its expanded form as 
+
+\begin{align}
+\label{eq:feature_matrix}
+X =  \begin{bmatrix}
+x_{11} & x_{12} & \cdots & x_{1d} \\
+x_{21} & x_{22} & \cdots & x_{2d} \\
+\vdots & \vdots & \ddots & \vdots \\
+x_{n1} & x_{n2} & \cdots & x_{nd}
+\end{bmatrix}
+\end{align}
+
+\begin{enumerate}
+
+\item If we consider $\xbf_i$ as a feature vector for the $i$-th  sample, how would you write $X$ using $\xbf_i$? \hfill \textbf{(2 Points)}
+
+\item Consider one sample equivalent of affine transformation as $ z_i = \xbf_i^\top \wbf + b$ where $b$ is a bias. How the expression changes when you consider all samples at once? \hfill \textbf{(2 Points)}
+
+\item Consider a loss function as $C = \frac{1}{n}\sum_i v_i^2$ where $v_i$ is error due to individual sample $i$. What would be its vectorized equivalent if you need to take into account all samples? \hfill \textbf{(2 Points)}
+
+\end{enumerate}
+
+\subsection{Solution}
+
+\begin{enumerate}
+\item 
+
+\begin{align*}
+X = \begin{bmatrix}
+\xbf_1 \\ \xbf_2 \\ \vdots \\ \xbf_n
+\end{bmatrix}
+\end{align*}
+
+
+\item 
+
+\begin{align*}
+Z = XW + b
+\end{align*}
+
+
+where $X$ has dimension $n \times d$, $W$ has dimension  $d\times n$ and $b$ can be either a column vector with dimension $d\times 1$ or a scalar and elementwise addition will be used.
+
+\item 
+
+\begin{align*}
+C = \frac{1}{n} \vbf^\top \vbf
+\end{align*} 
+
+\end{enumerate}
+
+
+
+\section{Weight Dimension in a Neural Network (5 Points)}
+
+Consider the problem assigned in Homework 1. $W_1$ is a matrix for the given sequence of operations in the diagram. Under what condition, $W_1$ will become one-dimensional vector. You are free to modify the sequence of operation, or eliminate any sequence of operation, keeping the goal as the classification. \hfill \textbf{(5 Points)}
+
+\subsection{Solution}
+
+$W_1$ becomes one-dimensional vector under two circumstances:
+
+\begin{enumerate}
+\item If we only have only linear layer and there won't be any subsequent linear layer or affine transformation, then in that case, we won't need a matrix $W_1$ because we are not looking to change the dimension of features.
+\item If we only consider one sample at a time, weight matrix is just one dimensional vector.
+\end{enumerate}
+
+
+\section{Streamplots (5 Points)}
+
+Consider the streamplot given in Figure~\ref{fig:streamline}. Based on the streamplot, what is the critical point of the function $f$? Is this represent a maximum or minimum? Explain your claim. \hfill \textbf{(5 Points)}
+
+
+\begin{figure}[htpb]
+\centering
+\includegraphics[width=0.57\linewidth, trim={0cm 0.0cm 0cm 0.0cm},clip]{figures/streamline_cpe487587_hw2.pdf}
+\caption{A streamplot}
+\label{fig:streamline}
+\end{figure}
+
+\section{Solution}
+
+Critical point is approximately at $(0, 0)$, based on the color graph, it seesm that it represents maximum.
+
+\section{Gradient Calculations for  Multiple Points in Autograd PyTorch (5 Points)}
+
+For a bivariate function $f(x,y)$, before computing gradients for multiple points via \mintinline[bgcolor=faintOrangeYellow, ]{python}{.backward()}, why do we use \mintinline[bgcolor=faintOrangeYellow]{python}{.sum()}? Provide an example to support your answer. \hfill \textbf{(5 Points)}
+
+\subsection{Solution}
+
+Consider only three points for the example.
+
+$$Loss = f(x_1, y_1) + f(x_2, y_2) + f(x_3, y_3)$$
+
+$$\frac{\partial Loss}{\partial x_1} = \frac{\partial f}{\partial x_1} \quad \text{(only depends on the first set of points.)}$$
+$$\frac{\partial Loss}{\partial y_1} = \frac{\partial f}{\partial y_1}$$
+
+$$\frac{\partial Loss}{\partial x_2} = \frac{\partial f}{\partial x_2} \quad \text{(only depends on the second set of points.)}$$
+$$\frac{\partial Loss}{\partial y_2} = \frac{\partial f}{\partial y_2}$$
+
+$$\frac{\partial Loss}{\partial x_3} = \frac{\partial f}{\partial x_3} \quad \text{(only depends on the third set of points.)}$$
+$$\frac{\partial Loss}{\partial y_3} = \frac{\partial f}{\partial y_3}$$
+
+\section*{Practice}
+
+Solution through Github repo.
+
+\section{Weight Matrix Visualization (35 Points)}
+Go back to your homework 01. Create a subpackage in your homework Github repo called \mintinline[bgcolor=faintOrangeYellow]{python}{animation}.
+
+Add a module called \texttt{weight\_animation.py} and copy the code from \url{https://github.com/rahulbhadani/manimations/blob/main/scripts/weight_animation.py}. \hfill \textbf{(2 Points)}
+
+Add another module called \texttt{largewt\_animation.py} and copy from \url{https://github.com/rahulbhadani/manimations/blob/main/scripts/largewt_animation.py}. \hfill \textbf{(2 Points)}
+
+
+\texttt{weight\_animation.py} provides implementation for a python Class \mintinline[bgcolor=faintOrangeYellow]{python}{WeightMatrixAnime} that takes a 3D matrix as an argument and generate animation for matrix visualization. However, this is only fast enough if matrix size is not too large. There is also a function \mintinline[bgcolor=faintOrangeYellow]{python}{animate_weight_heatmap} that will actually do the animation.
+
+The usage is below (also provided in .py file):
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=faintOrangeYellow,
+    fontsize=\small,
+    breaklines
+]{python}
+weight_data = torch.randn(20, 50, 50)
+    animate_weight_heatmap(
+        weight_data, 
+        dt=0.1,
+        file_name = "wt_animation",
+        title_str="Neural Weight Distribution"
+    )
+
+\end{minted}
+
+
+\texttt{largewt\_animation.py} provides implementation for a python Class \mintinline[bgcolor=faintOrangeYellow]{python}{LargeWeightMatrixAnime} that takes a 3D matrix as an argument and generate animation for matrix visualization. This is suitable for a situation when matrix is large, for example $1000\times 1000$.  There is also a function \mintinline[bgcolor=faintOrangeYellow]{python}{animate_large_heatmap} that will do the animation.
+
+The usage is below (also provided in .py file):
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=faintOrangeYellow,
+    fontsize=\small,
+    breaklines
+]{python}
+    large_data = torch.randn(20, 1000, 1000) 
+    animate_large_heatmap(
+        large_data, 
+        dt=0.1,
+        file_name="large_weights_evolution",
+        title_str="Weight Evolution"
+    )
+
+\end{minted}
+
+
+\subsection{Tasks}
+
+
+\begin{enumerate}
+\item Modify your  \mintinline[bgcolor=faintOrangeYellow]{python}{__init__.py}  so that \mintinline[bgcolor=faintOrangeYellow]{python}{WeightMatrixAnime} and \mintinline[bgcolor=faintOrangeYellow]{python}{LargeWeightMatrixAnime} can be imported in your test scripts when necessary. You may also need to import  \mintinline[bgcolor=faintOrangeYellow]{python}{animate_weight_heatmap} or \mintinline[bgcolor=faintOrangeYellow]{python}{animate_large_heatmap} if you decide to only pass weight matrices stacks to create animation.  \hfill \textbf{(2 Points)}
+
+
+\item Modify \mintinline{python}{binary_classification} in the file  \mintinline{python}{two_layer_binary_classification.py} of \texttt{deepl} subpackage so that you can store intermediate weights from every epoch. \hfill \textbf{(10 Points)}
+
+A rough code-snippet to accomplish the above task is provided below:
+
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=faintOrangeYellow,
+    fontsize=\small,
+    breaklines
+]{python}
+   weights = torch.zeros(steps, size1, size2)
+   for i in range(steps):
+   
+   		# randomly generate weight matrix but for you 
+   		# it would come from updated weights 
+   		# after gradient descent every epochs
+        current = torch.randn(size1, size2)
+        weights[i] = current.clone()
+    return weights
+
+\end{minted}
+
+\item Why do we need \mintinline[bgcolor=faintOrangeYellow]{python}{clone()} function in above code-snippet? \hfill \textbf{(5 Points)}
+
+\item Create a copy of \texttt{binaryclassification\_impl}.py called \mintinline[bgcolor=faintOrangeYellow]{python}{binaryclassification_animate_impl.py} in \mintinline[bgcolor=pink]{python}{scripts} folder of your homework project directory and modify it to import either \mintinline[bgcolor=faintOrangeYellow]{python}{WeightMatrixAnime} or \mintinline[bgcolor=faintOrangeYellow]{python}{LargeWeightMatrixAnime} whichever works best for your case. Your task is to access 3D weights matrices returned by  \mintinline[bgcolor=faintOrangeYellow]{python}{binary_classification} function and create animation. A successful execution of  \mintinline[bgcolor=faintOrangeYellow]{python}{binaryclassification_animate_impl.py} should create .mp4 file in media folder.
+
+While making commit to GitHub, you should not commit media folder. You may add \mintinline[bgcolor=faintOrangeYellow]{python}{media/} entry to your .gitignore to avoid committing this file inadvertently.
+
+You should be able to generate a four animation movie corresponding to four weights $W_1 - W_4$ from the model provided in Homework 01. \hfill \textbf{(10 Points)}
+
+You can also supply custom name for animation movie file as you see fit.
+
+Parameters you would choose for your executing
+
+\begin{enumerate}
+\item dt = 0.04
+\item epochs = 5000
+\item eta = 0.01
+\item number of features = 200
+\item number of samples = 40000
+\end{enumerate}
+
+Now, at this point, you  may realize that it takes a long time to finish executing.
+
+
+\item \textbf{BONUS:} you can write a bash script to run the execution in the background. \hfill \textbf{(5 Points)}
+
+\item Update your README with a section title \textbf{HW02Q7} with instructions on how to execute your code, and where to find the .mp4 files generated.\hfill \textbf{(4 Points)}
+
+\end{enumerate}
+
+
+
+\section{Classification with a Neural Network (45 Points)}
+
+
+Consider a class definition of a Neural Network for a binary classification problem:
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=faintOrangeYellow,
+    fontsize=\small,
+    breaklines
+]{python}
+class SimpleNN(nn.Module):
+    def __init__(self, in_features):
+        super(SimpleNN, self).__init__()
+        self.in_features = in_features
+        self.fc1 = nn.Linear(self.in_features, 3)
+        self.fc2 = nn.Linear(3, 4)
+        self.fc3 = nn.Linear(4, 5)
+        self.fc4 = nn.Linear(5, 1)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+        x = self.relu(self.fc3(x))
+        x = self.fc4(x)
+        return x
+
+\end{minted}
+
+
+\begin{enumerate}
+\item If your dataset has \textbf{m} number of classes present in the  ground truth lable, what changes you need to make to the above code? Provide your response separately in the accompanied PDF file. \hfill \textbf{(2 Points)}
+\item Given the default values in \mintinline[bgcolor=faintOrangeYellow]{python}{nn.Linear} for parameters that are not explicitly set, what are total number of scalar parameters used in the above neural network. You may need to refer to documentation for their API to provide correct answer. \hfill \textbf{(5 Points)}
+
+
+\item Download android malware dataset from \url{https://github.com/rahulbhadani/CPE487587_SP26/releases/download/android_malware/Android_Malware.csv}. To enable automation of your data analysis, you must download dataset in the specified way as follows:
+
+\begin{enumerate}
+\item Create a shell script called malwaredatadownload.sh in your project directory with the following content
+
+
+
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=faintOrangeYellow,
+    fontsize=\tiny,
+    breaklines
+]{bash}
+#!/bin/bash
+
+mkdir -p data
+cd data
+wget https://github.com/rahulbhadani/CPE487587_SP26/releases/download/android_malware/Android_Malware.csv
+\end{minted}
+
+Then in the command line, execute the following:
+
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=faintOrangeYellow,
+    fontsize=\small,
+    breaklines
+]{bash}
+chmod +x malwaredatadownload.sh
+./malwaredatadownload.sh
+\end{minted}
+
+Executing above will directly download the data in your machine. However, you must never commit \textbf{data} folder in your GitHub. You, however, do need to commit malwaredatadownload.sh file to GitHub. \hfill \textbf{(5 Points)}
+
+
+
+\end{enumerate}
+
+\item Read the dataset using Pandas or Polars library. Dataset contains a number of features related network data packet that helps in classifying what kind of malware that data packet is.
+
+There are following classes of malware:
+
+\begin{enumerate}
+\item Android\_Adware
+\item Android\_Scareware
+\item Android\_SMS\_Malware
+\item Benign
+\end{enumerate}
+
+Benign  means not a malware.
+
+You should also fiter out the following features that are not helpful in classification:
+
+\begin{enumerate}
+\item Flow ID	 \item Source IP	 \item Source Port	 \item Destination IP	 \item Destination Port	 \item Protocol	 \item Timestamp
+\end{enumerate}
+
+\end{enumerate}
+
+\subsection{Deliverables}
+
+\begin{enumerate}
+
+\item In \mintinline[bgcolor=faintOrangeYellow]{python}{deepl} subpackage, add a module multiclass.py and add code for \mintinline[bgcolor=faintOrangeYellow]{python}{SimpleNN} Class. \hfill \textbf{(3 Points)}
+
+\item Modify \mintinline[bgcolor=faintOrangeYellow]{python}{SimpleNN} neural network class that you will use to create a machine learning model to take number of classes as input parameter as well.\hfill \textbf{(2 Points)}
+
+\item Create new class in multiclass.py called \mintinline[bgcolor=faintOrangeYellow]{python}{ClassTrainer}. It will have following parameters that users can specify at run time, and will be set as class variable: \hfill \textbf{(5 Points)}
+
+\begin{enumerate}
+\item X\_train: feature matrix
+\item Y\_train: known label
+\item eta: learning rate
+\item epoch: number of epochs
+\item loss: loss function (e.g. \mintinline[bgcolor=faintOrangeYellow]{python}{nn.BCEWithLogitsLoss()})
+\item optimizer, for example ADAM (\mintinline[bgcolor=faintOrangeYellow]{python}{optim.Adam(model.parameters(), lr=self.eta)}
+\item loss\_vector: to be set after training, initializer as empty torch Tensors with length of epochs
+\item accuracy\_vector: to be set after training, initializer as empty torch Tensors with length of epochs
+\item model: a model class (e.g. \mintinline[bgcolor=faintOrangeYellow]{python}{SimpleNN} defined above)
+\item device: cuda device set depending on availability.
+\end{enumerate}
+
+\item In addition, \mintinline[bgcolor=faintOrangeYellow]{python}{ClassTrainer} will have the following functions: \hfill \textbf{(15 Points)}
+
+\begin{enumerate}
+\item train(): it would invoke the training process upon calling. This function doesn't take any argument.
+\item test():  it would perform test using test data. It would take two arguments: X\_test, and y\_test.
+\item predict(): it would make inference using a set of features. It takes only one argument: X
+\item save(): it will save the trained model in onnx format. It may take one argument optionally: file name of the model to be saved.
+\item evaluation(): this function takes loss vector and accuracy vector and plot to demonstrate the performance on training set. In addition, it also creates a plot of confusion matrix showing correct label and predicted labels, as well as final F1 score, Precision, Recall, and Accuracy for both training and test dataset.
+\end{enumerate}
+
+You will need to  modify your \mintinline[bgcolor=faintOrangeYellow]{python}{__init__.py} accordingly so that you can use them later.
+
+\item In your \mintinline[bgcolor=faintOrangeYellow]{python}{scripts} folder, create a file called \mintinline[bgcolor=faintOrangeYellow]{python}{multiclass_impl.py} that will be import your classes defined above and perform the following task: \hfill \textbf{(15 Points)}
+
+\begin{enumerate}
+\item Read data file from the data folder.
+\item Perform feature extraction and get rid of above some features I specified above.
+\item Perform 80:20 train-test split.
+\item instantiate your \mintinline[bgcolor=faintOrangeYellow]{python}{SimpleNN}  and \mintinline[bgcolor=faintOrangeYellow]{python}{Trainer} class.
+\item You should specifiy some default values for data file location, learning rate,  epoch, loss function, optimizer, and device. However, write your script in such a way that it should be able to take command line parameters similar to ones specified in \url{https://github.com/rahulbhadani/cpe487587hw01/blob/main/scripts/binaryclassification_impl_cmdline.py}.
+
+\item Your \mintinline[bgcolor=faintOrangeYellow]{python}{multiclass_impl.py}  should also be able to save final accuracy, F1 score, precison and recall for both training and test set in CSV file. The script should also specify a comman line parameter for a unique keyword that will be appending to CSV file name containing training/test metrics. Since you are going to train multiple times, CSV file name should also contain timestamp at the time of saving the file.
+
+\item Write a python script  \mintinline[bgcolor=faintOrangeYellow]{python}{multiclass_eval.py} that tkaes the same unique keyword specified above as a command line parameter, and look for all CSV files whose name matches that keyword and aggregate all training/test metrics and produce a boxplot of Accuracy, F1 score, precision, and recall for both training and test dataset.
+
+\item Write a shell script \mintinline[bgcolor=faintOrangeYellow]{python}{multiclass_impl.sh} that should invoke \mintinline[bgcolor=faintOrangeYellow]{python}{multiclass_impl.py} five times with same parameters, including a unique word. For consitency, use "hw02" as the unique keyword. Immediately after invoking \mintinline[bgcolor=faintOrangeYellow]{python}{multiclass_impl.py} five times, invoke \mintinline[bgcolor=faintOrangeYellow]{python}{multiclass_eval.py} with keyword "hw02" that will aggregate training/test metrics and produce box plot. The boxplot should be saved with a name that should carry the keyword "hw02" and the timestamp.
+
+\end{enumerate}
+
+\item In README, add a section HW02Q8 and provide instructions on how to execute your code to get the boxplot.\hfill\textbf{(5 Points)}
+
+\end{enumerate}
+
+
+
+
+\end{document}
