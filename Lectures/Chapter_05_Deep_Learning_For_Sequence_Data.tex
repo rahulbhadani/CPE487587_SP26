@@ -24,7 +24,7 @@
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 \usepackage{tikz,pgfplots}
-
+\usepackage{mathtools}
 \usepackage{subfigure}
 \usetikzlibrary{arrows}
 \usepackage{minted}
@@ -55,6 +55,7 @@ apple/.pic={
 \usetikzlibrary{arrows}
 \usetikzlibrary{shapes.geometric, positioning}
 \usetikzlibrary{matrix,positioning,decorations.pathreplacing,calc}
+\usepackage{tikz-dependency}
 
 \pgfplotsset{compat=1.8} % or newest version
 
@@ -129,8 +130,8 @@ apple/.pic={
 \tikzset{input/.style={basic,circle}}
 \tikzset{weights/.style={basic,rectangle}}
 \tikzset{functions/.style={basic,circle,fill=MediumBlue!10}}
-
-
+\usetikzlibrary{arrows.meta, bending}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds}
 
 \usepackage{listofitems} % for \readlist to create arrays
 \tikzstyle{mynode}=[thick,draw=MediumBlue,fill=MediumBlue!20,circle,minimum size=22]
@@ -2823,6 +2824,710 @@ forget gate and new memory via the input gate)
             }
         \end{column}
     \end{columns}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{}
+
+\begin{tikzpicture}[
+    >=stealth, thick,
+    block/.style={rectangle, draw=gray!40, fill=white, minimum width=2cm, minimum height=3cm, rounded corners=2pt},
+    encoderBlock/.style={block, draw=encoderBlue, text=encoderBlue, line width=1.2pt},
+    decoderBlock/.style={block, draw=decoderPurple, text=decoderPurple, line width=1.2pt},
+    labelFont/.style={font=\bfseries\footnotesize},
+    arrowLine/.style={->, draw=frameNavy, line width=1pt},
+    feedbackLine/.style={->, draw=genAIGold, dashed, line width=1pt, rounded corners=10pt}
+]
+
+% Outer Container Frame
+\draw[draw=frameNavy!20, fill=frameNavy!2, rounded corners=10pt] (-2.2, -2.5) rectangle (8.2, 2.5);
+
+% --- ENCODER STACK ---
+\node[block] at (0.2, 0.2) {};
+\node[block] at (0.1, 0.1) {};
+\node[encoderBlock, labelFont] (Enc) at (0,0) {ENCODERS};
+
+% --- DECODER STACK ---
+\node[block] at (5.2, 0.2) {};
+\node[block] at (5.1, 0.1) {};
+\node[decoderBlock, labelFont] (Dec) at (5,0) {DECODERS};
+
+% --- INPUT/OUTPUT ---
+\node[labelFont] (input_arch) at (-3.5, 0) {Input};
+\node[labelFont] (output_arch) at (9.5, 0) {Output};
+
+% --- CONNECTIONS ---
+\draw[arrowLine] (input_arch) -- (Enc);
+
+% Encoder to Decoder connections
+\foreach \y in {0.7, 0, -0.7} {
+    \draw[arrowLine] ($(Enc.east) + (0,\y)$) -- ($(Dec.west) + (0,\y)$);
+}
+
+\draw[arrowLine] (Dec) -- (output_arch);
+
+% --- FEEDBACK CONNECTION (New) ---
+% Draws a path from Output back to the start of the Decoder
+\draw[feedbackLine] (output_arch.south) -- ++(0,-1.5) -- node[below, font=\tiny\bfseries] {Previous Output} ($(Enc.west) + (-0.8,-1.5)$) -- ($(Enc.west) + (-0.5,-0.5)$);
+
+% Layer Labels
+\node[below=0.2cm of Enc, font=\tiny\itshape, text=gray] {$N \times$ Layers};
+\node[below=0.2cm of Dec, font=\tiny\itshape, text=gray] {$N \times$ Layers};
+
+\end{tikzpicture}
+
+This is called auto-regressive transformer architecture.
+
+\end{frame}
+
+\begin{frame}{Addressing Long Range Context}
+
+Consider the text:
+
+\begin{tikzpicture}[remember picture, overlay=false, node distance=0.8cm]
+
+
+    % Line 1 of text
+    \node[anchor=west, font=\Large\sffamily] (as) at (0,0) {As};
+    \node[right of=as, node distance=1.2cm, font=\Large\sffamily] (aliens) {aliens};
+    \node[right of=aliens, node distance=1.8cm, font=\Large\sffamily] (entered) {entered};
+
+    % Line 2 of text (indented and lower)
+    \node[anchor=west, font=\Large\sffamily] (our) at (4.5,-0.2) {our};
+    \node[right of=our, node distance=1.5cm, font=\Large\sffamily] (planet) {planet};
+    \node[right of=planet, node distance=1.8cm, font=\Large\sffamily] (and) {and};
+    \node[right of=and, node distance=1.5cm, font=\Large\sffamily] (began) {began};
+    
+    % Line 3 (even lower)
+    \node[anchor=west, font=\Large\sffamily] (to) at (4.5,-1.2) {to};
+    \node[right of=to, node distance=1.5cm, font=\Large\sffamily] (colonize) {colonize};
+    \node[right of=colonize, node distance=1.8cm, font=\Large\sffamily] (earth) {Earth};
+
+    % Red Arrows
+    \begin{scope}[red, thick, -{Stealth[bend]}]
+        % Top long arc: began -> entered
+        \draw (began.north) .. controls +(up:1.5cm) and +(up:1.5cm) .. (entered.north);
+        
+        % Middle arc: began -> planet
+        \draw (and.north) .. controls +(up:0.8cm) and +(up:0.8cm) .. (planet.north);
+        
+        % Bottom double arrows: earth -> planet
+        \draw (earth.west) .. controls +(up:0.5cm) and +(down:0.5cm) .. (planet.south);
+        \draw (colonize.east) ++(0,0.5) .. controls +(left:0.0cm) and +(down:0.3cm) .. ([xshift=0.4cm]planet.south);
+    \end{scope}
+
+\end{tikzpicture}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Transformer has longer Context Window}
+    
+    \begin{tcolorbox}[colback=contextNavy!5, colframe=contextNavy, arc=1.5mm]
+        \small
+        As the model generates a text word-by-word, it has the ability to reference or tend to words that are relevant to the generated word. 
+    \end{tcolorbox}
+
+    \begin{columns}[T]
+        % --- Left Column: Process ---
+        \begin{column}{0.48\textwidth}
+            \small
+            \vspace{5pt}
+            \begin{itemize}
+                \item[\textcolor{contextTeal}{\faGraduationCap}] How the model learns which word to tend is done via back propagation.
+            \end{itemize}
+        \end{column}
+
+        % --- Right Column: Mechanism ---
+        \begin{column}{0.48\textwidth}
+            \small
+            \vspace{5pt}
+            \begin{itemize}
+                \item[\textcolor{contextGold}{\faInfinity}] A transformer has an infinite history to look at, only limited by the available memory.
+                
+                \vspace{4pt}
+                
+                Check the RAM prices in 2026!!!
+
+                \vspace{4pt}
+
+Yet, transformers have fixed context window due to the cost associated with the inference.                
+                
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{3pt}
+
+    \begin{center}
+        \begin{tikzpicture}[>=stealth, thick]
+            % Abstract visualization of "Attention" across context
+            \foreach \x in {0,1,2,3,4}
+                \node (w\x) [circle, fill=contextNavy!20, minimum size=15pt] at (\x*1.2, 0) {};
+            
+            \node (gen) [circle, fill=contextTeal, text=white, minimum size=20pt] at (6, 0) {\tiny Gen};
+            
+            \draw[->, contextTeal!60, dashed] (gen) to [bend right] (w0);
+            \draw[->, contextTeal!90, thick] (gen) to [bend right] (w2);
+            \draw[->, contextTeal!40, dashed] (gen) to [bend right] (w4);
+            
+            \node[below=2pt of w2, font=\tiny] {History};
+            \node[below=2pt of gen, font=\tiny\bfseries] {Current Word};
+        \end{tikzpicture}
+    \end{center}
+
+    \vfill
+    
+    \begin{beamercolorbox}[wd=\textwidth, sep=5pt, rounded=true]{block body}
+        \centering \small It is possible through \textbf{\textcolor{contextTeal}{Attention Mechanism}}.
+    \end{beamercolorbox}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Transformer Architecture}
+    \centering
+    \resizebox{!}{0.85\textheight}{
+    \begin{tikzpicture}[
+        >=stealth, thick,
+        % Styles
+        mainBox/.style={rectangle, draw=transformerBlue, fill=white, minimum width=3.5cm, minimum height=2.5cm, line width=1.2pt},
+        stackBox/.style={rectangle, draw, fill=white, minimum width=2cm, minimum height=2cm, rounded corners=2pt},
+        encBox/.style={stackBox, draw=encoderGreen, text=encoderGreen, line width=1pt},
+        decBox/.style={stackBox, draw=decoderOrange, text=decoderOrange, line width=1pt},
+        labelFont/.style={font=\bfseries\small},
+        subLabel/.style={font=\scriptsize\itshape, text width=2cm, align=center},
+        arrowLine/.style={->, draw=transformerBlue!80, line width=1pt},
+        feedbackLine/.style={->, draw=transformerBlue, line width=1pt, rounded corners=12pt}
+    ]
+
+        % --- TOP LEVEL: ABSTRACT VIEW ---
+        \node[labelFont, color=transformerBlue] (topLabel) at (0, 4) {Top-level 1};
+        \node[mainBox] (transformer) at (2.5, 2.5) {\Large Transformer};
+        
+        % Inputs/Outputs for Top Level
+        \node[labelFont] (inputTop) at (-0.5, 2.5) {I/P};
+        \node[labelFont] (outputTop) at (5.5, 2.5) {O/P};
+        
+        \draw[arrowLine] (inputTop) -- (transformer);
+        \draw[arrowLine] (transformer) -- (outputTop);
+        
+        % Feedback Loop (Previous O/P)
+    
+    \draw[feedbackLine] (4.5, 2.5) to [out=90, in=90, looseness=2.5] 
+    node[above, font=\tiny\bfseries] {Previous O/P} (transformer.north);
+
+        % --- CONNECTING DASHED LINES ---
+        \draw[dashed, gray!50] (transformer.south west) -- (-0.5, -0.5);
+        \draw[dashed, gray!50] (transformer.south east) -- (5.5, -0.5);
+
+        % --- LOWER LEVEL: DETAILED STACK ---
+        % Container for the detailed view
+        \draw[draw=gray!30, fill=gray!2, rounded corners=8pt] (-1, -3.5) rectangle (6, 0.5);
+
+        % Encoder Stack (with offsets)
+        \node[stackBox, gray!30] at (0.7, -1.3) {};
+        \node[stackBox, gray!50] at (0.6, -1.4) {};
+        \node[encBox, labelFont] (EncStack) at (0.5,-1.5) {Encoder};
+        \node[subLabel, below=0.1cm of EncStack, color=encoderGreen] {A stack of Encoder layer};
+
+        % Decoder Stack (with offsets)
+        \node[stackBox, gray!30] at (4.2, -1.3) {};
+        \node[stackBox, gray!50] at (4.1, -1.4) {};
+        \node[decBox, labelFont] (DecStack) at (4,-1.5) {Decoder};
+        \node[subLabel, below=0.1cm of DecStack, color=decoderOrange] {A stack of decoder layer};
+
+        % Cross-Attention Connections
+        \foreach \i in {0.6, 0.2, -0.2, -0.6} {
+            \draw[->, gray!60, thin] ($(EncStack.east) + (0,\i)$) -- ($(DecStack.west) + (0, \i - 0.2)$);
+            \draw[->, gray!60, thin] ($(EncStack.east) + (0,\i)$) -- ($(DecStack.west) + (0, \i + 0.2)$);
+        }
+
+    \end{tikzpicture}
+    }
+\end{frame}
+
+
+\begin{frame}[fragile]{Unraveling Encoder-Decoder Architecture}
+
+
+\begin{figure}
+\includegraphics[width=1.0\linewidth]{figures/EncoderDecoder.pdf}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}{Step 1: Tokenization}
+    \small
+    \begin{tcolorbox}[colback=tokenGraphite, colframe=tokenGraphite, arc=1mm, fontupper=\color{white}]
+        \textbf{Tokenization:} A text is converted to different tokens, which are a part of a fixed vocabulary.
+    \end{tcolorbox}
+
+    \vspace{5pt}
+    \textit{"A quick brown fox jumped over the lazy dog"}
+
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Word-level}
+                \scriptsize \{ A, quick, brown, fox, jumped, over, the, lazy, dog \}
+            \end{block}
+            \begin{block}{Character-level}
+                \scriptsize Dog $\to$ \{ D/d, o, g \}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Subword tokens}
+                \scriptsize jumps over $\to$ \{jump, s, over\}
+            \end{block}
+        \end{column}
+    \end{columns}
+
+    \vspace{5pt}
+    \begin{itemize}
+        \item[\textcolor{tokenMint}{\faHashtag}] \textbf{Then we create numerical mapping:}
+        \footnotesize \texttt{"The cat sat on the mat" $\to$ \{ The:1, cat:2, sat:3, on:4, the:5, mat:6\}}
+    \end{itemize}
+
+    \begin{beamercolorbox}[wd=\textwidth, sep=6pt, rounded=true]{block body}
+        \footnotesize \textbf{Padding:} In order to keep all the input to the same length, we add padding at the end of the sequence.
+        \vspace{3pt}
+        \centering
+        \texttt{\textcolor{tokenGraphite}{"The cat sat on the mat [PAD] [PAD] [PAD]"}}
+    \end{beamercolorbox}
+\end{frame}
+
+
+\begin{frame}[fragile]{Tokenization: Byte-pair Encoding}
+    \begin{tcolorbox}[colback=bpeIndigo!5, colframe=bpeIndigo, arc=1mm]
+        \small \faExclamationCircle \ Due to fixed context window of a transformer, an efficient tokenization is necessary.
+    \end{tcolorbox}
+
+    \begin{tcolorbox}[enhanced, title=Byte-pair Encoding, colframe=bpeIndigo, colback=white, attach boxed title to top left={xshift=3mm, yshift=-2mm}, boxed title style={colback=bpeIndigo}]
+        \begin{enumerate}
+            \item \small \textcolor{bpeIndigo}{\faArrowRight} Start with all individual characters as tokens, (a, b, c, etc.)
+            \item \small \textcolor{bpeIndigo}{\faArrowRight} Look through your training data and find the most common pair of adjacent characters
+            \item \small \textcolor{bpeIndigo}{\faArrowRight} Merge the most frequent pair of adjacent tokens into a new token and add to your vocabulary
+            \item \small \textcolor{bpeIndigo}{\faArrowRight} Repeat steps 2-3 thousands of times until you have your desired vocabulary size
+        \end{enumerate}
+    \end{tcolorbox}
+\end{frame}
+
+
+\begin{frame}{Byte-pair Encoding Example: Step 1}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \textbf{\faDatabase \ Sample Corpus}: \\
+            \footnotesize \{low, low, low, new, new, wide, wide, wide, wide\}
+            
+            \vspace{1em}
+            \textbf{Step 1: Split words into individual characters} \\
+            \scriptsize (Add \texttt{</w>} = end-of-word marker to track word boundaries)
+            
+            \begin{itemize}
+                \item \scriptsize low $\rightarrow$ \texttt{l}, \texttt{o}, \texttt{w}, \texttt{</w>} x3
+                \item \scriptsize new $\rightarrow$ \texttt{n}, \texttt{e}, \texttt{w}, \texttt{</w>} x2
+                \item \scriptsize wide $\rightarrow$ \texttt{w}, \texttt{i}, \texttt{d}, \texttt{e}, \texttt{</w>} x4
+            \end{itemize}
+        \end{column}
+        
+        \begin{column}{0.45\textwidth}
+            \begin{tcolorbox}[title=Initial Vocabulary, colframe=vocabcolor, colback=vocabcolor!5]
+                \centering \textcolor{vocabcolor}{\texttt{l, o, w, n, e, i, d, </w>}}
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Byte-pair Encoding Example: Step 2}
+    \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \begin{tcolorbox}[colback=gray!10, colframe=gray!50, title=\scriptsize Merge (Most Frequent Pair)]
+                \scriptsize
+                \begin{tabular}{ll}
+                    \texttt{w + </w>} & (3+2 = 5) \\
+                    \texttt{e + </w>} & (4) \\
+                    \texttt{l + o}    & (3) \\
+                    \texttt{o + w}    & (3) \\
+                    \texttt{n + e}    & (2) \\
+                    \texttt{e + w}    & (2) \\
+                    \texttt{w + i}    & (4) \\
+                    \texttt{i + d}    & (4) \\
+                    \texttt{d + e}    & (4)
+                \end{tabular}
+            \end{tcolorbox}
+        \end{column}
+        \begin{column}{0.55\textwidth}
+            \textbf{\faPlusCircle \ Most frequent pair}: \textcolor{mergecolor}{\texttt{w + </w>}} \\
+            \textbf{\faCogs \ Merge into new token}: \textcolor{mergecolor}{\texttt{w</w>}}
+            
+            \vspace{0.5em}
+            \textbf{\faSync \ Updated word splits}:
+            \begin{itemize}
+                \item \scriptsize low $\rightarrow$ \texttt{l}, \texttt{o}, \textcolor{mergecolor}{\texttt{w</w>}}
+                \item \scriptsize new $\rightarrow$ \texttt{n}, \texttt{e}, \textcolor{mergecolor}{\texttt{w</w>}}
+                \item \scriptsize wide $\rightarrow$ \texttt{w}, \texttt{i}, \texttt{d}, \texttt{e}, \texttt{</w>}
+            \end{itemize}
+        \end{column}
+    \end{columns}
+    \vfill
+    \begin{beamercolorbox}[wd=\textwidth, sep=3pt, rounded=true]{block title}
+        \scriptsize \textbf{Updated Vocabulary:} \textcolor{contextGold}{\texttt{l, o, w, n, e, i, d, </w>, w</w>}}
+    \end{beamercolorbox}
+\end{frame}
+
+\begin{frame}{Byte-pair Encoding Example: Step 3}
+    \begin{tcolorbox}[colback=white, colframe=bpeIndigo, arc=0mm, leftrule=3mm]
+        \footnotesize \textbf{Second Merge (Iterative Process)} \\
+        \scriptsize Recount pairs (after first merge)
+    \end{tcolorbox}
+
+    \textbf{\faArrowCircleRight \ New most frequent pair}: \textcolor{mergecolor}{\texttt{e + </w>}} (4) \\
+    \textbf{\faCogs \ Merge into new token}: \textcolor{mergecolor}{\texttt{e </w>}}
+    
+    \vspace{1em}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{\faSync \ Updated word splits}:
+            \begin{itemize}
+                \item \scriptsize low $\rightarrow$ \texttt{l},\texttt{o}, \texttt{w</w>}
+                \item \scriptsize new $\rightarrow$ \texttt{n}, \texttt{e}, \texttt{w</w>}
+                \item \scriptsize wide $\rightarrow$ \texttt{w}, \texttt{i}, \texttt{d}, \textcolor{mergecolor}{\texttt{e}\texttt{</w>}}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+             \scriptsize \textbf{Updated Vocabulary}: \\
+             \textcolor{vocabcolor}{\texttt{l, o, w, n,  e, i, d, w</w>, e</w>}}
+        \end{column}
+    \end{columns}
+    
+    \vfill
+    \centering \footnotesize \faRedo \ Repeat this merge process until you reach your target vocabulary size!
+\end{frame}
+
+\begin{frame}{Byte-pair Encoding Example: Step 4}
+    \begin{itemize}
+        \item[\faFastForward] \scriptsize Next merge: \textcolor{mergecolor}{\texttt{w+i $\rightarrow$ wi}} (4)
+        \item[\faFastForward] \scriptsize Then merge: \textcolor{mergecolor}{\texttt{d+e</w> $\rightarrow$ de</w>}} (4)
+    \end{itemize}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[colback=bpeIndigo!5, colframe=bpeIndigo, fonttitle=\bfseries\scriptsize]
+                \scriptsize
+                \begin{itemize}
+                    \item Common words become full tokens
+                    \item Less common words stay split
+                    \item Unknown words later split into existing subwords
+                \end{itemize}
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{WordPiece Tokenization Scheme}
+    \vspace{10pt}
+    
+    \begin{tcolorbox}[colback=wpDark!5, colframe=wpDark!10, arc=0mm, leftrule=3mm]
+        \small Instead of the absolute count as the criteria for merging, it calculates the merge score as:
+    \end{tcolorbox}
+
+    \vspace{15pt}
+
+    \begin{tcolorbox}[
+        enhanced,
+        colback=wpHighlight,
+        colframe=wpBlue,
+        arc=2mm,
+        boxrule=1.5pt,
+        drop fuzzy shadow,
+        title=\centering \footnotesize \faCalculator \ \textbf{WordPiece Merge Score},
+        fonttitle=\bfseries,
+        coltitle=white,
+        attach boxed title to top center={yshift=-2mm}
+    ]
+        \begin{align*}
+        \text{score} = \frac{\text{count(pair)}}{\text{count(token1)} \times \text{count(token2)}}
+        \end{align*}
+    \end{tcolorbox}
+
+
+    \begin{itemize}
+        \item[\textcolor{wpBlue}{\faArrowCircleRight}] Here, the algorithm merges the pair with the highest score.
+    \end{itemize}
+    
+    \vfill
+    \begin{flushright}
+        \footnotesize \textcolor{wpDark!90}{\textit{Prioritizes pairs that appear together more often than by chance.}}
+    \end{flushright}
+\end{frame}
+
+\begin{frame}{Step 2: Embedding Layer}
+
+
+    
+    % Core Definition Block
+    \begin{tcolorbox}[colback=embedSlate, colframe=embedSlate, arc=1mm, fontupper=\color{white}]
+        \small \faBrain \ \textbf{Embedding layer} is there to enable a model to learn about relationship between words, tokens, or other inputs.
+    \end{tcolorbox}
+
+
+    % Matrix Dimensions Callout
+    \begin{center}
+        \begin{beamercolorbox}[wd=0.8\textwidth, sep=8pt, center, rounded=true]{block body}
+            \small \faArrowsAlt \ It is a matrix with dimensions: 
+            \large \textbf{(\textcolor{embedEmerald}{vocabsize} $\times$ \textcolor{embedSlate}{dmodel})}
+        \end{beamercolorbox}
+    \end{center}
+
+
+    % Example Visualization
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+            \small \faInfoCircle \ For example, we can have:
+            \begin{itemize}
+                \item \textbf{vocabsize} = 6
+                \item \textbf{dmodel} = 3
+            \end{itemize}
+            
+             If we pass \textbf{dog} to the embedding layer, the layer would return $[0.12, -0.5, 0.88]$.
+             
+        \end{column}
+        
+        \begin{column}{0.5\textwidth}
+            \centering
+            \scriptsize
+
+Would be initialized with random numbers in the beginning and then will be learnt via backpropagation eventually.            
+            
+            \begin{tabular}{|c|c|c|c|}
+                \hline
+                \rowcolor{embedSlate!10} \textbf{Token} & \textbf{v1} & \textbf{v2} & \textbf{v3} \\ \hline
+                dog & 0.12 & -0.5 & 0.88 \\ \hline
+                cat & -0.1 & 0.33 & 0.12 \\ \hline
+                mat & 0.45 & 0.11 & -0.9 \\ \hline
+                fox & 0.01 & 0.92 & 0.05 \\ \hline
+                jump & -0.8 & -0.2 & 0.44 \\ \hline
+                 quick & 0.3 & 0.06 & 0.29 \\ \hline
+            \end{tabular}
+            \centerline{{\tiny \textcolor{gray}{Example $6 \times 3$ Matrix}}
+            }
+            
+           
+            
+        \end{column}
+        
+    \end{columns}
+\end{frame}
+
+\begin{frame}{We also perform one hot encoding}
+    \centering
+    
+    \begin{tikzpicture}[
+        node distance=1.2cm, 
+        >=stealth, 
+        thick,
+        % Define styles locally for easy reading
+        stepBox/.style={draw=green!50!black, fill=green!5, font=\tiny, align=center},
+        matrixBox/.style={draw=blue, fill=blue!5, font=\tiny, align=center}
+    ]
+
+        % 1. Draw the "Background" Frame FIRST so it stays behind the nodes
+        % This replaces the need for the 'backgrounds' library
+        \draw[fill=gray!2, draw=gray!20, dashed, rounded corners=8pt] 
+            (-0.8, -2.2) rectangle (5.2, 0.4);
+        \node[anchor=north west, font=\tiny\itshape, text=gray] at (-0.8, 0.4) {Processing Pipeline};
+
+        % 2. Input sentence
+        \node (text) [draw=purple!50, rounded corners=4pt, fill=purple!5, inner sep=8pt, font=\small]
+            {``the dog is brown''};
+
+        % 3. Token list
+        \node (tokens) [stepBox, below=0.8cm of text, align=left]
+            {the\\ dog\\ is\\ brown};
+
+        % 4. Integer IDs
+        \node (ids) [stepBox, right=1cm of tokens]
+            {1\\ 2\\ 3\\ 4};
+
+        % 5. One-hot matrix
+        \node (onehot) [matrixBox, right=1cm of ids]
+            {1\ 0\ 0\ 0\\ 0\ 1\ 0\ 0\\
+             0\ 0\ 1\ 0\\ 0\ 0\ 0\ 1};
+
+        % 6. Embedding (unknown)
+        \node (embed) [draw=gray!80, right=1.2cm of onehot,
+                       minimum height=1.5cm, minimum width=0.8cm, fill=white]
+            {\Large ?};
+
+        % 7. Arrows
+        \draw[->, purple!60] (text)   -- (tokens);
+        \draw[->, gray!40] (tokens) -- (ids);
+        \draw[->, gray!40] (ids)    -- (onehot);
+        \draw[->, blue!60] (onehot) -- node[above, font=\tiny, text=black]{Embed} (embed);
+
+        % 8. Label under one-hot
+        \node[below=0.2cm of onehot, align=center, font=\tiny]
+            {\textbf{One-hot Encoding}\\
+             \textcolor{blue}{1 million $\times$ 1 million}};
+
+    \end{tikzpicture}
+
+But 1 million $\times$ 1 million matrix seems a bit too much. Right?
+   
+\end{frame}
+
+
+\begin{frame}[fragile]{Embedding Layer}
+
+    
+    % Core Definition with a stylish left-border
+    \begin{tcolorbox}[colback=embedDark!5, colframe=embedDark, arc=0mm, leftrule=3pt, boxrule=0pt]
+        \small Embedding layer can be used to map one-hot encoding matrix to a lower dimensional representation.
+    \end{tcolorbox}
+
+    \begin{itemize}
+        \item[\textcolor{embedBlue}{\faIcon{vector-square}}] Each word can be represented as a {\color{embedDark}\texttt{dmodel}}-dimensional vector.
+        \item[\textcolor{embedGold}{\faIcon{dice}}] Initially, you can use rand function to randomly initialize the embedding matrix.
+    \end{itemize}
+
+    \vspace{3pt}
+
+    % Matrix Math Section
+    \begin{center}
+        \footnotesize
+        \begin{equation*}
+        \renewcommand{\arraystretch}{1.2}
+        % One-Hot Matrix
+        \underbrace{
+            \begin{bmatrix}
+             \cdot & \cdot & \cdot & \cdot \\
+             \cdot & \cdot & \cdot & \cdot \\
+             \cdot & \cdot & \cdot & \cdot \\
+             \cdot & \cdot & \cdot & \cdot \\
+             \cdot & \cdot & \cdot & \cdot 
+            \end{bmatrix}
+        }_{\mathclap{\substack{\text{\textbf{\textcolor{embedBlue}{One Hot Encoding}}} \\ \text{vocabsize} \times \text{vocabsize}}}} 
+        \times 
+        % Embedding Matrix
+        \underbrace{
+            \begin{bmatrix}
+            \cdot & \cdot & \cdot \\
+            \cdot & \cdot & \cdot \\
+            \cdot & \cdot & \cdot \\
+            \cdot & \cdot & \cdot \\
+            \cdot & \cdot & \cdot 
+            \end{bmatrix}
+        }_{\mathclap{\substack{\text{\textbf{\textcolor{embedGold}{Embedding Matrix}}} \\ \text{vocabsize} \times \text{dmodel}}}} 
+     \quad \quad \quad   = 
+        % Result Matrix
+        \underbrace{
+            \begin{bmatrix}
+             \cdot & \cdot & \cdot \\
+             \cdot & \cdot & \cdot \\
+             \cdot & \cdot & \cdot \\
+             \cdot & \cdot & \cdot \\
+             \cdot & \cdot & \cdot 
+            \end{bmatrix}
+        }_{\mathclap{\substack{\text{\textbf{Embedding for the sequence}} \\ \text{vocabsize} \times \text{dmodel}}}}
+        \end{equation*}
+    \end{center}
+
+    \begin{flushright}
+        \footnotesize \textcolor{darkgray}{Note: Matrix multiplication acts as a "lookup" for specific row vectors.}
+    \end{flushright}
+    
+  The embedding matrix will be updated and optimized using backpropagation.
+\end{frame}
+
+
+\begin{frame}[fragile]{Step 3: Positional Encoding}
+\begin{columns}[T]
+    % Column 1: The Diagram (based on your handwritten logic)
+    \begin{column}{0.2\textwidth}
+        \centering
+        \resizebox{0.8\textwidth}{!}{
+            \begin{tikzpicture}[
+                >=Stealth, thick,
+                node distance=1.1cm,
+                box/.style={draw, minimum width=2.2cm, minimum height=0.8cm, rounded corners=2pt, align=center, font=\bfseries\sffamily},
+                pill/.style={draw, ellipse, minimum width=3cm, minimum height=1cm, fill=blue!5, text=blue!80!black, font=\bfseries\sffamily},
+                plusNode/.style={draw, circle, inner sep=2pt, font=\Large\bfseries}
+            ]
+                \node[font=\Large\itshape\sffamily] (text) at (0,0) {text};
+                \node[box, above=0.6cm of text] (ip) {I/P};
+                \node[pill, above=0.8cm of ip] (embedding) {Embedding};
+                \node[plusNode, above=1cm of embedding] (sum) {$+$};
+                \node[left=0.8cm of sum, align=right, font=\tiny\bfseries\sffamily, text=blue!80!black] (pos) {Positional\\Encoding};
+                \coordinate[above=0.6cm of sum] (output);
+
+                \draw[->] (text) -- (ip);
+                \draw[->] (ip) -- (embedding);
+                \draw[->] (embedding) -- (sum);
+                \draw[-] (sum) -- (output);
+                \draw[->] (pos) -- (sum);
+            \end{tikzpicture}
+        }
+        
+        \begin{equation*}
+        PE = \begin{bmatrix} \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot \\ \cdot & \cdot & \cdot \end{bmatrix}
+        \end{equation*}
+        
+        
+    \end{column}
+
+    % Column 2: The Explanation
+    \begin{column}{0.8\textwidth}
+        \scriptsize
+       \begin{itemize}
+       
+       \item  As transformer itself doesn't provide information about positions, we have to encode them separately.
+       
+       \item  \textbf{Positional Encoding} is used to provide a relative position for each token or word in a sequence. When reading a sentence, each word is dependent on the word around it. Some words have different meaning in different context.
+       
+       \item  To encode the position, we use cosine, and sine.
+        
+        \begin{tikzpicture}
+            \begin{axis}[
+                width=4cm, height=2.5cm,
+                axis lines=none,
+                xmin=0, xmax=10, ymin=-1.2, ymax=1.2,
+                samples=50, domain=0:10
+            ]
+                \addplot[blue, thick] {sin(deg(x))};
+                \addplot[red, dashed] {cos(deg(x))};
+            \end{axis}
+        \end{tikzpicture}
+       
+\end{itemize}       
+        
+       
+
+       
+        
+
+        Consider $L$ as the maximum number of positions or vectors in the embedding.
+
+        
+
+        \begin{tcolorbox}[colback=black!5, colframe=black!50, arc=1mm, boxrule=0.5pt, left=2pt, right=2pt, top=2pt, bottom=2pt]
+        \tiny\begin{verbatim}
+for each k = 0 to L-1
+  for each i = 0 to dmodel/2
+    PE(k, 2i) = sin( k /n^{2i/dmodel})
+    PE(k, 2i+1) = cos( k /n^{2i/dmodel}) \end{verbatim}
+        \end{tcolorbox}
+        
+        $n$ is user-defined, set as $10000$ by the original author.
+        
+        Once PE Matrix is calculated, it is added to the embedding matrix calculated in the previous step.
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Step 4: Multihead Attention}
+
 \end{frame}
 
 \begin{frame}{References}
