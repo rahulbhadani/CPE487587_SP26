@@ -608,7 +608,9 @@ Your goal is create a suprvised classifier to predict the adaptive cruise contro
     \end{tabular}
     
     \vspace{10pt}
-  
+    
+    
+
   
 Here is the machine learning problem: based on the speed data, determine if ACC is enabled or not. (6 or otherwise).
 
@@ -621,6 +623,11 @@ To refer to data for this problem, please to the folder  \texttt{/data/CPE\_487-
 You will only need to use those csv files that ends with \texttt{decoded\_wheel\_speed\_fl.csv} along with labels in \texttt{acc\_status.cv}. You will need to binarize the labels as 0 for not ACC and 1 for ACC (which is originally 6 in the above table).
 
 Each of wheel speed fl(fl = front left) csv file names start with a timestamp representing different driving experiment.
+
+In addition, \texttt{decoded\_wheel\_speed\_fl.csv} contains Time column which is in seconds and Message column that has units in km/h that would you need to convert to m/s. Similarly, \texttt{acc\_status.cv} has Time column with values in seconds and Message column that has ACC status. You will need to use any other columns in these two files.
+
+Here is another problem: sampling rate of speed and ACC status are not the same. Hence number of rows in both datasets are not the same. Clearly in that case number of feature samples and number of labels are not the same. In such a case, you can use \textbf{Zero-Order Hold technique} to upsample. See \url{https://en.wikipedia.org/wiki/Zero-order_hold} for more details.
+
 
 \begin{enumerate}
 \item Create a PyTorch Dataset class and PyTorch Dataloader for batch training that takes wheel speed files as input and create multiple feature columns based on historical speed values.
