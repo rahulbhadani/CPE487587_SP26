@@ -9,8 +9,9 @@
 
 \usefonttheme[onlymath]{serif}
 \newcommand{\showanswers}{yes}
+\usepackage{pifont} % For checkmarks and crosses
 
-
+\usepackage{setspace}
 \usepackage{xspace}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -65,7 +66,7 @@ apple/.pic={
 \usepackage{bm}
 \usepackage{relsize}
 
-
+\tcbuselibrary{skins, hooks}
 
 \tikzset{basic/.style={draw,fill=MediumBlue!20,text width=1em,text badly centered}}
 \tikzset{input/.style={basic,circle}}
@@ -3526,16 +3527,817 @@ for each k = 0 to L-1
 \end{columns}
 \end{frame}
 
-\begin{frame}{Step 4: Multihead Attention}
+\begin{frame}[fragile]{Step 4: Multihead Attention}
+
+\resizebox{!}{0.8\textheight}{
+\begin{tikzpicture}[
+    >=Stealth, thick,
+    % Styles for the diagram components
+    block/.style={draw, minimum width=2cm, minimum height=2cm, fill=white, font=\bfseries},
+    sum/.style={draw, circle, inner sep=2pt, font=\large\bfseries},
+    labelFont/.style={font=\small\sffamily\bfseries},
+    weightFont/.style={font=\large\bfseries\color{blue!70!black}}
+]
+
+    % --- Input Section ---
+    % Embedding input at the bottom
+    \node (embed) at (0,0) [labelFont, align=center] {Embedding};
+    
+    % Summation node (+)
+    \node (plus) [sum, above=1cm of embed] {+};
+    
+    % Positional Encoding input from the left
+    \node (pos) [left=1.5cm of plus, labelFont, align=right] {Positional\\Encoding};
+
+    % --- Hidden Representation x ---
+    % Point x representing the combined input
+    \node (x) [above=0.5cm of plus, font=\Large\itshape] {$\xbf$};
+
+    % --- Linear Layers (Q, K, V) ---
+    % Central Key (K) block
+    \node (K_block) [block, above=1.2cm of x] {};
+    \node at (K_block.center) [labelFont, color=gray] {linear layer};
+    \node (Wk) [left=0.1cm of K_block, weightFont] {$W_K$};
+    \node (K_out) [above=0.8cm of K_block, font=\Large\bfseries] {K};
+
+    % Left Query (Q) block
+    \node (Q_block) [block, left=1.8cm of K_block] {};
+    \node at (Q_block.center) [labelFont, color=gray] {linear layer};
+    \node (Wq) [left=0.1cm of Q_block, weightFont] {$W_Q$};
+    \node (Q_out) [above=0.8cm of Q_block, font=\Large\bfseries] {Q};
+
+    % Right Value (V) block
+    \node (V_block) [block, right=1.8cm of K_block] {};
+    \node at (V_block.center) [labelFont, color=gray] {linear layer};
+    \node (Wv) [right=0.1cm of V_block, weightFont, xshift=0.3cm] {$W_V$};
+    \node (V_out) [above=0.8cm of V_block, font=\Large\bfseries] {V};
+
+    % --- Connections ---
+    % Bottom path
+    \draw[->] (embed) -- (plus);
+    \draw[->] (pos) -- (plus);
+    \draw[-] (plus) -- (x);
+
+    % Branching to the three linear layers
+    \coordinate (branch) at (x.north);
+    \draw[-] (branch) -- ++(0, 0.4) coordinate (split);
+    \draw[-] (split) -| (Q_block.south);
+    \draw[->] (split) -- (K_block.south);
+    \draw[-] (split) -| (V_block.south);
+    
+    % Final arrowheads for branched lines
+    \draw[->] (Q_block.south) ++(0,0); 
+    \draw[->] (V_block.south) ++(0,0);
+
+    % Output paths
+    \draw[->] (Q_block) -- (Q_out);
+    \draw[->] (K_block) -- (K_out);
+    \draw[->] (V_block) -- (V_out);
+
+\end{tikzpicture}
+}
 
 \end{frame}
 
-\begin{frame}{References}
+\begin{frame}[fragile]{Self-Attention in Multi-Head Attention}
+    \begin{columns}[T]
+        % --- Left Column: Diagram ---
+        \begin{column}{0.55\textwidth}
+            \centering
+            \begin{tikzpicture}[
+                node distance=0.8cm and 1cm,
+                block/.style={rectangle, draw=blue!60, fill=blue!5, text width=2.2cm, text centered, rounded corners, minimum height=0.7cm, font=\sffamily\scriptsize},
+                op/.style={ellipse, draw=orange!60, fill=orange!5, text centered, font=\sffamily\scriptsize, inner sep=2pt},
+                stack/.style={rectangle, draw=gray!80, fill=white, minimum width=1.2cm, minimum height=0.5cm, font=\sffamily\tiny\bfseries},
+                arrow/.style={-Stealth, thick, draw=gray!60}
+            ]
+                % Heads (Q, K, V)
+                \node[stack] (q3) at (0,0) {};
+                \node[stack] (q2) at ($(q3)+(0.08, 0.08)$) {};
+                \node[stack, fill=blue!10] (q1) at ($(q2)+(0.08, 0.08)$) {Q};
+                
+                \node[stack] (k3) at (1.8,0) {};
+                \node[stack] (k2) at ($(k3)+(0.08, 0.08)$) {};
+                \node[stack, fill=green!10] (k1) at ($(k2)+(0.08, 0.08)$) {K};
+                
+                \node[stack] (v3) at (3.6,0) {};
+                \node[stack] (v2) at ($(v3)+(0.08, 0.08)$) {};
+                \node[stack, fill=red!10] (v1) at ($(v2)+(0.08, 0.08)$) {V};
+
+                % Operations
+                \node[block, above=1cm of $(q1.north)!0.5!(k1.north)$] (matmul1) {MatMul};
+                \node[op, above=0.5cm of matmul1] (scale) {Scale};
+                \node[op, above=0.5cm of scale] (softmax) {Softmax};
+                \node[block, right=0.6cm of softmax] (matmul2) {MatMul};
+                \node[op, right=0.5cm of matmul2] (concat) {Concat};
+                \node[block, below=0.6cm of concat, fill=purple!5, draw=purple!60] (linear) {Linear};
+                
+                \node[below right, xshift=-0.5cm, yshift=-0.35cm, text=red!80!black, font=\sffamily\itshape] at (scale.east) (score) {Score}; 
+
+ 
+                \node[below right, xshift=-0.5cm, yshift=-0.35cm, text=red!80!black, font=\sffamily\itshape] at (q1.east) (heads) {Each of these are called heads}; 
+                
+                % Arrows
+                \draw[arrow] (q1.north) -- (matmul1.south);
+                \draw[arrow] (k1.north) -- (matmul1.south);
+                \draw[arrow] (matmul1) -- (scale);
+                 \draw[arrow] (scale) -- (softmax);
+                \draw[arrow] (softmax) -- (matmul2);
+                \draw[arrow] (v1.north) -- (matmul2.south);
+                \draw[arrow] (matmul2) -- (concat);
+                \draw[arrow] (concat) -- (linear);
+            \end{tikzpicture}
+        \end{column}
+
+        % --- Right Column: Text ---
+        \begin{column}{0.43\textwidth}
+            \begin{tcolorbox}[colback=blue!5, colframe=blue!40, fonttitle=\bfseries\small, fontupper=\small]
+                \textbf{Self-attention} allows a model to associate each individual word in the input to the other words in the input.
+            \end{tcolorbox}
+
+            \vspace{0.3cm}
+            
+            \begin{tcolorbox}[colback=orange!5, colframe=orange!40, fontupper=\scriptsize]
+                \textbf{Example:} In ``How are you'', the model learns to associate \textit{How} strongly with \textit{you}.
+            \end{tcolorbox}
+
+            \vspace{0.2cm}
+            
+            \begin{itemize}
+                \item \textbf{Q}: Query, has dimension $d_k$
+                \item \textbf{K}: Key, has dimension $d_k$
+                \item \textbf{V}: Value, has dimension $d_v$
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{The Q, K, V Mechanism}
+    \begin{columns}[T]
+        % --- Left Column: Concept & Matrix Math ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[colback=green!5, colframe=green!40!black, fonttitle=\bfseries\small]
+                \small Query, Key, Value notion comes fom the retrieval system. In this system, a query is mapped using a key and it returns some values.
+            \end{tcolorbox}
+            
+            \vspace{0.2cm}
+            \centering
+            \textbf{Score Calculation}
+            \vspace{0.1cm}
+            
+            \begin{tikzpicture}[
+                scale=0.4, every node/.style={scale=0.4},
+                cell/.style={rectangle, draw=green!50!black, thick, minimum width=0.6cm, minimum height=0.6cm},
+                matrix_label/.style={font=\sffamily\large\bfseries, color=green!50!black}
+            ]
+                % Query Matrix
+                \foreach \x in {0, 0.8, 1.6} \foreach \y in {0, 0.7, 1.4, 2.1} \node[cell] at (\x, \y) {};
+                \node[matrix_label, below=0.2cm of {(0.8,0)}] {Q ($3 \times 4$)};
+
+                \node[matrix_label, scale=1.5] at (2.8, 1.2) {$\times$};
+
+                % Key Matrix
+                \begin{scope}[shift={(3.5, 0)}]
+                    \foreach \y in {0, 1.0, 2.0} \foreach \x in {0, 0.7, 1.4, 2.1} \node[cell] at (\x, \y) {};
+                    \node[matrix_label, below=0.2cm of {(1.05,0)}] {K$^T$ ($4 \times 3$)};
+                \end{scope}
+
+                \node[matrix_label, scale=1.5] at (6.8, 1.2) {$=$};
+
+                % Score Matrix
+                \begin{scope}[shift={(8, 0.2)}]
+                    \foreach \x in {0, 0.9, 1.8} \foreach \y in {0, 0.9, 1.8} \node[cell, fill=green!10, minimum width=0.8cm, minimum height=0.8cm] at (\x, \y) {};
+                    \node[matrix_label, below=0.4cm of {(0.9,0)}] {Score};
+                \end{scope}
+            \end{tikzpicture}
+
+        \end{column}
+
+        % --- Right Column: Attention Scores ---
+        \begin{column}{0.48\textwidth}
+            \centering
+            \textbf{Similarity Mapping}
+            \vspace{0.2cm}
+
+            \begin{tikzpicture}[
+                scale=0.8, every node/.style={scale=0.7},
+                attention_matrix/.style={
+                    matrix of nodes,
+                    nodes in empty cells,
+                    row sep=-\pgflinewidth, column sep=-\pgflinewidth,
+                    nodes={draw=green!40!black, thick, minimum width=1.1cm, minimum height=0.7cm, anchor=center, font=\sffamily},
+                    column 1/.style={nodes={draw=none, font=\sffamily\bfseries, text=green!60!black}},
+                    row 1/.style={nodes={draw=none, font=\sffamily\bfseries, text=green!60!black}}
+                }
+            ]
+                \matrix (m) [attention_matrix] {
+                         & Hi & How & are & you \\
+                    Hi   & |[fill=green!30]| 98 & 27  & 10  & 12  \\
+                    How  & 27 & |[fill=green!20]| 89  & 31  & 67  \\
+                    are  & 10 & 31  & |[fill=green!20]| 91  & 54  \\
+                    you  & 12 & 67  & 54  & |[fill=green!25]| 92  \\
+                };
+            \end{tikzpicture}
+            
+            \vspace{0.3cm}
+            \begin{quote}
+                \scriptsize \textit{Score matrix tells us how much focus one word should put on another words}
+            \end{quote}
+        \end{column}
+    \end{columns}
+    
+                \begin{tcolorbox}[colback=blue!5, colframe=blue!40, fontupper=\small]
+                \textbf{Scaling Step:}
+                $$\text{Attention} = \text{Softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+                \scriptsize Where $d_k$ is the dimension of keys/queries.
+            \end{tcolorbox}
+            
+            
+\end{frame}
+
+
+
+\begin{frame}{Attention Weights}
+    \begin{columns}[T]
+        % --- Left Column: Diagrams ---
+        \begin{column}{0.5\textwidth}
+            \centering
+            \begin{tcolorbox}[colback=blue!5, colframe=blue!70, fontupper=\tiny, boxrule=0.5pt, top=2pt, bottom=2pt]
+                $Softmax(scaled score) = attention weight$
+            \end{tcolorbox}
+
+            \begin{tikzpicture}[
+                scale=0.5, every node/.style={scale=0.5},
+                cell_blue/.style={rectangle, draw=blue!70, thick, minimum width=0.5cm, minimum height=0.5cm},
+                v_stack/.style={rectangle, draw=blue!70, thick, minimum width=0.8cm, minimum height=2.0cm},
+                label_style/.style={font=\sffamily\small\bfseries, color=blue!70}
+            ]
+                % Attention Weight Matrix
+                \foreach \x in {0, 0.6, 1.2} {
+                    \foreach \y in {0, 0.6, 1.2} {
+                        \node[cell_blue, minimum width=0.6cm, minimum height=0.6cm] at (\x, \y) {};
+                    }
+                }
+                \node[label_style, text width=2cm, align=center] at (0.6, -0.8) {attention\\weight};
+                \node[label_style, scale=1.5] at (2.2, 0.6) {$\times$};
+
+                % Value Vectors
+                \node[v_stack] (v1) at (3.2, 0.6) {};
+                \node[v_stack] (v2) at (4.2, 0.6) {};
+                \node[v_stack] (v3) at (5.2, 0.6) {};
+                \node[v_stack] (v4) at (6.2, 0.6) {};
+                
+                \foreach \s in {3.2, 4.2, 5.2, 6.2} {
+                    \draw[blue!70, thick] (\s-0.4, 0.9) -- (\s+0.4, 0.9);
+                    \draw[blue!70, thick] (\s-0.4, 0.3) -- (\s+0.4, 0.3);
+                }
+                \node[label_style, scale=1.5] at (7.2, 0.6) {$=$};
+                \node[label_style] at (7.8, 0.6) {O/P};
+            \end{tikzpicture}
+
+            \vspace{0.3cm}
+
+            \begin{tikzpicture}[
+                scale=0.5, every node/.style={scale=0.5},
+                v_stack/.style={rectangle, draw=blue!70, thick, minimum width=0.8cm, minimum height=2.0cm},
+                linear_box/.style={rectangle, draw=blue!70, thick, rounded corners=2pt, minimum width=2.5cm, minimum height=0.8cm, font=\sffamily\bfseries, color=blue!70},
+                arrow/.style={-Stealth, thick, blue!70}
+            ]
+                \foreach \x [count=\i] in {-1.2, 0, 1.2} {
+                    \node[v_stack] (v\i) at (\x, 3) {};
+                    \foreach \h in {2.5, 3.0, 3.5} {
+                        \draw[blue!70, thick] (\x-0.4, \h) -- (\x+0.4, \h);
+                    }
+                }
+                \node[linear_box] (lin) at (0, 0.5) {linear};
+                \draw[arrow] (0, 1.8) -- (0, 1.0);
+                \draw[arrow] (0, 0) -- (0, -0.8);
+            \end{tikzpicture}
+        \end{column}
+
+        % --- Right Column: Text & Concepts ---
+        \begin{column}{0.48\textwidth}
+            \begin{spacing}{0.8}
+                \begin{tcolorbox}[colback=gray!5, colframe=gray!50, boxrule=0.5pt, fontupper=\scriptsize]
+                    Since we can have many Q, K, V, each of them are called heads. That's why we have the name \textbf{mult-head attention}.
+                \end{tcolorbox}
+                
+                { \scriptsize
+                \begin{itemize}
+                
+                    \item Each output as a result of each \textit{head} gets concatenated to get a single vector before passing through the linear layer.
+                    \item  Each head learns something different.
+                \end{itemize}
+				}
+			
+                \begin{tcolorbox}[colback=orange!5, colframe=orange!60, boxrule=0.5pt, fontupper=\scriptsize]
+                    Multi-headed attention output is added to the original input. This is called \textbf{residual connection}.
+                \end{tcolorbox}
+            \end{spacing}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}{Multi-head Attention}
+
+\footnotesize
+
+\begin{columns}[T]
+    % --- Left Column: Description and Equations ---
+    \begin{column}{0.55\textwidth}
+        \begin{tcolorbox}[colback=blue!5, colframe=blue!75!black]
+            Linearly project the queries, keys, and values $h$ times with different learned projections to $d_k$, $d_k$, and $d_v$ dimensions, respectively. Attention is performed in parallel, yielding $d_v$-dimensional output values, then concatenated and projected again.
+        \end{tcolorbox}
+
+        
+        \begin{itemize}
+            \item \begin{align*}
+                \text{Multihead}(Q, K, V) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)W^O
+            \end{align*}
+            
+            \item  \begin{align*}
+                \text{head}_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)
+            \end{align*}
+            
+            \item  $W_i^Q \in \mathbb{R}^{d_{model} \times d_k}$
+               , $W_i^K \in \mathbb{R}^{d_{model} \times d_k}$
+               , $W_i^V \in \mathbb{R}^{d_{model} \times d_v}$
+                , $W^O \in \mathbb{R}^{hd_v \times d_{model}}$
+        \end{itemize}
+        
+        Original paper sets $d_k = d_v = d_{model}/h = 64$.
+    \end{column}
+
+    % --- Right Column: The Diagram ---
+    \begin{column}{0.45\textwidth}
+        \centering
+       \resizebox{!}{0.7\textheight}{
+\begin{tikzpicture}[
+    node distance=0.8cm and 0.5cm,
+    % Define block styles
+    block/.style={
+        rectangle, 
+        draw=black, 
+        thick, 
+        fill=white, 
+        minimum width=1.5cm, 
+        minimum height=0.7cm, 
+        align=center, 
+        rounded corners=2pt
+    },
+    linear/.style={block, fill=gray!10},
+    concat/.style={block, fill=yellow!20},
+    attention/.style={block, fill=purple!20, minimum width=5cm, minimum height=1cm},
+    arrow/.style={-Stealth, thick}
+]
+
+    % --- Bottom Inputs ---
+    \node (K) at (0,0) {K};
+    \node (V) [left=1.5cm of K] {V};
+    \node (Q) [right=1.5cm of K] {Q};
+
+    % --- Linear Layers (The stacked look) ---
+    % We draw the back ones first, then the front one
+    \foreach \i in {2,1,0} {
+        \node (L_V\i) [linear, above=0.8cm of V, xshift=\i*4pt, yshift=\i*4pt] {Linear};
+        \node (L_K\i) [linear, above=0.8cm of K, xshift=\i*4pt, yshift=\i*4pt] {Linear};
+        \node (L_Q\i) [linear, above=0.8cm of Q, xshift=\i*4pt, yshift=\i*4pt] {Linear};
+    }
+
+    % --- Scaled Dot-Product Attention (Stacked) ---
+    \foreach \i in {2,1,0} {
+        \node (SDP\i) [attention, above=1.2cm of L_K\i, xshift=\i*4pt, yshift=\i*4pt] 
+            {\ifnum\i=0 Scaled Dot-Product\\Attention \fi};
+    }
+    
+    % Label for 'h' (number of heads)
+%    \draw [thick] ($(SDP0.east) + (0.1, -0.2)$) to[bend right] node[right] {h} ($(SDP0.east) + (0.1, 0.2)$);
+
+\begin{scope}[rotate=-15, shift={(1.8,3)}] 
+        \draw [
+            thick, 
+            decorate, 
+            decoration={
+                brace, 
+                amplitude=8pt,
+                mirror % Use mirror to flip the 'point' of the brace
+            }
+        ] (0,0) -- (0.2,2.5) 
+        node [midway, xshift=0.6cm] {\Huge h}; 
+    \end{scope}
+
+    % --- Concat and Final Linear ---
+    \node (concat) [concat, above=1.2cm of SDP0] {Concat};
+    \node (linear_top) [linear, above=0.6cm of concat] {Linear};
+    \node (output) [above=0.8cm of linear_top] {Multi-Head Attention};
+
+    % --- Arrows ---
+    % Inputs to Linear
+    \draw [arrow] (V) -- (L_V0.south);
+    \draw [arrow] (K) -- (L_K0.south);
+    \draw [arrow] (Q) -- (L_Q0.south);
+
+    % Linear to Attention
+    \draw [arrow] (L_V0.north) -- ($(SDP0.south) + (-1.65, 0)$);
+    \draw [arrow] (L_K0.north) -- (SDP0.south);
+    \draw [arrow] (L_Q0.north) -- ($(SDP0.south) + (1.65, 0)$);
+    
+    % Representing hidden head paths to Concat
+    \draw [arrow] (SDP0.north) -- (concat.south);
+    \draw [arrow, gray] ($(SDP1.north) + (0.2, 0)$)-- ($(concat.south) + (0.2, 0)$);
+    \draw [arrow, gray!60] ($(SDP2.north) + (0.4, 0)$)-- ($(concat.south) + (0.4, 0)$);
+
+    % Concat to Output
+    \draw [arrow] (concat.north) -- (linear_top.south);
+    \draw [arrow] (linear_top.north) -- (output.south);
+    
+    
+
+\end{tikzpicture}
+}
+
+$Q_{ni} = X_n W_i^Q$, $K_{ni} = X_n W_i^K$, $V_{ni} = X_n W_i^V$
+
+
+    \end{column}
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}{Position-wise Feedforward Network}
+
+\Large
+
+\begin{align*}
+FFN(x)  = max(0, xW_1 + b_1)W_2 + b_2
+\end{align*}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Layer Normalization}
+\begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+        \begin{tcolorbox}[colback=LNDark, colframe=LNDark, arc=1mm, fontupper=\color{white}]
+            \small \faArrowRight \ Input to Layer Norm is a single vector of dimensioanlity $d_{model}$ and the output is that vector normalized, of the same dimensionality.
+        \end{tcolorbox}
+
+        \vspace{5pt}
+        \scriptsize
+        \begin{enumerate}
+            \item Calculate the mean $\mu$ and the standard deviation $\sigma$ over the elements of the vector to be normalized.
+        \end{enumerate}
+
+        \begin{tcolorbox}[colback=white, colframe=LNEmerald!30, title=\tiny, fonttitle=\bfseries]
+            \tiny If $\mathbf{x}$ is the embedding, then
+            \begin{align*}
+            \mu = \cfrac{1}{d_{model}}\sum_{i=1}^{d_{model}} x_i \\
+            \sigma = \sqrt{\cfrac{1}{d_{model}}\sum_{i=1}^{d_{model}} (x_i - \mu)^2 }
+            \end{align*}
+        \end{tcolorbox}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+        \scriptsize
+        \begin{enumerate}
+            \setcounter{enumi}{1}
+            \item Then the normalized output is 
+        \end{enumerate}
+
+        \begin{tcolorbox}[enhanced, colback=white, colframe=LNEmerald!50, borderline west={2pt}{0pt}{LNEmerald}]
+            \begin{align*}
+            \hat{\mathbf{x}} = \frac{\mathbf{x} - \mu }{\sigma}
+            \end{align*}
+        \end{tcolorbox}
+
+        \vspace{5pt}
+        \begin{tcolorbox}[enhanced, colback=white, colframe=LNEmerald, boxrule=1pt, arc=2mm, title=\centering \tiny ]
+            \tiny In the implementation, we have two learnable parameters $\gamma$ and $\beta$ such that
+            \begin{align*}
+            LayerNorm(\mathbf{x}) =\gamma \frac{\mathbf{x} - \mu }{\sigma} + \beta
+            \end{align*}
+        \end{tcolorbox}
+    \end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Step 5: Decoder}
+    \begin{columns}[T]
+        % --- Left Column: Diagram ---
+        \begin{column}{0.52\textwidth}
+            \centering
+            \begin{tikzpicture}[
+                scale=0.6, every node/.style={scale=0.6},
+                masked_attention/.style={
+                    matrix of nodes,
+                    nodes in empty cells,
+                    row sep=-\pgflinewidth,
+                    column sep=-\pgflinewidth,
+                    ampersand replacement=\&,
+                    nodes={
+                        draw=green!40!black, 
+                        thick,
+                        minimum width=1.4cm, 
+                        minimum height=1.1cm, 
+                        anchor=center, 
+                        font=\sffamily
+                    },
+                    column 1/.style={nodes={draw=none, font=\bfseries, text=green!40!black}},
+                    row 1/.style={nodes={draw=none, font=\bfseries, text=green!40!black}}
+                }
+            ]
+                \matrix (m) [masked_attention] {
+                             \& $<$start$>$ \& How \& are \& you \\
+                   $<$start$>$ \&         \& |[orange]| \ding{55} \& |[orange]| \ding{55} \& |[orange]| \ding{55} \\
+                    How      \&         \& |[orange]| \checkmark \& |[orange]| \ding{55} \& |[orange]| \ding{55} \\
+                    are      \&         \& |[orange]| \checkmark \& |[orange]| \checkmark \& |[orange]| \ding{55} \\
+                    you      \&         \& |[orange]| \checkmark \& |[orange]| \checkmark \& |[orange]| \checkmark \\
+                };
+
+                \draw[orange, ultra thick, rounded corners=2pt] 
+                    (m-2-2.north east) -- (m-2-3.south west) -- 
+                    (m-3-3.north east) -- (m-3-4.south west) -- 
+                    (m-4-4.north east) -- (m-4-5.south west);
+            \end{tikzpicture}
+            
+            \vspace{0.3cm}
+            \begin{tcolorbox}[colback=orange!5, colframe=orange!60, boxrule=0.5pt, fontupper=\scriptsize]
+                \textbf{Shift Logic:} \\
+                I/P Side $\to$ $<$start$>$ How are you \\
+                O/P Side $\to$ \textit{shifted} $<$start$>$ $<$start$>$ How are you
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: Explanation ---
+        \begin{column}{0.45\textwidth}
+            \begin{spacing}{0.9}
+                \begin{tcolorbox}[colback=green!5, colframe=green!40!black, title=Architecture, fonttitle=\bfseries\small]
+                    \scriptsize Decoder layer will have two multiheaded attention. The first attention layer is similar to what we saw in the encoder side.
+                \end{tcolorbox}
+
+                \begin{itemize}
+                
+                {
+                \scriptsize
+                
+                    \item But the second attention layer takes input from the output of the encoder side.
+                    \item  Then, after passing throught the normalization layer, we add output from two attention layers and then normalize again.
+                    
+                    }
+                \end{itemize}
+
+                \begin{tcolorbox}[colback=blue!5, colframe=blue!40, boxrule=0.5pt, fontupper=\scriptsize]
+                    This process matches the encoder input to the decoder input, allowing decoder to decide which encoder input is relevant to put focus on.
+                \end{tcolorbox}
+            \end{spacing}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+
+% --- Custom tcolorbox Style ---
+\tcbset{
+    theorybox/.style={
+        colback=mainblue!5,
+        colframe=mainblue,
+        fonttitle=\bfseries,
+        sharp corners,
+        boxrule=0.5pt,
+        enhanced,
+        attach boxed title to top left={yshift=-2mm, xshift=2mm},
+        boxed title style={colback=mainblue}
+    }
+}
+
+\definecolor{techblue}{RGB}{0, 80, 158}
+\definecolor{softgray}{RGB}{245, 245, 247}
+
+% --- Professional Box Style ---
+\tcbset{
+    modernbox/.style={
+        colback=techblue!5,
+        colframe=techblue,
+        boxrule=0.8pt,
+        rounded corners,
+        fonttitle=\bfseries,
+        left=10pt, right=10pt, top=8pt, bottom=8pt,
+        enhanced,
+        shadow={2pt}{-2pt}{0pt}{black!10}
+    }
+}
+
+\begin{frame}[fragile]{Language Model Head}
+
+
+
+
+    \begin{columns}[T]
+        % --- Left Column: Text & Theory ---
+        % Left Column: Primary Concept
+        \begin{column}{0.44\textwidth}
+            \begin{tcolorbox}[modernbox]
+                The language model head is the last component of the transformer.
+            \end{tcolorbox}
+            
+            \vspace{0.1cm}
+            
+            \tiny
+            
+            The job of the language model is to take the output of the final transformer layer from the last token $N$ and use it to predict the upcoming word at position $N+1$.
+            
+            \vspace{0.1cm}
+            
+            \begin{description}
+            
+                \item[Linear Layer] There is a linear layer that takes output $h_N^L$ which is the output token embedding at position$N$ from the final block $L$ of shape $1 \times d_{model}$ to the logit vector (score vector) and then have a single score for each of the $|V|$ possible words in the vocabulary $V$. The logit vector has dimensionality $1\times |V|$.
+                \item[Unembedding Layer] Unembedding layer $E^\top$ where $E$ is the embedding matrix of shape $|V| \times d_{model}$, with same weight is used to map back from the embedding shape $1 \times d_{model}$ to $1\times |V|$.
+
+                \item[Softmax] Turns the logits into probabilities.
+            \end{description}
+            
+        \end{column}
+
+        % --- Right Column: TikZ Diagram ---
+        \begin{column}{0.5\textwidth}
+            \centering
+            \resizebox{\linewidth}{!}{
+                \begin{tikzpicture}[
+                    font=\sffamily\small,
+                    >=Stealth,
+                    node distance=1cm,
+                    box/.style={rectangle, draw, rounded corners=3pt, minimum width=1.2cm, minimum height=0.6cm, fill=white},
+                    trapeze/.style={trapezium, draw, fill=mypink, trapezium stretches body, minimum width=4cm, minimum height=1cm, trapezium angle=65, shape border rotate=180}
+                ]
+            
+                    % --- Bottom Layer (Input Words) ---
+                    \node[box] (w1) at (0,0) {$w_1$};
+                    \node[box] (w2) at (1.8,0) {$w_2$};
+                    \node at (3.2,0) {\dots};
+                    \node[box] (wN) at (4.5,0) {$w_N$};
+            
+                    % --- Transformer Block (Purple Cloud/Bar) ---
+                    \draw[dashed, fill=myblue, rounded corners=10pt] (-0.8,1.5) rectangle (5.3,2.1);
+                    \node[anchor=east, align=right, font=\sffamily\bfseries\footnotesize] at (-1, 1.8) {Layer $L$\\Transformer\\Block};
+            
+                    % --- Hidden States h^L ---
+                    \node[box] (h1) at (0,2.8) {$h^L_1$};
+                    \node[box] (h2) at (1.8,2.8) {$h^L_2$};
+                    \node at (3.2,2.8) {\dots};
+                    \node[box] (hN) at (4.5,2.8) {$h^L_N$};
+                    \node[anchor=west, xshift=2pt, color=gray] at (hN.east) {\small $[1 \times d]$};
+            
+                    % --- Connections from Words to Hidden States ---
+                    \draw[->] (w1) -- (0, 1.5); \draw[->] (0, 2.1) -- (h1);
+                    \draw[->] (w2) -- (1.8, 1.5); \draw[->] (1.8, 2.1) -- (h2);
+                    \draw[->] (wN) -- (4.5, 1.5); \draw[->] (4.5, 2.1) -- (hN);
+            
+                    % --- Language Model Head Container ---
+                    \draw[rounded corners=10pt, fill=mybeige, draw=gray!50] (2.8, 3.6) rectangle (6.8, 8.2);
+                    \node[align=left, anchor=east, font=\sffamily] at (2.5, 7.5) {
+                        \textbf{\large Language Model Head}\\ 
+                        takes $h^L_N$ and outputs a\\ 
+                        distribution over vocabulary $V$
+                    };
+            
+                    % --- Unembedding Layer (Trapezium) ---
+                    \node[trapeze] (unembed) at (4.8, 4.6) {Unembedding layer};
+                    \node[font=\bfseries] at (4.8, 4.3) {$\mathbf{U} = \mathbf{E}^T$};
+                    \draw[->, thick] (hN) -- (4.8, 4.1);
+            
+                    % --- Logits Flow ---
+                    \coordinate (splitpoint) at (4.8, 5.1);
+                    \node (u1) at (3.5, 5.8) {$u_1$};
+                    \node (u2) at (4.3, 5.8) {$u_2$};
+                    \node at (5.0, 5.8) {\dots};
+                    \node (uV) at (6.1, 5.8) {$u_{|V|}$};
+                    
+                    \draw[->] (splitpoint) -- (u1);
+                    \draw[->] (splitpoint) -- (u2);
+                    \draw[->] (splitpoint) -- (uV);
+            
+                    % --- Softmax Layer ---
+                    \draw[fill=mygreen, draw, rounded corners=3pt] (3.0, 6.4) rectangle (6.5, 7.2) coordinate[midway] (softmax_mid);
+                    \node[font=\large] at (4.3, 6.8) {Softmax};
+                    
+                    \draw[->] (u1.north) -- (u1.north |- 3.0, 6.4);
+                    \draw[->] (u2.north) -- (u2.north |- 3.0, 6.4);
+                    \draw[->] (uV.north) -- (uV.north |- 3.0, 6.4);
+                    
+                    % Mini Histogram Icon
+                    \begin{scope}[shift={(5.4, 6.6)}, scale=0.15]
+                        \draw[rounded corners=0.5pt, draw=black!60] (0,0) rectangle (3,3);
+                        \fill[black!70] (0.4,0) rectangle (0.8, 1.2);
+                        \fill[black!70] (1.1,0) rectangle (1.5, 2.6);
+                        \fill[black!70] (1.8,0) rectangle (2.2, 0.8);
+                        \fill[black!70] (2.5,0) rectangle (2.9, 1.8);
+                    \end{scope}
+            
+                    % --- Output Word Probabilities ---
+                    \node (y1) at (3.5, 7.8) {$y_1$};
+                    \node (y2) at (4.3, 7.8) {$y_2$};
+                    \node at (5.0, 7.8) {\dots};
+                    \node (yV) at (6.1, 7.8) {$y_{|V|}$};
+                    
+                    \draw[->] (3.5, 7.2) -- (y1);
+                    \draw[->] (4.3, 7.2) -- (y2);
+                    \draw[->] (6.1, 7.2) -- (yV);
+            
+                    % --- Right Side Metadata Labels ---
+        \node[anchor=west] at (7, 7.8) {Word probabilities \quad \textcolor{gray}{$[1 \times |V|]$}};
+        \node[anchor=west] at (7, 6.8) {Softmax over vocabulary $V$};
+        \node[anchor=west] at (7, 5.8) {Logits \quad \textcolor{gray}{$[1 \times |V|]$}};
+        \node[anchor=west] at (7, 4.6) {Unembedding layer \quad \textcolor{gray}{$[d \times |V|]$}};
+            
+                \end{tikzpicture}
+            }
+            We might sample a word with highest probability or some other sampling strategy.
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}{Three Architectures of Language Models}
+
+    \begin{columns}[T]
+        % --- Left Column: Text & Theory ---
+        % Left Column: Primary Concept
+        \begin{column}{0.4\textwidth}
+    
+    % Style for the blocks
+    \tcbset{
+        arc=1mm, 
+        boxrule=0pt, 
+        leftrule=3pt,
+        fonttitle=\bfseries\small,
+        fontupper=\scriptsize,
+        top=2pt, bottom=2pt
+    }
+
+    % Encoder-Decoder
+    \begin{tcolorbox}[colback=encdec!5, colframe=encdec, title=\faLayerGroup \ Encoder-decoder (Original Transformer Architecture)]
+        takes a series of tokens as input and output a series of tokens.
+    \end{tcolorbox}
+
+    % Encoder
+    \begin{tcolorbox}[colback=enc!5, colframe=enc, title=\faMicrochip \ Encoder]
+        takes a sequence of tokens as input and output their vector representation. (BERT, RoBERTA, etc.)
+    \end{tcolorbox}
+
+    % Decoder
+    \begin{tcolorbox}[colback=dec!5, colframe=dec, title=\faPenNib \ Decoder (The most commonly used ones now)]
+        takes a series of tokens as input and iteratively generates an output token one at a time. (GPT, Claude, Lllama, Mistral)
+    \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: TikZ Diagram ---
+        \begin{column}{0.6\textwidth}
+    
+    % Figure placement with better styling
+    \begin{figure}
+        \centering
+        \begin{tikzpicture}
+            \node[inner sep=0pt, rounded corners=5pt, clip] (img) {
+                \includegraphics[scale=0.16]{figures/transformer_variants.png}
+            };
+            \draw[gray!30, line width=0.5pt, rounded corners=5pt] (img.south west) rectangle (img.north east);
+        \end{tikzpicture}
+    \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+
+\begin{frame}{References and Readings}
+
+\footnotesize
+
+\textbf{Must Read}
 
 \begin{enumerate}
-\item \url{https://web.stanford.edu/~jurafsky/slp3/3.pdf}
+\item N-gram Language Models: \url{https://web.stanford.edu/~jurafsky/slp3/3.pdf}
+\item Large Language Models: \url{https://web.stanford.edu/~jurafsky/slp3/7.pdf}
+\item Transformers: \url{https://web.stanford.edu/~jurafsky/slp3/8.pdf}
+\item RNNs and LSTMs: \url{https://web.stanford.edu/~jurafsky/slp3/13.pdf}
 \item \url{https://pages.cs.wisc.edu/~shavlik/cs638/lectureNotes/Long\%20Short-Term\%20Memory\%20Networks.pdf}
-\item \url{https://web.stanford.edu/~jurafsky/slp3/13.pdf}
+\item Attention is All You Need: \url{https://arxiv.org/abs/1706.03762}
+\item Scaling Laws for Neural Language Models: \url{https://arxiv.org/abs/2001.08361}
+\item DeepSeek-V3 Technical Report: \url{https://arxiv.org/abs/2412.19437}
+\item The Llama 3 Herd of Models: \url{https://arxiv.org/abs/2407.21783}
+
+\end{enumerate}
+
+\textbf{Recommended Reading}
+
+\begin{enumerate}
+
+\item Large Language Models: A Survey: \url{https://arxiv.org/abs/2402.06196}
+\item Neural Machine Translation by Jointly Learning to Align and Translate: \url{https://arxiv.org/abs/1409.0473}
+
 \end{enumerate}
 
 \end{frame}
