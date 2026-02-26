@@ -183,14 +183,6 @@ frame=none
 \begin{frame}{Outline}
     \backgroundtableofcontents
 \end{frame}
-
-%------------------------------------------------
-\begin{frame}{}
-    \begin{center}
-        \huge \bf \color{DarkBlue}
-        Motivation 
-    \end{center}
-    \end{frame}
     
 
 %------------------------------------------------
@@ -203,13 +195,106 @@ frame=none
 \end{frame}
 
 
+\section{Motivation}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+\begin{frame}{Discriminative vs. Generative Models}
+    \begin{columns}[T]
+        \begin{column}{0.49\textwidth}
+            \centering
+            \begin{block}{Discriminative}
+                \small Focuses on the \textbf{boundary} between classes.
+                \vspace{0.5em}
+                \begin{itemize}
+                    \item Maps high-dimensional input $\mathbf{x}$ to label $y$.
+                    \item Learns $P(y \mid \mathbf{x})$.
+                    \item \textit{Goal:} Classification and Regression.
+                \end{itemize}
+            \end{block}
+        \end{column}
+        
+        \begin{column}{0.49\textwidth}
+            \centering
+            \begin{block}{Generative}
+                \small Focuses on the \textbf{distribution} of the data.
+                \vspace{0.5em}
+                \begin{itemize}
+                    \item Models the process that \textit{creates} the data.
+                    \item Learns $P(\mathbf{x}, y)$ or $P(\mathbf{x})$.
+                    \item \textit{Strategy:} MLE or Variational Inference.
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+
+    \vspace{1.5em}
+
+    \begin{quote}
+        \centering
+        \small
+        While \textbf{Discriminative} models tell you how to tell things apart, \textbf{Generative} models give you the "recipe" for the data itself.
+    \end{quote}
+    	\centering
+    	
+    \textbf{	GAN is a generative model.}
+    	
+\end{frame}
+
+
+
+\begin{frame}{Adversarial Machine Learning}
+
+\footnotesize
+
+    \begin{columns}[T]
+        \begin{column}{0.7\textwidth}
+            \begin{tcolorbox}[colback=blue!5, colframe=blue!75!black, title=Wikipedia Definition, arc=0mm, left=2pt, right=2pt, top=2pt, bottom=2pt]
+                 Study of attacks on ML algorithms and defenses against such attacks.
+            \end{tcolorbox}
+
+            \begin{itemize}
+                \item \textbf{Data Assumption:} Conventional training is based on IID assumption, but however someone can supply non-IID data.
+                \item \textbf{Exploitation:} Adversaries may attempt to exploit a learning mechanism either to cause it to misbehave or to extract or misuse information.
+            \end{itemize}
+            
+        \end{column}
+
+        \begin{column}{0.3\textwidth}
+            \begin{figure}
+                \centering
+                \resizebox{0.6\textwidth}{!}{
+                    \includegraphics{figures/detective.jpg}
+                }
+             
+            \end{figure}
+        \end{column}
+    \end{columns}
+
+  \begin{tcolorbox}[colback=red!5, colframe=red!75!black, boxrule=0.5pt]
+                \footnotesize While we won't delve in Secure Machine Learning, we serve this as a motivation for \textbf{Generative Adversarial Network (GAN)}.
+            \end{tcolorbox}
+
+    \begin{tcolorbox}[colback=green!5, colframe=green!60!black]
+         
+        GAN is a \textbf{two-player minimax} game where:
+        \begin{description}
+            \item[Generator:] A counterfeiter (adversary) trying to fool you.
+            \item[Discriminator:] A police officer investigating and detecting counterfeit objects.
+        \end{description}
+    \end{tcolorbox}
+\end{frame}
+
+
 %------------------------------------------------
 \begin{frame}{Example of a Complex $p_{data}(\x)$ }
 \begin{center}
-\uncover<2->{\includegraphics[width=.3\textwidth]{figures/gan-p1.jpg}}
-\uncover<3->{\includegraphics[width=.3\textwidth]{figures/gan-p2.jpg}}
-\uncover<4->{\includegraphics[width=.3\textwidth]{figures/gan-p3.jpg}}\\
-\Large \uncover<5->{\color{MediumRed}None of these people are real!}
+\uncover<1->{\includegraphics[width=.3\textwidth]{figures/gan-p1.jpg}}
+\uncover<2->{\includegraphics[width=.3\textwidth]{figures/gan-p2.jpg}}
+\uncover<3->{\includegraphics[width=.3\textwidth]{figures/gan-p3.jpg}}\\
+\Large \uncover<4->{\color{MediumRed}None of these people are real!}
 \end{center}
 \end{frame}
 
@@ -225,35 +310,56 @@ There are hundreds(?) of different types of GANs; however, this lecture only pre
 
 
 
-
-
-
-
-%------------------------------------------------
 \section{Generative Adversarial Networks}
-%------------------------------------------------
 
-%------------------------------------------------
-\begin{frame}{}
-\begin{center}
-    \huge \bf \color{DarkBlue}
-    Generative Adversarial Networks 
-\end{center}
+\begin{frame}
+    \sectionpage
 \end{frame}
 
 
-
-
-%------------------------------------------------
 \begin{frame}{Definitions}
-    \begin{itemize}
-        \item $p_{data}(\x)$: Probability distribution over the data. We assume we have access to a dataset $\{\x_i\}_{i=1}^n$; however, we do not assume we have labels nor do we need them because we're not doing classification. 
-        \item<2-> $p_{g}(\zbf)$: Probability distribution over a latent variable $\zbf$. This of this distribution that is over random noise. 
-        \item<3-> $G(\zbf)$: $G$ is the generator neural network that takes in a noise vector, $\zbf$, to produce a vector $\x_{fake}$. $\x_{fake}$ is a ``fake'' data sample that is generated from $\zbf$. 
-        \item<4-> $D(\xbf)$: $D$ is a discriminator network that takes in a data vector $\x$ and tries to discern whether $\xbf$ was sampled from $p_{data}(\xbf)$ or generated by $G$. 
-        \item<5-> Let $\theta_g$ and $\theta_d$ represent the parameters for the generator and discriminator neural networks, respectively. 
-    \end{itemize}
+
+\footnotesize
+
+    \begin{columns}[T, totalwidth=\textwidth]
+        % Left Column: Distributions
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[colback=datagreen!5, colframe=datagreen, title=\textbf{Data Distribution}, fonttitle=\bfseries\small, arc=1mm]
+                 $p_{data}(\mathbf{x})$: Probability distribution over the data. 
+                \begin{itemize}
+                    \item Access to $\{\mathbf{x}_i\}_{i=1}^n$
+                    \item No labels needed (not classification).
+                \end{itemize}
+            \end{tcolorbox}
+            
+            \pause
+            \begin{tcolorbox}[colback=gray!5, colframe=gray!60, title=\textbf{Latent Variable}, fonttitle=\bfseries\small, arc=1mm]
+                 $p_{g}(\mathbf{z})$: Probability distribution over a latent variable $\mathbf{z}$. Think of this distribution as being over random noise.
+            \end{tcolorbox}
+        \end{column}
+
+        % Right Column: Networks
+        \begin{column}{0.48\textwidth}
+            \pause
+            \begin{tcolorbox}[colback=genblue!5, colframe=genblue, title=\textbf{Generator} $G(\mathbf{z})$, fonttitle=\bfseries\small, arc=1mm]
+                 $G$ is the generator neural network that takes in a noise vector, $\zbf$, to produce a vector $\x_{fake}$. $\x_{fake}$ is a ``fake'' data sample that is generated from $\zbf$. 
+            \end{tcolorbox}
+
+            \pause
+            \begin{tcolorbox}[colback=discred!5, colframe=discred, title=\textbf{Discriminator} $D(\mathbf{x})$, fonttitle=\bfseries\small, arc=1mm]
+                 $D$ takes vector $\mathbf{x}$ and tries to discern if $\mathbf{x}$ was sampled from $p_{data}(\mathbf{x})$ or generated by $G$.
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+
+    \pause
+    
+    % Bottom wide box for parameters
+    \begin{tcolorbox}[enhanced, sharp corners, boxrule=0pt, frame hidden, colback=yellow!10, borderline west={2pt}{0pt}{orange}]
+         Let $\theta_g$ and $\theta_d$ represent the parameters for the generator and discriminator neural networks, respectively.
+    \end{tcolorbox}
 \end{frame}
+
 
 \begin{frame}{Generative Adversarial Net}
     \begin{center}
@@ -282,6 +388,10 @@ There are hundreds(?) of different types of GANs; however, this lecture only pre
             \draw[-stealth, thick] (pt3) -- (D);
         
         \end{tikzpicture}
+        
+        \begin{quote}
+        Goodfellow, Ian J., Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio. "Generative adversarial nets." Advances in neural information processing systems 27 (2014).
+        \end{quote}
         \end{center}
         
 \end{frame}
@@ -302,6 +412,11 @@ There are hundreds(?) of different types of GANs; however, this lecture only pre
 \end{itemize}
 \end{block}
 
+\begin{quote}
+We train $D$ to maximize the probability of assigning the
+correct label to both training examples and samples from $G$. We simultaneously train $G$ to minimize $\log(1 - D(G(z)))$.
+\end{quote}
+
 
 \end{frame}
 
@@ -310,14 +425,26 @@ There are hundreds(?) of different types of GANs; however, this lecture only pre
 
 
 %------------------------------------------------
-\begin{frame}{Formally Defining the Optimization Task}
+\begin{frame}[fragile]{Formally Defining the Optimization Task}
 
 \begin{tblock}{}
 The optimization of $\theta_g$ and $\theta_d$ can be cast as a $\min$-$\max$ task, which is given by
 \begin{multiequation}
-\min_{G}\max_{D} \left\{ \Ebb_{\xbf\sim p_{data}}\left[ \log(D(\x)) \right] + \Ebb_{\zbf\sim p_{g}}\left[\log(1 - D(G(\zbf)))\right]\right\}
+\min_{G}\max_{D} V (D, G) = \left\{ \Ebb_{\xbf\sim p_{data}}\left[ \log(D(\x)) \right] + \Ebb_{\zbf\sim p_{\zbf}}\left[\log(1 - D(G(\zbf)))\right]\right\}
 \end{multiequation}
+
+$V$ is called as value function.
+
 \end{tblock}
+
+From the original paper: alternate between $k$ steps of optimizing $D$ and one step of optimizing $G$.
+
+\begin{texample}{}
+ 
+ In the beginning $G$ is poor, so $D$ will reject samples with a high confidence, and 
+ $\log(1 - D(G(z)))$ saturates. So, rather than training $G$ to minimize $\log(1 - D(G(z)))$ , $G$ is trained to maximize $\log D(G(z))$.
+ 
+\end{texample}
 
 
 \end{frame}
@@ -339,8 +466,34 @@ The optimization of $\theta_g$ and $\theta_d$ can be cast as a $\min$-$\max$ tas
 
 \end{frame}
 
+\begin{frame}{Global Optimality of $p_g = p_{\textbf{data}}$}
+
+If we fix the generator $G$, the optimal discriminator $D$ is
+
+\LARGE 
+
+\begin{align*}
+\centering
+D^*_G(\xbf) = \frac{p_{data}(\xbf)}{p_{data}(\xbf) + p_g(\xbf)}
+\end{align*}
+
+\end{frame}
 
 
+\begin{frame}{Minimax Equation with Optimal Discriminator}
+
+For a fixed G, the minimax is
+
+\begin{align*}
+C(G) & = \max_{D} V (D, G) \\
+& =   \Ebb_{\xbf\sim p_{data}}\left[ \log(D_G^*(\x)) \right] + \Ebb_{\zbf\sim p_{\zbf}}\left[\log(1 - D_G^*(G(\zbf)))\right]\\
+& =  \Ebb_{\xbf\sim p_{data}}\left[ \log(D_G^*(\x)) \right] + \Ebb_{\xbf\sim p_g}\left[\log(1 - D_G^*(\xbf))\right]\\
+& = \Ebb_{\xbf\sim p_{data}}\left[ \log   \frac{p_{data}(\xbf)}{p_{data}(\xbf) + p_g(\xbf)} \right] + \Ebb_{\xbf\sim p_g}\left[\log  \frac{p_{\xbf}(\xbf)}{p_{data}(\xbf) + p_g(\xbf)} \right]
+\end{align*}
+
+Here, training objective of $D$ can be interpreted as maximizing the log-likelihood for estimating the conditional probability $P(Y = y|\xbf)$ where $Y$ is the random variable denoting where $\xbf$ comes from $p_{data}$ with $y=1$ or from $p_g$ with $y=0$.
+
+\end{frame}
 
 
 %------------------------------------------------
@@ -445,111 +598,221 @@ Stably training GANs was a challenge faced by the community for quite some time 
 
 
 
+\section{GANs (in PyTorch)}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
 
 %------------------------------------------------
-\begin{frame}[fragile]{GANs (in PyTorch)}
+\begin{frame}[fragile]{Generators}
+    \begin{columns}[T]
+        % Left Column: Theory and Diagram
+        \begin{column}{0.45\textwidth}
+            \begin{tcolorbox}[colback=blue!5, colframe=blue!50!black, title=Conceptual Flow, fonttitle=\bfseries\small]
+                \footnotesize
+                The Generator takes random noise (latent vector $\mathbf{z}$) and generates an $m \times n$ image.
+            \end{tcolorbox}
 
-    \footnotesize
+            \vspace{0.5em}
+            
+            \centering
+            \resizebox{\textwidth}{!}{
+                \begin{tikzpicture}[
+                    node distance=1.2cm,
+                    block/.style={draw, rectangle, minimum height=2.5em, minimum width=4.5em, fill=blue!10, font=\sffamily\bfseries},
+                    arrow/.style={-{Stealth[scale=1.2]}, thick}
+                ]
+                    % Nodes
+                    \node (noise) [label={[align=center]below:\tiny Latent Vector $\mathbf{z}$\\\tiny (Random Noise)}] {
+                        \fbox{\includegraphics[width=1.2cm]{figures/whitenoise.png}}
+                    };
+                    \node (generator) [block, right=of noise] {Generator};
+                    \node (output) [right=of generator, label={[align=center]below:\tiny $m \times n$ Image}] {
+                        \fbox{\includegraphics[width=1.2cm]{figures/five.png}}
+                    };
+            
+                    % Connections
+                    \draw [arrow] (noise) -- (generator);
+                    \draw [arrow] (generator) -- (output);
+                \end{tikzpicture}
+            }
+        \end{column}
 
-    \begin{verbatim}
+        % Right Column: Code Implementation
+        \begin{column}{0.53\textwidth}
+            \begin{tcolorbox}[enhanced, boxrule=0.5pt, colback=pink!5, colframe=pink!50!black, title=PyTorch Implementation, fonttitle=\bfseries\small]
+                \begin{minted}[
+                    fontsize=\tiny,
+                    breaklines,
+                    baselinestretch=1.0
+                ]{Python}
 class Generator(nn.Module):
-    def __init__(self):
+    def __init__(self, latent_dim=100, height=28, width=28):
         super(Generator, self).__init__()
-        def block(in_feat, out_feat, normalize=True):
-            layers = [nn.Linear(in_feat, out_feat)]
-            if normalize:
-                layers.append(nn.BatchNorm1d(out_feat, 0.8))
-            layers.append(nn.LeakyReLU(0.2, inplace=True))
-            return layers
+        self.latent_dim = latent_dim
+        self.height, self.width = height, width
+        
         self.model = nn.Sequential(
-            *block(latent_dim, 128, normalize=False),
-            *block(128, 256), *block(256, 512), *block(512, 1024),
-            nn.Linear(1024, int(np.prod(img_shape))), nn.Tanh())
+            nn.Linear(latent_dim, 256),
+            nn.LeakyReLU(0.2),
+            nn.Linear(256, 512),
+            nn.LeakyReLU(0.2),
+            nn.Linear(512, 1024),
+            nn.LeakyReLU(0.2),
+            nn.Linear(1024, width*height),
+            nn.Tanh() # Output in [-1, 1]
+        )
+    
     def forward(self, z):
         img = self.model(z)
-        img = img.view(img.size(0), *img_shape)
-        return img
-
-\end{verbatim}
-
-\end{frame}
-
-%------------------------------------------------
-\section{GAN in PyTorch}
-%------------------------------------------------
-
-%------------------------------------------------
-\begin{frame}{}
-\begin{center}
-    \huge \bf \color{DarkBlue}
-    GAN in PyTorch 
-\end{center}
+        # Reshape to [batch, channels, H, W]
+        return img.view(img.size(0), 1, 
+                        self.height, self.width)
+                \end{minted}
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 
-
 %------------------------------------------------
-\begin{frame}[fragile]{GANs (in PyTorch)}
+\begin{frame}[fragile]{Discriminators}
+    \begin{columns}[T]
+        % Left Column: Theory and Diagram
+        \begin{column}{0.45\textwidth}
+            \begin{tcolorbox}[colback=blue!5, colframe=red!50!black, title=Conceptual Flow, fonttitle=\bfseries\small]
+                \footnotesize
 
-    \footnotesize
+			The discriminator takes generated image and guess whether it is fake or real through binary classification.                
+                
+            \end{tcolorbox}
 
-    \begin{verbatim}
+            \vspace{0.5em}
+            
+            \centering
+            \resizebox{\textwidth}{!}{
+                \begin{tikzpicture}[
+                    node distance=1.2cm,
+                    block/.style={draw, rectangle, minimum height=2.5em, minimum width=4.5em, fill=red!10, font=\sffamily\bfseries},
+                    arrow/.style={-{Stealth[scale=1.2]}, thick}
+                ]
+                    % Nodes
+                    \node (noise) [label={[align=center]below:\tiny Generate Image}] {
+                        \fbox{\includegraphics[width=1.2cm]{figures/five.png}}
+                    };
+                    \node (discriminator) [block, right=of noise] {Discriminator};
+                    \node (output) [right=of discriminator, label={[align=center]below:\tiny Real or Fake}] {
+                        \fbox{ \Large 0 / 1}
+                    };
+            
+                    % Connections
+                    \draw [arrow] (noise) -- (discriminator);
+                    \draw [arrow] (discriminator) -- (output);
+                \end{tikzpicture}
+            }
+        \end{column}
+
+        % Right Column: Code Implementation
+        \begin{column}{0.53\textwidth}
+            \begin{tcolorbox}[enhanced, boxrule=0.5pt, colback=pink!5, colframe=pink!50!black, title=PyTorch Implementation, fonttitle=\bfseries\small]
+                \begin{minted}[
+                    fontsize=\tiny,
+                    breaklines,
+                    baselinestretch=1.0
+                ]{Python}
 class Discriminator(nn.Module):
-    def __init__(self):
+    def __init__(self, height  = 28, width = 28):
         super(Discriminator, self).__init__()
+        self.height, self.width = height, width
+        
         self.model = nn.Sequential(
-            nn.Linear(int(np.prod(img_shape)), 512),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(self.height*self.width, 1024),
+            nn.LeakyReLU(0.2),
+            nn.Dropout(0.3),  # Regularization
+            nn.Linear(1024, 512),
+            nn.LeakyReLU(0.2),
+            nn.Dropout(0.3),
             nn.Linear(512, 256),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2),
+            nn.Dropout(0.3),
             nn.Linear(256, 1),
-            nn.Sigmoid(),
+            nn.Sigmoid()  # Output probability [0, 1]
         )
+    
     def forward(self, img):
-        img_flat = img.view(img.size(0), -1)
+        img_flat = img.view(img.size(0), -1)  # Flatten
         validity = self.model(img_flat)
         return validity
-\end{verbatim}
+                \end{minted}
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}{Training Loss in GAN Implementation}
+\scriptsize
+
+\begin{tcolorbox}[colback=blue!5, colframe=theoryblue, arc=2pt]
+    Training loss is actually just Binary Cross Entropy loss effectively.
+    $$\mathcal{L}_{BCE}(y, \hat{y}) = -[y \cdot \log(\hat{y}) + (1-y) \cdot \log(1-\hat{y})]$$
+\end{tcolorbox}
+
+\begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+        \textbf{Case 1: Real Sample ($y=1$)}
+        \begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0pt]
+            $$\mathcal{L}_{BCE} = -\log D(x)$$
+        \end{tcolorbox}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+        \textbf{Case 2: Fake Sample ($y=0$)}
+        \begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0pt]
+            $$\mathcal{L}_{BCE} = -\log(1 - D(G(z)))$$
+        \end{tcolorbox}
+    \end{column}
+\end{columns}
+
+\vspace{0.2cm}
+Exactly the negative of the value function mentioned in the original paper. 
+
+\begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+\begin{tcolorbox}[colback=red!5, colframe=warnred, arc=2pt]
+    We also noted earlier that GoodFellow recommended to maximize $\log D(G(z))$ instead of minimizing $\log(1 - D(G(z)))$, becase early training: $D$ easily detects fakes $\Rightarrow D(G(z)) \approx 0$
+    $$\frac{\partial}{\partial \theta} \log(1 - D(G(z))) \approx 0 \quad \text{\textbf{(Vanishing gradients!)}}$$
+\end{tcolorbox}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+\begin{table}
+\centering
+\resizebox{0.8\textwidth}{!}{%
+\begin{tabular}{@{}cc@{}}
+\toprule
+\textbf{\textcolor{theoryblue}{Theory (Maximize)}} & \textbf{\textcolor{codegreen}{Code (Minimize)}} \\ \midrule
+$\mathbb{E}[\log D(x)]$ & \texttt{criterion(D(x), 1)} \\
+$\mathbb{E}[\log(1-D(G(z)))]$ & \texttt{criterion(D(G(z)), 0)} \\ \bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{center}
+    \textbf{\textcolor{blue}{Implementation: Just flip the label!}}
+\end{center}
+
+    \end{column}
+\end{columns}
+
+
+
+
+
+
 
 \end{frame}
 
 
-
-
-%------------------------------------------------
-\begin{frame}[fragile]{GANs (in PyTorch)}
-\tiny
-\begin{verbatim}
-for epoch in range(n_epochs):
-    for i, (imgs, _) in enumerate(dataloader):
-        # Adversarial ground truths
-        valid = Variable(Tensor(imgs.size(0), 1).fill_(1.0), requires_grad=False)
-        fake = Variable(Tensor(imgs.size(0), 1).fill_(0.0), requires_grad=False)
-        # Configure input
-        real_imgs = Variable(imgs.type(Tensor))
-        # -----------------
-        #  Train Generator
-        optimizer_G.zero_grad()
-        # Sample noise as generator input
-        z = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], latent_dim))))
-        # Generate a batch of images
-        gen_imgs = generator(z)
-        # Loss measures generator's ability to fool the discriminator
-        g_loss = adversarial_loss(discriminator(gen_imgs), valid)
-        g_loss.backward()
-        optimizer_G.step()
-        # ---------------------
-        #  Train Discriminator
-        optimizer_D.zero_grad()
-        # Measure discriminator's ability to classify real from generated samples
-        real_loss = adversarial_loss(discriminator(real_imgs), valid)
-        fake_loss = adversarial_loss(discriminator(gen_imgs.detach()), fake)
-        d_loss = (real_loss + fake_loss) / 2
-        d_loss.backward()
-        optimizer_D.step()
-\end{verbatim}
-
-\end{frame}
 
 
 
@@ -564,16 +827,10 @@ for epoch in range(n_epochs):
 
 
 
-%------------------------------------------------
 \section{Examples}
-%------------------------------------------------
 
-%------------------------------------------------
-\begin{frame}{}
-\begin{center}
-    \huge \bf \color{DarkBlue}
-    Examples 
-\end{center}
+\begin{frame}
+    \sectionpage
 \end{frame}
 
 
@@ -701,14 +958,9 @@ style of Claude Monet''\\
 \section{Challenges with GANs}
 %------------------------------------------------
 
-%------------------------------------------------
-\begin{frame}{}
-\begin{center}
-    \huge \bf \color{DarkBlue}
-    Challenges with GANs 
-\end{center}
+\begin{frame}
+    \sectionpage
 \end{frame}
-
 
 
 
@@ -729,7 +981,120 @@ style of Claude Monet''\\
 \end{frame}
 
 
+%------------------------------------------------
+\section{Advance Architecture in GAN}
+%------------------------------------------------
 
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+
+
+\begin{frame}{Deep Convolution GAN}
+
+
+Fractionally-Strided Convolutional Layer (or Transposed Convolution) is opposite of convolution operation. 
+
+In a convolution operation (for example, stride = 2), we obtain a downsampled (smaller) output of the larger input.
+
+In fractionally-streded convolution,  an upsampled (larger) output is obtained from a smaller input. 
+
+Consider $X = \begin{bmatrix}
+x_{00} & x_{01}\\
+x_{10} & x_{11}
+\end{bmatrix}$ and filter as $K = \begin{bmatrix}
+k_{00} & k_{01} & k_{02}\\
+k_{10} & k_{11} & k_{12}\\
+k_{20} & k_{21} & k_{22}\\
+\end{bmatrix}$ 
+
+with stride of 2, i.e. fractional stride of 1/2, we insert, zeros to between every other input pixel. Hence,  $X = \begin{bmatrix}
+x_{00} & 0 & x_{01} & 0\\
+0 & 0 & 0 & 0\\
+x_{10} & 0  x_{11} & 0\\
+0 & 0 & 0 & 0\\
+\end{bmatrix}$. Then we apply regular convolution operation.
+
+
+ 
+
+\vfill 
+\begin{quote}
+\tiny Radford, Alec, Luke Metz, and Soumith Chintala. "Unsupervised representation learning with deep convolutional generative adversarial networks." arXiv preprint arXiv:1511.06434 (2015).
+\end{quote}
+\end{frame}
+
+\begin{frame}{Deep Convolution GAN}
+\scriptsize
+
+\begin{tcolorbox}[colback=mainblue!5, colframe=mainblue, arc=3pt, boxrule=0.5pt]
+    \textbf{Fractionally-Strided Convolutional Layer} (or Transposed Convolution) is the opposite of the convolution operation.
+\end{tcolorbox}
+
+\begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+        \textbf{Key Concepts:}
+        \begin{itemize}
+            \item \textbf{Standard Convolution:} In a convolution operation (for example, stride = 2), we obtain a downsampled (smaller) output of the larger input.
+            \item \textbf{Fractional Stride:} In fractionally-strided convolution, an upsampled (larger) output is obtained from a smaller input.
+        \end{itemize}
+        
+         
+        \begin{tcolorbox}[colback=gray!10, boxrule=0pt, frame hidden, left=2pt, right=2pt, top=2pt, bottom=2pt]
+    \tiny \textcolor{gray}{Radford, Alec, Luke Metz, and Soumith Chintala. "Unsupervised representation learning with deep convolutional generative adversarial networks." arXiv preprint arXiv:1511.06434 (2015).}
+\end{tcolorbox}
+
+        
+      
+
+    \end{column}
+    
+    \begin{column}{0.48\textwidth}
+        \textbf{Mathematical Example:}
+        Consider $X = \begin{bmatrix}
+        x_{00} & x_{01}\\
+        x_{10} & x_{11}
+        \end{bmatrix}$ and filter as $K = \begin{bmatrix}
+        k_{00} & k_{01} & k_{02}\\
+        k_{10} & k_{11} & k_{12}\\
+        k_{20} & k_{21} & k_{22}\\
+        \end{bmatrix}$ 
+       
+  \begin{tcolorbox}[colback=lightbg, colframe=gray!50,  fonttitle=\bfseries]
+    We insert zeros between every other input pixel. Hence:
+    \[
+    X = \begin{bmatrix}
+    x_{00} & 0 & x_{01} & 0\\
+    0 & 0 & 0 & 0\\
+    x_{10} & 0 & x_{11} & 0\\
+    0 & 0 & 0 & 0\\
+    \end{bmatrix}
+    \]
+    Then we apply regular convolution operation.
+\end{tcolorbox}
+
+    \end{column}
+\end{columns}
+
+
+
+\end{frame}
+
+\begin{frame}{Deep Convolution GAN}
+
+From the original paper:
+
+\begin{enumerate}
+\item  Replace any pooling layers with strided convolutions (discriminator) and fractional-strided convolutions (generator).
+\item Use batchnorm in both the generator and the discriminator.
+\item Remove fully connected hidden layers for deeper architectures.
+\item Use ReLU activation in generator for all layers except for the output, which uses Tanh.
+\item  Use LeakyReLU activation in the discriminator for all layers.
+\end{enumerate}
+
+
+\end{frame}
 
 
 %------------------------------------------------
