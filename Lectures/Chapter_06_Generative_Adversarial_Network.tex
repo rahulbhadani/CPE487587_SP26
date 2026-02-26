@@ -1093,9 +1093,37 @@ From the original paper:
 \item  Use LeakyReLU activation in the discriminator for all layers.
 \end{enumerate}
 
+\vspace{10pt}
+
+\begin{block}{}
+The DCGAN made possible vector arithmetic for image maniuplation: vector("King") - vector("Man") + vector("Woman") = vector("Queen").
+\end{block}
+
 
 \end{frame}
 
+
+\begin{frame}{Cycle GAN Architecture}
+
+It is used for image to image translation to transfer some interesting features from image to another image, as we saw earlier. Examples: Horse to Zebra, Summer to Winter, etc.
+
+Cycle GAN introduces \textbf{Cycle Consistency Loss} in addition to adversarial Loss seen in the original GAN.
+
+Cycle GAN has four networks:
+
+\begin{enumerate}
+\item $G_{A\to B}$ : a generator for translating images from domain $ A \to B$.
+
+\item $D_B$: a discriminator if an image is real or fake in $B$.
+
+\item $G_{B\to A}$ : a generator for translating images from domain $ B \to A$.
+
+\item $D_A$: a discriminator if an image is real or fake in $A$.
+
+
+\end{enumerate}
+
+\end{frame}
 
 %------------------------------------------------
 % \begin{frame}{Wasserstein GAN}
@@ -1111,6 +1139,15 @@ From the original paper:
 %------------------------------------------------
 %------------------------------------------------
 
+\begin{frame}{Code}
+
+\LARGE
+
+\centering
+
+\url{https://github.com/rahulbhadani/CPE487587_SP26/blob/master/Code/Chapter_06_Generative_Adversarial_Network.ipynb}
+
+\end{frame}
 
 
 
