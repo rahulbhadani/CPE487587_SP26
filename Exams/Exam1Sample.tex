@@ -585,131 +585,132 @@ apple/.pic={
 \end{center}
 
 % ============================================================
-%  PAGE 2 -- SCORE DISTRIBUTION
-% ============================================================
-\newpage
-
-% Title
-\begin{tcolorbox}[
-  enhanced,
-  colback=NavyDeep, colframe=NavyDeep,
-  arc=0pt, boxrule=0pt,
-  left=15pt, right=15pt, top=10pt, bottom=10pt,
-  shadow={2pt}{-2pt}{0pt}{black!30},
-]
-  \begin{center}
-    {\color{GoldBright}\bfseries\LARGE\faChartBar\enspace Score Distribution Sheet}\\[3pt]
-    {\color{MidGray}\large\examnum\quad\textbullet\quad\course\ --\ \coursename\quad\textbullet\quad\examdate}
-  \end{center}
-\end{tcolorbox}
-
-\vspace{14pt}
-
-% ---------- Visual score table (TikZ) ----------------------
-\begin{center}
-\begin{tikzpicture}[
-  box/.style={
-    draw=NavyMid, fill=OffWhite, thick,
-    minimum width=1.6cm, minimum height=1.4cm,
-    rounded corners=2pt,
-    font=\small,
-  },
-  labelbox/.style={
-    fill=NavyDeep, text=white, draw=NavyDeep,
-    minimum width=1.6cm, minimum height=0.7cm,
-    rounded corners=2pt,
-    font=\bfseries\large,
-  },
-  pointsbox/.style={
-    fill=GoldBright, text=NavyDeep, draw=GoldBright,
-    minimum width=1.6cm, minimum height=0.6cm,
-    rounded corners=2pt,
-    font=\bfseries\large,
-  },
-  scorebox/.style={
-    fill=white, text=NavyDeep, draw=DarkGray,
-    minimum width=1.6cm, minimum height=1.2cm,
-    rounded corners=2pt,
-    font=\large,
-  },
-]
-
-% Column positions
-\foreach \col/\qname/\pts in {%
-  0/Q1/10,%
-  1.8/Q2/10,%
-  3.6/Q3/10,%
-  5.4/Q4/5,%
-  7.2/Q5/10,%
-  9.0/Q6/15,%
-  10.8/Q7/10,%
-  12.6/Q8/10}{
-
-  % Question label
-  \node[labelbox] at (\col+0.8, 3.5) {\qname};
-
-  % Max points badge
-  \node[pointsbox] at (\col+0.8, 2.7) {\pts\ pts};
-
-  % Score entry box
-  \draw[DarkGray, thick, rounded corners=2pt]
-    (\col, 0) rectangle (\col+1.6, 2.1);
-  \node[font=\small\color{DarkGray}] at (\col+0.8, 1.9) {Score};
-  \draw[MidGray, thin] (\col, 1.65) -- (\col+1.6, 1.65);
-  
-  
-
-}
-
-% Bonus column
-\node[
-  fill=PurpleAccent, text=white, draw=PurpleAccent,
-  minimum width=1.6cm, minimum height=0.7cm,
-  rounded corners=2pt, font=\bfseries\small,
-] at (14.4+0.8, 3.5) {Bonus};
-
-\node[
-  fill=PurpleFill, text=PurpleAccent, draw=PurpleAccent,
-  minimum width=1.6cm, minimum height=0.6cm,
-  rounded corners=2pt, font=\bfseries\footnotesize,
-] at (14.4+0.8, 2.7) {+15 pts};
-
-\draw[PurpleAccent, thick, rounded corners=2pt]
-  (14.4, 0) rectangle (14.4+1.6, 2.1);
-\node[font=\small\color{PurpleAccent}] at (14.4+0.8, 1.9) {Score};
-\draw[PurpleAccent!40, thin] (14.4, 1.65) -- (16.0, 1.65);
-
-% Decorative separator
-\draw[GoldBright, line width=1.5pt] (-0.1, -0.35) -- (16.1, -0.35);
-
-% TOTAL box (centered below)
-\node[
-  fill=NavyDeep, text=GoldBright, draw=NavyDeep,
-  minimum width=3.4cm, minimum height=0.8cm,
-  rounded corners=3pt, font=\bfseries\normalsize,
-] at (8.0, -0.95) {\faStar\enspace TOTAL SCORE};
-
-\node[font=\large\bfseries\color{NavyDeep}, anchor=west] at (5.15, -2.5) {Raw Score};
-\node[font=\large\color{SlateGray}, anchor=west]          at (5.15, -3.0) {out of 100};
-\draw[GoldBright!60, thin] (8.2, -2.75) -- (10.8, -2.75);
-% Row 2 -- Bonus
-\node[font=\large\bfseries\color{NavyDeep}, anchor=west] at (5.15, -4.5) {+ Bonus};
-\node[font=\large\color{SlateGray}, anchor=west]          at (5.15, -5.0) {optional};
-\draw[GoldBright!60, thin] (8.2, -4.75) -- (10.8, -4.75);
-% Row 3 -- Final
-\node[font=\large\bfseries\color{NavyDeep}, anchor=west] at (5.15, -7.0) {Final Score};
-\fill[GoldFill] (8.2, -6.0) rectangle (10.8, -8.0);
-\draw[GoldBright, thin] (8.2, -6.0) rectangle (10.8, -8.0);
-
-\end{tikzpicture}
-\end{center}
+%%  PAGE 2 -- SCORE DISTRIBUTION
+%% ============================================================
+%\newpage
+%
+%% Title
+%\begin{tcolorbox}[
+%  enhanced,
+%  colback=NavyDeep, colframe=NavyDeep,
+%  arc=0pt, boxrule=0pt,
+%  left=15pt, right=15pt, top=10pt, bottom=10pt,
+%  shadow={2pt}{-2pt}{0pt}{black!30},
+%]
+%  \begin{center}
+%    {\color{GoldBright}\bfseries\LARGE\faChartBar\enspace Score Distribution Sheet}\\[3pt]
+%    {\color{MidGray}\large\examnum\quad\textbullet\quad\course\ --\ \coursename\quad\textbullet\quad\examdate}
+%  \end{center}
+%\end{tcolorbox}
+%
+%\vspace{14pt}
+%
+%% ---------- Visual score table (TikZ) ----------------------
+%\begin{center}
+%\begin{tikzpicture}[
+%  box/.style={
+%    draw=NavyMid, fill=OffWhite, thick,
+%    minimum width=1.6cm, minimum height=1.4cm,
+%    rounded corners=2pt,
+%    font=\small,
+%  },
+%  labelbox/.style={
+%    fill=NavyDeep, text=white, draw=NavyDeep,
+%    minimum width=1.6cm, minimum height=0.7cm,
+%    rounded corners=2pt,
+%    font=\bfseries\large,
+%  },
+%  pointsbox/.style={
+%    fill=GoldBright, text=NavyDeep, draw=GoldBright,
+%    minimum width=1.6cm, minimum height=0.6cm,
+%    rounded corners=2pt,
+%    font=\bfseries\large,
+%  },
+%  scorebox/.style={
+%    fill=white, text=NavyDeep, draw=DarkGray,
+%    minimum width=1.6cm, minimum height=1.2cm,
+%    rounded corners=2pt,
+%    font=\large,
+%  },
+%]
+%
+%% Column positions
+%\foreach \col/\qname/\pts in {%
+%  0/Q1/10,%
+%  1.8/Q2/10,%
+%  3.6/Q3/10,%
+%  5.4/Q4/5,%
+%  7.2/Q5/10,%
+%  9.0/Q6/15,%
+%  10.8/Q7/10,%
+%  12.6/Q8/10}{
+%
+%  % Question label
+%  \node[labelbox] at (\col+0.8, 3.5) {\qname};
+%
+%  % Max points badge
+%  \node[pointsbox] at (\col+0.8, 2.7) {\pts\ pts};
+%
+%  % Score entry box
+%  \draw[DarkGray, thick, rounded corners=2pt]
+%    (\col, 0) rectangle (\col+1.6, 2.1);
+%  \node[font=\small\color{DarkGray}] at (\col+0.8, 1.9) {Score};
+%  \draw[MidGray, thin] (\col, 1.65) -- (\col+1.6, 1.65);
+%  
+%  
+%
+%}
+%
+%% Bonus column
+%\node[
+%  fill=PurpleAccent, text=white, draw=PurpleAccent,
+%  minimum width=1.6cm, minimum height=0.7cm,
+%  rounded corners=2pt, font=\bfseries\small,
+%] at (14.4+0.8, 3.5) {Bonus};
+%
+%\node[
+%  fill=PurpleFill, text=PurpleAccent, draw=PurpleAccent,
+%  minimum width=1.6cm, minimum height=0.6cm,
+%  rounded corners=2pt, font=\bfseries\footnotesize,
+%] at (14.4+0.8, 2.7) {+15 pts};
+%
+%\draw[PurpleAccent, thick, rounded corners=2pt]
+%  (14.4, 0) rectangle (14.4+1.6, 2.1);
+%\node[font=\small\color{PurpleAccent}] at (14.4+0.8, 1.9) {Score};
+%\draw[PurpleAccent!40, thin] (14.4, 1.65) -- (16.0, 1.65);
+%
+%% Decorative separator
+%\draw[GoldBright, line width=1.5pt] (-0.1, -0.35) -- (16.1, -0.35);
+%
+%% TOTAL box (centered below)
+%\node[
+%  fill=NavyDeep, text=GoldBright, draw=NavyDeep,
+%  minimum width=3.4cm, minimum height=0.8cm,
+%  rounded corners=3pt, font=\bfseries\normalsize,
+%] at (8.0, -0.95) {\faStar\enspace TOTAL SCORE};
+%
+%\node[font=\large\bfseries\color{NavyDeep}, anchor=west] at (5.15, -2.5) {Raw Score};
+%\node[font=\large\color{SlateGray}, anchor=west]          at (5.15, -3.0) {out of 100};
+%\draw[GoldBright!60, thin] (8.2, -2.75) -- (10.8, -2.75);
+%% Row 2 -- Bonus
+%\node[font=\large\bfseries\color{NavyDeep}, anchor=west] at (5.15, -4.5) {+ Bonus};
+%\node[font=\large\color{SlateGray}, anchor=west]          at (5.15, -5.0) {optional};
+%\draw[GoldBright!60, thin] (8.2, -4.75) -- (10.8, -4.75);
+%% Row 3 -- Final
+%\node[font=\large\bfseries\color{NavyDeep}, anchor=west] at (5.15, -7.0) {Final Score};
+%\fill[GoldFill] (8.2, -6.0) rectangle (10.8, -8.0);
+%\draw[GoldBright, thin] (8.2, -6.0) rectangle (10.8, -8.0);
+%
+%\end{tikzpicture}
+%\end{center}
 
 
 % ============================================================
 %  PAGE 3 -- SECTION 1: TRUE / FALSE  (25 pts)
 % ============================================================
 \newpage
-\section{\faCheckSquare\enspace {--} True / False\hfill\textcolor{GoldBright}{10 Points}}
+%\section{\faCheckSquare\enspace {--} True / False\hfill\textcolor{GoldBright}{10 Points}}
+\section{\faCheckSquare\enspace {--} True / False}
 
 \vspace{4pt}
 {\small\textit{For each statement, circle \textbf{T} (True) or \textbf{F} (False).
@@ -760,7 +761,7 @@ is fully differentiable.
 % ============================================================
 %  SECTION 2: MULTIPLE CHOICE  (15 pts)
 % ============================================================
-\section{\faListOl\enspace \textbf{--} Multiple Choice\hfill\textcolor{GoldBright}{10 Points}}
+\section{\faListOl\enspace \textbf{--} Multiple Choice}
 
 \vspace{4pt}
 {\small\textit{Circle the single best answer. \textbf{1 pts each.} No partial credit.}}
@@ -980,7 +981,7 @@ What is the dimension of an example tensor that can serve as an input to the abo
 % ============================================================
 %  SECTION 3: SHORT ANSWER  (10 pts)
 % ============================================================
-\section{\faMarker\enspace \textbf{--} Short Answer\hfill\textcolor{GoldBright}{10 Points}}
+\section{\faMarker\enspace \textbf{--} Short Answer}
 
 
 {\small\textit{Answer each prompt in the box. Write in complete sentences. \textbf{5 pts each.}}}
@@ -1048,8 +1049,8 @@ What is Markov assumption in n-Gram Language Model? \pts{5}
 
 \newpage
 
-
-\section{\faCalculator\enspace \textbf{--}  Mathematically Trained \hfill\textcolor{GoldBright}{10 Points}}
+% ============================================================
+\section{\faCalculator\enspace \textbf{--}  Mathematically Trained}
 
 \subsection{}
 An input feature matrix is 
@@ -1122,7 +1123,9 @@ K = \frac{1}{9}\begin{bmatrix}
 \newpage
 
 
-\section{\faCalculator\enspace \textbf{--}  Forward Pass\hfill\textcolor{GoldBright}{5 Points}}
+% ============================================================
+
+\section{\faCalculator\enspace \textbf{--}  Forward Pass}
 
 \vspace{4pt}
 {\small\textit{Show all work for partial credit. Box or circle every final numeric answer.}}
@@ -1161,7 +1164,7 @@ K = \frac{1}{9}\begin{bmatrix}
 
 % ============================================================
 
-\section{\faAtom\enspace \textbf{--} Magical CNN \hfill\textcolor{GoldBright}{10 Points}}
+\section{\faAtom\enspace \textbf{--} Magical CNN}
 
 \vspace{4pt}
 
@@ -1342,7 +1345,7 @@ K = \frac{1}{9}\begin{bmatrix}
 %  PAGE 6 -- SECTION 7 & 8: CODING
 % ============================================================
 \newpage
-\section{\faCode\enspace \textbf{--} Code Identification\hfill\textcolor{GoldBright}{10 Points}}
+\section{\faCode\enspace \textbf{--} Code Identification}
 
 \vspace{6pt}
 
@@ -1400,9 +1403,10 @@ class MysteryBlock(nn.Module):
   \vspace{2.0cm}
 \end{tcolorbox}
 
+% ============================================================
 
 \newpage
-\section{\faCode\enspace \textbf{--} Fancy Layers \hfill\textcolor{GoldBright}{10 Points}}
+\section{\faCode\enspace \textbf{--} Fancy Layers}
 
 
 \subsection{}
@@ -1712,7 +1716,7 @@ Provide an implementation of above neural network with a recurrent connection an
 \newpage
 
 
-\section{\faKeyboard\enspace \textbf{--} Sentence Probability\hfill\textcolor{GoldBright}{10 Points}}
+\section{\faKeyboard\enspace \textbf{--} Sentence Probability}
 
 
 Consider a text corpus
@@ -1805,7 +1809,7 @@ disappointed</s>
 
 \newpage
 
-\section{\faKeyboard\enspace \textbf{--} Embeddings\hfill\textcolor{GoldBright}{10 Points}}
+\section{\faKeyboard\enspace \textbf{--} Embeddings}
 
 Consider that after a particular epoch in the training embedding matrix looks like
 
@@ -1891,7 +1895,7 @@ Answer the following question
 
 % ============================================================
 
-\section{\faKeyboard\enspace \textbf{--} Training Master \hfill\textcolor{GoldBright}{10 Points}}
+\section{\faKeyboard\enspace \textbf{--} Training Master}
 
 \begin{enumerate}
 \item 
@@ -2214,7 +2218,7 @@ By looking at the above graph, when would have been the best time to stop traini
 
 % ============================================================
 
-\section{\faKeyboard\enspace \textbf{--} Code Writing\hfill\textcolor{GoldBright}{10 Points}}
+\section{\faKeyboard\enspace \textbf{--} Code Writing}
 
 
 \begin{tcolorbox}[codebox, title={\faCogs\enspace -- Implement SimpleCNN (10 pts)}]
@@ -2298,7 +2302,7 @@ class SimpleCNN(nn.Module):
 
 \newpage
 
-\section{\faKeyboard\enspace \textbf{--} Jacobian and Derivatives \hfill\textcolor{GoldBright}{10 Points}}
+\section{\faKeyboard\enspace \textbf{--} Jacobian and Derivatives}
 
 \begin{enumerate}
 \item Consider $y = \sum_{i=1}^n f_i(\xbf, \zbf)$ where $f_i(\xbf, \zbf) = x_i^2 z_i$. $\xbf$, $\zbf$ each has $n$ elements.
