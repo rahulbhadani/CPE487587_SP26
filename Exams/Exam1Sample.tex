@@ -730,7 +730,7 @@ g(z) = \begin{cases}
 is fully differentiable.
   \\  \TF 
 
-    \item  Is it possible to implement a neural network in PyToch without inhering from \texttt{nn.Module}?
+    \item  Is it possible to implement a neural network in PyTorch without inheriting from \texttt{nn.Module}?
    \\ \TF
 
     \item The vanishing gradient problem becomes \emph{more} severe as network depth increases, particularly with saturating activations such as sigmoid and tanh.
@@ -742,14 +742,14 @@ is fully differentiable.
     \item The Adam optimizer maintains per-parameter adaptive learning rates by tracking exponentially decaying first and second moment estimates of the gradient.
  \\   \TF
     
-    \item Predicting the glucose-level given patients helatmetric is a regression problem. \\ \TF
+    \item Predicting the glucose level given patients' health metrics is a regression problem. \\ \TF
     
     \item I have got the training accuracy of 95\% while training a deep learning model for predicting WiFi strength given access point transmit power, antenna gain/direction, and WiFi channel/frequency. I should immediately declare victory and publish a paper based on the result. \\ \TF
     
     \item \texttt{uv venv -- python 3.12} creates a Python virtual environment with Python 3.12. \\ \TF
 
 
-\item Coefficient of determination $R^2$ can also be applied to deep neural network based machine learning models. \\ \TF
+\item The Coefficient of determination $R^2$ can also be applied to deep neural network-based machine learning models. \\ \TF
 
 \item Sigmoid function is not differentiable at least at one point. \\ \TF
 
@@ -777,7 +777,7 @@ is fully differentiable.
 
 \includegraphics[width=0.5\linewidth]{../Classwork/figures/nn1.png}
 
-If we are supplying two samples with two featurs (green bubbles), then what is the dimension of $W$s responsible for compressing 4 meta features to 2 meta features? For this assume that features in a feature matrix are along the column dimenions, and samples are along row dimensions.
+If we are supplying two samples with two features (green bubbles), then what is the dimension of $W$s responsible for compressing 4 meta features to 2 meta features? For this, assume that features in a feature matrix are along the column dimensions, and samples are along row dimensions.
 
     \begin{multicols}{4}
       \begin{enumerate}[label=(\Alph*), noitemsep]
@@ -829,7 +829,7 @@ How many trainable parameters are there in the above network (including biases)?
       \end{enumerate}
     \end{multicols}
     
-    \item Which of the following is not an assumption in Simple Linear Regression model?
+    \item Which of the following is not an assumption in the Simple Linear Regression model?
     
       \begin{enumerate}[label=(\Alph*), noitemsep]
 \item 
@@ -861,7 +861,7 @@ How many trainable parameters are there in the above network (including biases)?
 
       \end{enumerate}
 
-\item Which of the loss function is not suitable for regression problems?
+\item Which of the loss functions is not suitable for regression problems?
 
 \begin{enumerate}
 \item Cross-Entropy Loss
@@ -929,7 +929,7 @@ x_1x_2 + x_2x_3
 \end{bmatrix}
 \end{align*}
 
-What is the size of Jacobian $J$?
+What is the size of the Jacobian $J$?
 \begin{enumerate}
 \item  $4 \times 4$
 \item $ 4\times 3$
@@ -1018,7 +1018,7 @@ What happens if you don't register a member variable tensor as parameters in PyT
 
 
 \subsection{}
-Why does feedforward fully connected neural network not work well with sequential data? \pts{5} 
+Why does a feedforward fully connected neural network not work well with sequential data? \pts{5} 
 
 
 
@@ -1033,7 +1033,7 @@ Why does feedforward fully connected neural network not work well with sequentia
 
 
 \subsection{}
-What is Markov assumption in n-Gram Language Model? \pts{5} 
+What is the Markov assumption in an n-Gram Language Model? \pts{5} 
 
 
 
@@ -1073,7 +1073,7 @@ K = \frac{1}{9}\begin{bmatrix}
 \end{align*}
 
 
- Consider a padding of 1 and stride of 1, and compute the output after applying the kernel to the input feature matrix.
+ Consider a padding of 1 and a stride of 1, and compute the output after applying the kernel to the input feature matrix.
 
 \begin{tcolorbox}[qbox]
 
@@ -1443,7 +1443,7 @@ Consider a VGG Block:
           }
           
 
-Provide an implementation for a composite layer \texttt{VGGBlock} representing above VGG Block implemented in PyTorch by inheriting from \texttt{nn.Module} class that specifies $v$ copies $3\times 3$ Conv Layer of padding 1 sequentially connected.
+Provide an implementation for a composite layer \texttt{VGGBlock} representing the above VGG Block implemented in PyTorch by inheriting from \texttt{nn.Module} class that specifies $v$ copies of a $3\times 3$ Conv Layer of padding 1 sequentially connected.
 
 \begin{tcolorbox}[codebox]
 
@@ -1589,7 +1589,7 @@ Consider a quadratic equation $ h(\xbf) = a\xbf^2 + b \xbf + c$. Provide an impl
 \subsection{}
 
 
-Consider a network shown below
+Consider a network shown below.
 
  \resizebox{0.95\textwidth}{!}{
 \begin{tikzpicture}[
@@ -1626,7 +1626,7 @@ Consider a network shown below
 }
 
 
-Provide an implementation of above neural network with a recurrent connection and a feedback using PyTorch by inheriting from \texttt{nn.Module}. Assume that all nodes are performing linear affine transformation and in addition to recurrence and feedback they also apply linear affine transformation to regular inputs.
+Provide an implementation of the above neural network with a recurrent connection and a feedback using PyTorch by inheriting from \texttt{nn.Module}. Assume that all nodes are performing linear affine transformation, and in addition to recurrence and feedback, they also apply linear affine transformation to regular inputs.
 
 \begin{tcolorbox}[codebox]
 
@@ -1719,7 +1719,7 @@ Provide an implementation of above neural network with a recurrent connection an
 \section{\faKeyboard\enspace \textbf{--} Sentence Probability}
 
 
-Consider a text corpus
+Consider a text corpus:
 
 
           \begin{minted}[
@@ -1749,7 +1749,7 @@ disappointed</s>
             <s>Washington had hoped to make a stand at Canada</s>
      \end{minted}
      
-     using 2-gram model?
+     using a 2-gram model?
 
 \begin{tcolorbox}[codebox]
 
@@ -1811,7 +1811,7 @@ disappointed</s>
 
 \section{\faKeyboard\enspace \textbf{--} Embeddings}
 
-Consider that after a particular epoch in the training embedding matrix looks like
+Consider that after a particular epoch during the training embedding matrix looks like
 
 \begin{align*}
 E = \begin{bmatrix}
@@ -1826,13 +1826,13 @@ E = \begin{bmatrix}
 \end{bmatrix}
 \end{align*}
 
-Answer the following question
+Answer the following question:
 
 \begin{enumerate}
 \item What is the $d_{model}$ of the embedding?
-\item What is the size of vocabulary?
-\item Write the one hot encoding matrix corresponding to the vocabulary.
-\item Assuming that sequences ID assigned to tokens in the vocabulary start from 1, if a particular token sequence has been represented by $ T = \{4, 2, 1, 5, 3, 4 \}$, what is the emebdding for the given sequence?
+\item What is the size of the vocabulary?
+\item Write the one-hot encoding matrix corresponding to the vocabulary.
+\item Assuming that sequences ID assigned to tokens in the vocabulary start from 1, if a particular token sequence has been represented by $ T = \{4, 2, 1, 5, 3, 4 \}$, what is the embedding for the given sequence?
 \end{enumerate}
 
 \begin{tcolorbox}[codebox]
@@ -2125,7 +2125,7 @@ By looking at the above graph, when would have been the best time to stop traini
 \textbf{Derivatives of Activation Functions} 
 
 
-\textit{Identify differenti activation functions based on their derivatives.}
+\textit{Identify different activation functions based on their derivatives.}
 
 \textit{Where does the gradient vanish or die?}
 
@@ -2288,7 +2288,7 @@ class SimpleCNN(nn.Module):
     \vspace{1.6cm}
 % \underline{\hspace{\linewidth}}
     
-    If you need to implement weight initialization for Conv1, how would you do it and when weight initialization function should be called?
+    If you need to implement weight initialization for Conv1, how would you do it, and when should the weight initialization function be called?
 
     \vspace{5.6cm}
    % \underline{\hspace{\linewidth}}
@@ -2314,7 +2314,7 @@ class SimpleCNN(nn.Module):
 \item Compute the gradient $\nabla_\zbf y$. What's its dimension? 
 \end{enumerate}
 
-\item Consider $ y = f(x) = e^{x^2 - 1}$. Introduce intermediate variables,  compute intermediate derivatives and apply chain rule to determine $\frac{dy}{dx}$.
+\item Consider $ y = f(x) = e^{x^2 - 1}$. Introduce intermediate variables,  compute intermediate derivatives, and apply the chain rule to determine $\frac{dy}{dx}$.
 \item Find the Jacobian of 
 
 \begin{align*}
