@@ -22,6 +22,11 @@
 \usepackage{rahul_math}
 \usepackage{bigints}
 
+\usepackage[utf8]{inputenc}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 \usepackage{tikz,pgfplots}
@@ -982,7 +987,7 @@ style of Claude Monet''\\
 
 
 %------------------------------------------------
-\section{Advance Architecture in GAN}
+\section{Advanced Architecture in GAN}
 %------------------------------------------------
 
 \begin{frame}
@@ -990,40 +995,14 @@ style of Claude Monet''\\
 \end{frame}
 
 
+%------------------------------------------------
+\subsection{Deep Convolution GAN}
+%------------------------------------------------
 
-\begin{frame}{Deep Convolution GAN}
-
-
-Fractionally-Strided Convolutional Layer (or Transposed Convolution) is opposite of convolution operation. 
-
-In a convolution operation (for example, stride = 2), we obtain a downsampled (smaller) output of the larger input.
-
-In fractionally-streded convolution,  an upsampled (larger) output is obtained from a smaller input. 
-
-Consider $X = \begin{bmatrix}
-x_{00} & x_{01}\\
-x_{10} & x_{11}
-\end{bmatrix}$ and filter as $K = \begin{bmatrix}
-k_{00} & k_{01} & k_{02}\\
-k_{10} & k_{11} & k_{12}\\
-k_{20} & k_{21} & k_{22}\\
-\end{bmatrix}$ 
-
-with stride of 2, i.e. fractional stride of 1/2, we insert, zeros to between every other input pixel. Hence,  $X = \begin{bmatrix}
-x_{00} & 0 & x_{01} & 0\\
-0 & 0 & 0 & 0\\
-x_{10} & 0  x_{11} & 0\\
-0 & 0 & 0 & 0\\
-\end{bmatrix}$. Then we apply regular convolution operation.
-
-
- 
-
-\vfill 
-\begin{quote}
-\tiny Radford, Alec, Luke Metz, and Soumith Chintala. "Unsupervised representation learning with deep convolutional generative adversarial networks." arXiv preprint arXiv:1511.06434 (2015).
-\end{quote}
+\begin{frame}
+    \subsectionpage
 \end{frame}
+
 
 \begin{frame}{Deep Convolution GAN}
 \scriptsize
@@ -1102,6 +1081,13 @@ The DCGAN made possible vector arithmetic for image maniuplation: vector("King")
 
 \end{frame}
 
+%------------------------------------------------
+\subsection{Cycle GAN}
+%------------------------------------------------
+
+\begin{frame}
+    \subsectionpage
+\end{frame}
 
 \begin{frame}{Cycle GAN Architecture}
 
@@ -1120,23 +1106,1249 @@ Cycle GAN has four networks:
 
 \item $D_A$: a discriminator if an image is real or fake in $A$.
 
+  
+        \begin{tcolorbox}[colback=gray!10, boxrule=0pt, frame hidden, left=0pt, right=0pt, top=2pt, bottom=2pt]
+    \tiny \textcolor{gray}{Zhu, Jun-Yan, Taesung Park, Phillip Isola, and Alexei A. Efros. "Unpaired image-to-image translation using cycle-consistent adversarial networks." In Proceedings of the IEEE international conference on computer vision, pp. 2223-2232. 2017. \url{https://arxiv.org/pdf/1703.10593}}
+\end{tcolorbox}
 
+
+
+\end{enumerate}
+
+
+
+\end{frame}
+
+
+%\begin{frame}{Cycle GAN Problem Statement}
+%
+%$X$: Source domain
+%
+%$Y$: Target domain
+%
+%Find a mapping, $G:X \to Y$ such that the distribution of images from $G(X)$ is indistinguishable from $Y$ using an adversarial loss, i.e.  such that the output $\hat{y}=G(x), \quad x \in X$, is indistinguishable from images $y \in Y$ by an adversary trained to classify $\yhat$ apart from $y$.
+%
+%Basically, we need to have output distribution over $\yhat$ matching empirical distribution $p_{data}(y)$.
+%
+%Alternatively, we can learn $F: Y \to X$, and using a new kind of loss \textit{cycle consistency loss} to enforce $F(G(X)) \approx X$.
+%
+%Cycle consistency mean that if we translate from English to French, and then back from French to English, we should get the same sentence.
+%
+%
+%\tikzset{
+%    domain_box/.style={rectangle, draw=black, thick, minimum size=1.5cm, align=center, font=\LARGE},
+%    point/.style={circle, draw=black, minimum size=3mm, inner sep=0pt},
+%    data_point/.style={rectangle, draw=black, thick, minimum size=1cm, align=center, font=\large},
+%    blue_point/.style={point, fill=blue!80},
+%    red_point/.style={point, fill=red!80},
+%    cycle_label/.style={font=\fontsize{7pt}{7pt}\selectfont, align=center},
+%}
+%
+%
+%\end{frame}
+
+% --- TColorBox Styles ---
+\tcbset{
+    theorybox/.style={
+        colback=LightBlue!50,
+        colframe=MainBlue,
+        fonttitle=\bfseries,
+        sharp corners,
+        boxrule=1pt,
+        leftrule=4pt, % Sidebar accent
+        enhanced,
+        drop shadow
+    },
+    analogybox/.style={
+        colback=SoftGray,
+        colframe=AmberBox,
+        fonttitle=\bfseries\color{black},
+        arc=2mm,
+        boxrule=1pt,
+        left=2pt, right=2pt, top=2pt, bottom=2pt
+    }
+}
+
+% --- TikZ Settings (Retained) ---
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, decorations.pathreplacing}
+\tikzset{
+    domain_box/.style={rectangle, draw=black, thick, minimum size=1.5cm, align=center, font=\LARGE},
+    point/.style={circle, draw=black, minimum size=3mm, inner sep=0pt},
+    data_point/.style={rectangle, draw=black, thick, minimum size=1cm, align=center, font=\large},
+    blue_point/.style={point, fill=blue!80},
+    red_point/.style={point, fill=red!80},
+    cycle_label/.style={font=\fontsize{7pt}{7pt}\selectfont, align=center},
+}
+
+\begin{frame}{Cycle GAN Problem Statement}
+
+\footnotesize
+
+    \begin{columns}[T]
+        % --- Left Column: Definitions & Adversarial Loss ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[theorybox, title=Domain Definition]
+                \begin{itemize}
+                    \item \textbf{$X$:} Source domain
+                    \item \textbf{$Y$:} Target domain
+                \end{itemize}
+            \end{tcolorbox}
+
+            \vspace{0.25em}
+            
+     
+            \textbf{Mapping Objective:} \\
+            Find a mapping, $G:X \to Y$ such that the distribution of images from $G(X)$ is indistinguishable from $Y$ using an adversarial loss.
+            
+            \begin{itemize}
+                \item Output $\hat{y}=G(x), \quad x \in X$
+                \item Indistinguishable from $y \in Y$ by an adversary.
+            \end{itemize}
+            
+            \vspace{0.3em}
+            \textit{Basically, we need output distribution over $\hat{y}$ matching empirical distribution $p_{data}(y)$.}
+        \end{column}
+
+        % --- Right Column: Cycle Consistency & Analogy ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[theorybox, title=Dual Mapping, colframe=SlateGray!80]
+                Alternatively, we can learn $F: Y \to X$.
+            \end{tcolorbox}
+
+            \small
+            Using a new kind of loss \textbf{\textit{cycle consistency loss}} to enforce:
+            \[ F(G(X)) \approx X \]
+
+            \vspace{1em}
+            
+            \begin{tcolorbox}[analogybox, title=~~]
+                Cycle consistency mean that if we translate from English to French, and then back from French to English, we should get the same sentence.
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+
+    % --- Optional: Space for the TikZ Diagram (Hidden or Minimized for text focus) ---
+    % \centering
+    % \resizebox{0.4\textwidth}{!}{ \begin{tikzpicture}... \end{tikzpicture} }
+\end{frame}
+
+\begin{frame}{}
+
+\resizebox{!}{0.55\textheight}{
+\begin{tikzpicture}[>=latex]
+
+  % --- FIGURE (a) ---
+  \node[domain_box] (X_a) at (0,0) {$X$};
+  \node[domain_box] (Y_a) [right=3.5cm of X_a] {$Y$};
+
+  \draw[->, thick, shorten >=2pt, shorten <=2pt] (X_a.north east) to[out=40, in=140] node[midway, above=1pt, font=\LARGE] {$G$} (Y_a.north west);
+  \draw[<-, thick, shorten >=2pt, shorten <=2pt] (X_a.south east) to[out=-40, in=-140] node[midway, below=1pt, font=\LARGE] {$F$} (Y_a.south west);
+
+  \node[above=2.3cm of X_a] (D_X_a) {\LARGE $D_X$};
+  \draw[->, thick, densely dotted] (X_a.north) -- (D_X_a);
+
+  \node[above=2.3cm of Y_a] (D_Y_a) {\LARGE $D_Y$};
+  \draw[->, thick, densely dotted] (Y_a.north) -- (D_Y_a);
+
+  
+  % --- DOTTED DIVIDER ---
+  \draw[densely dotted, thick, gray] ($(Y_a.east)+(1.3cm, 4cm)$) -- ($(Y_a.east)+(1.3cm, -3.5cm)$);
+
+  % --- FIGURE (b) ---
+  \begin{scope}[shift={($(Y_a.east)+(1.3cm, 0cm)$)}]
+    \node[data_point] (x_b) at (1.5cm,2.7cm) {$x$};
+    \node[data_point] (Y_hat_b) [right=2.2cm of x_b] {$\hat{Y}$};
+    \node[data_point] (x_hat_b) [right=2.2cm of Y_hat_b] {$\hat{x}$};
+
+    \node[above=0.8cm of Y_hat_b] (D_Y_b) {\large $D_Y$};
+    \draw[->, thick, densely dotted] (Y_hat_b.north) -- (D_Y_b);
+
+    \draw[->, thick] (x_b.east) to[out=30, in=150] node[midway, above, font=\large] {$G$} (Y_hat_b.west);
+    \draw[->, thick] (Y_hat_b.east) to[out=-30, in=-150] node[midway, below, font=\large] {$F$} (x_hat_b.west);
+
+    \node[draw, thick, minimum width=2.5cm, minimum height=3cm] (Box_X_b) at (4cm, -0.8cm) {};
+    \node[anchor=north west, font=\LARGE, inner sep=2pt] at ($(Box_X_b.north west)+(1pt,-1pt)$) {$X$};
+
+    \node[draw, thick, minimum width=2.5cm, minimum height=3cm] (Box_Y_b) [right=0.2cm of Box_X_b] {};
+    \node[anchor=north east, font=\LARGE, inner sep=2pt] at ($(Box_Y_b.north east)+(-1pt,-1pt)$) {$Y$};
+
+    \node[blue_point] (p1_b) at ($(Box_X_b.center)+(-0.3cm, 0.4cm)$) {};
+    \node[blue_point] (p2_b) at ($(Box_X_b.center)+(-0.3cm, -0.4cm)$) {};
+    \node[red_point] (p3_b) at ($(Box_Y_b.center)+(0.4cm, 0cm)$) {};
+
+    \draw[->, thick] (p1_b) to[out=40, in=140] (p3_b);
+    \draw[->, thick] (p3_b) to[out=-160, in=-40] (p2_b);
+
+    \draw[decorate, decoration={brace, amplitude=10pt, mirror}, thick] ($(p1_b)+(-0.25cm, 0.35cm)$) -- ($(p2_b)+(-0.25cm, -0.35cm)$);
+    \draw[-, thick, densely dotted] ($(Box_X_b.west)!0.5!(Box_Y_b.east)+(-3.8cm, 0cm)$) -- ($(p1_b)!0.5!(p2_b)+(-1cm, 0cm)$);
+    \node[cycle_label] at ($(Box_X_b.west)!0.5!(Box_Y_b.east)+(-4.3cm, 0cm)$) {cycle-consistency\\loss};
+
+  
+  \end{scope}
+
+  % --- DOTTED DIVIDER ---
+  \draw[densely dotted, thick, gray] ($(Y_a.east)+(1.3cm, 4cm) + (9.7cm, 0)$) -- ($(Y_a.east)+(1.3cm, -3.5cm) + (9.7cm, 0)$);
+
+  % --- FIGURE (c) ---
+  \begin{scope}[shift={($(Y_a.east)+(1.3cm, 0cm) + (9.7cm, 0)$)}]
+    \node[data_point] (y_c) at (1.5cm,2.7cm) {$y$};
+    \node[data_point] (X_hat_c) [right=2.2cm of y_c] {$\hat{X}$};
+    \node[data_point] (y_hat_c) [right=2.2cm of X_hat_c] {$\hat{y}$};
+
+    \node[above=0.8cm of X_hat_c] (D_X_c) {\large $D_X$};
+    \draw[->, thick, densely dotted] (X_hat_c.north) -- (D_X_c);
+
+    \draw[->, thick] (y_c.east) to[out=-30, in=-150] node[midway, below, font=\large] {$F$} (X_hat_c.west);
+    \draw[->, thick] (X_hat_c.east) to[out=30, in=150] node[midway, above, font=\large] {$G$} (y_hat_c.west);
+
+    \node[draw, thick, minimum width=2.5cm, minimum height=3cm] (Box_X_c) at (2cm, -0.8cm) {};
+    \node[anchor=north west, font=\LARGE, inner sep=2pt] at ($(Box_X_c.north west)+(1pt,-1pt)$) {$X$};
+
+    \node[draw, thick, minimum width=2.5cm, minimum height=3cm] (Box_Y_c) [right=0.2cm of Box_X_c] {};
+    \node[anchor=north east, font=\LARGE, inner sep=2pt] at ($(Box_Y_c.north east)+(-1pt,-1pt)$) {$Y$};
+
+    \node[blue_point] (p1_c) at ($(Box_X_c.center)+(0cm, -0.4cm)$) {};
+    \node[red_point] (p2_c) at ($(Box_Y_c.center)+(-0.3cm, 0.4cm)$) {};
+    \node[red_point] (p3_c) at ($(Box_Y_c.center)+(-0.3cm, -0.4cm)$) {};
+
+    \draw[->, thick] (p2_c) to[out=140, in=40] (p1_c);
+    \draw[->, thick] (p1_c) to[out=-20, in=180] (p3_c);
+
+    \draw[decorate, decoration={brace, amplitude=10pt}, thick] ($(p2_c)+(0.2cm, 0.35cm)$) -- ($(p3_c)+(0.2cm, -0.35cm)$);
+    \draw[-, thick, densely dotted] ($(Box_Y_c.east)!0.5!(Box_X_c.west)+(2cm, 0.2cm)$) -- ($(p2_c)!0.5!(p3_c)+(1cm, 0.2cm)$);
+    \node[cycle_label] at ($(Box_Y_c.east)!0.5!(Box_X_c.west)+(3.3cm, 0.3cm)$) {cycle-consistency\\loss};
+
+
+  \end{scope}
+
+\end{tikzpicture}
+}
+
+\begin{center}
+Cycle consistency in domain to domain mapping for image style transfer
+\end{center}
+
+\end{frame}
+
+
+
+\tcbset{
+    lossbox/.style={
+        enhanced,
+        colback=white,
+        colframe=TechBlue,
+        fonttitle=\bfseries\sffamily,
+        sharp corners,
+        boxrule=0.5pt,
+        leftrule=3pt, % Sidebar accent
+        left=2pt, right=2pt, top=2pt, bottom=2pt,
+        title=#1
+    },
+    finalbox/.style={
+        enhanced,
+        colback=DeepIndigo,
+        colframe=DeepIndigo,
+        colupper=white,
+        fonttitle=\bfseries\sffamily,
+        arc=2mm,
+        left=5pt, right=5pt,
+        shadow={2pt}{-2pt}{0pt}{black!20}
+    }
+}
+
+\begin{frame}{Loss Functions in CycleGAN}
+    \begin{columns}[T]
+        % --- Left Column: Adversarial ---
+        \begin{column}{0.49\textwidth}
+            \begin{tcolorbox}[lossbox=Adversarial Loss]
+                \scriptsize
+                Adversarial Loss for $G: X \to Y$:
+                \begin{equation*}
+                \Lcal_{GAN}(G, D_Y, X, Y) = 
+                \end{equation*}
+                \vspace{-1.5em}
+                \begin{equation*}
+                \Ebb_{y\sim p_{y}}[\log D_Y(y)] + \Ebb_{x\sim p_{x}}[\log (1 - D_Y(G(x)))]
+                \end{equation*}
+
+                \hrulefill
+                
+                Adversarial Loss for $F: Y \to X$:
+                \begin{equation*}
+                \Lcal_{GAN}(F, D_X, Y, X) = 
+                \end{equation*}
+                \vspace{-1.5em}
+                \begin{equation*}
+                \Ebb_{x\sim p_{x}}[\log D_X(x)] + \Ebb_{y\sim p_{y}}[\log (1 - D_X(G(y)))]
+                \end{equation*}
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: Cycle Consistency ---
+        \begin{column}{0.49\textwidth}
+            \begin{tcolorbox}[lossbox=Cycle Consistency Loss, colframe=CycleGreen]
+                \scriptsize
+                As our goal in cycle consistency is $x \to G(x) \to F(G(x)) \approx x$, we have forward cycle consistency loss. Similarly, a backward cycle consistency requires $y \to F(y) \to G(F(y)) \approx y$.
+                
+
+                Cycle consistency loss is
+                \begin{equation*}
+                \Lcal_{cyc}(G, F) = 
+                \end{equation*}
+                \vspace{-1.5em}
+                \begin{equation*}
+                \Ebb_{x\sim p_{x}}[ || F(G(x)) - x||_1] + \Ebb_{y\sim p_{y}}[ || G(F(y)) - y||_1]
+                \end{equation*}
+                It captures differences of pixel values among generated and original images.
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+
+
+
+    % --- Bottom Section: Full Objective ---
+    \begin{tcolorbox}[finalbox]
+        \scriptsize
+        Full loss function is $
+        \Lcal(G, F, D_X, D_Y) = \Lcal_{GAN}(G, D_Y, X, Y) + \Lcal_{GAN}(F, D_X, Y, X) + \lambda \Lcal_{cyc}(G, F) $
+        
+        and objective is 
+        \begin{equation*}
+        G^{*}, F^{*} = \arg\min_{G,F} \max_{D_{x},D_{Y}} \mathcal{L}(G, F, D_{X}, D_{Y}).
+        \end{equation*}
+    \end{tcolorbox}
+\end{frame}
+
+
+\begin{frame}{Network Architecture}
+
+\footnotesize
+
+\textbf{Generator:}
+
+\begin{enumerate}
+\item Three convolutions, several residual blocks
+\item Fractionally-strided convolution with stride of $\frac{1}{2}$
+\item One convolution to map features to RGB.
+\item 6 blocks for $128 \times 128$ images, and 9 blocks for $256\times 256$ or higher resolution images.
+\item Use normalization
+\end{enumerate}
+
+\textbf{Discriminator:}
+\begin{enumerate}
+\item Use $70\times 70$ PatchGANs to classify whether70 × 70 overlapping image patches are real or fake.
+\item The PatchGAN discriminator is a fully convolutional network (FCN) with 4 layers of 4×4 convolutions (stride 2) — no fully connected (FC) layers.
+\item Patch-level discriminator architecture has fewer parameters than a full-image discriminator and can work on arbitrarilysized images in a fully convolutional fashion
 \end{enumerate}
 
 \end{frame}
 
-%------------------------------------------------
-% \begin{frame}{Wasserstein GAN}
-% \begin{tblock}{}
-% \begin{multiequation}
-    
-% \end{multiequation}
-% \end{tblock}
-% \end{frame}
+\begin{frame}{Training Hacks}
+
+\textbf{Replacing Negative Log-likelihood with Least Square Loss}
+
+
+\begin{enumerate}
+\item Train $G$ to minimize $ \mathbb{E}_{x \sim p_{\text{data}}(x)} \left[ (D(G(x)) - 1)^2 \right]$
+\item Train $D$ to minimize $ \mathbb{E}_{y \sim p_{\text{data}}(y)} \left[ (D(y) - 1)^2 \right] +  \mathbb{E}_{x \sim p_{\text{data}}(x)} \left[ (D(G(x))^2\right]$
+
+%\begin{align*}
+%\min_D V_{\text{LSGAN}}(D) 
+%&= \frac{1}{2} \mathbb{E}_{x \sim p_{\text{data}}(x)} \left[ (D(x) - b)^2 \right] 
+% + \frac{1}{2} \mathbb{E}_{z \sim p_z(z)} \left[ (D(G(z)) - a)^2 \right], \\[6pt]
+%\min_G V_{\text{LSGAN}}(G) 
+%&= \frac{1}{2} \mathbb{E}_{z \sim p_z(z)} \left[ (D(G(z)) - c)^2 \right].
+%\end{align*}
+
+\end{enumerate}
+
+\textbf{Reduce Model Training Oscillation}
+
+\begin{enumerate}
+
+\item Update discriminators using history of images rather the one just produced by the latest generators. Buffer of the last 50 images are kept.
+\item $\lambda = 10$, learning rate $\eta = 0.0002$.
+\item Gaussian weight distribution initialization $\Ncal(0, 0.02)$.
+\end{enumerate}
+
+\end{frame}
+
+
+\begin{frame}{Dataset Used for CycleGAN evaluation}
+
+\begin{enumerate}
+\item Maps $\longleftrightarrow$ Aerial Photos
+\item Architectural facades labels $\longleftrightarrow$ photo
+\item Winter $\longleftrightarrow$ Summer
+\item Painting $\longleftrightarrow$ Photo
+\item Cityscapes label $\longleftrightarrow$ Photo
+\item Horse $\longleftrightarrow$ Zebra
+\item Apple $\longleftrightarrow$ Orange
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Results}
+
+\begin{center}
+\includegraphics[width=0.6\linewidth]{figures/cyclegan.png}
+\end{center}
+
+\end{frame}
 
 %------------------------------------------------
+\subsection{Wasserstein GAN}
 %------------------------------------------------
+
+\begin{frame}
+    \subsectionpage
+    
+    
+    \vspace{-10pt}
+    
+    \begin{center}
+    Arjovsky, Martin, Soumith Chintala, and Léon Bottou. "Wasserstein GAN." arXiv preprint arXiv:1701.07875 (2017).
+    
+    \url{https://arxiv.org/abs/1701.07875}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Problem Formulation}
+
+\footnotesize
+
+    \begin{columns}[T]
+        % --- Left Column: Text and Math ---
+        \begin{column}{0.6\textwidth}
+            \begin{tcolorbox}[
+                enhanced,
+                colback=blue!5, 
+                colframe=blue!75!black, 
+                title=Learning a Distribution,
+                fonttitle=\bfseries,
+                arc=4pt
+            ]
+            What does it mean to learn a probability distribution? 
+
+            \vspace{0.2cm}
+            
+            \textit{Possibly, learn a probability density function!}
+            \end{tcolorbox}
+
+            \begin{itemize}
+                \item We define a parametric family of densities $P_\theta$ such that $\theta \in \Rbb^d$ for $d$-dimensions and find the one that mximizes the likelihood on our data.
+                
+                \item For a given data samples $\{ x^{(i)} \}_{i=1}^m$, we would want
+                
+                 \begin{equation*}
+                \max_{\theta \in \mathbb{R}^d} \frac{1}{m} \sum_{i=1}^m \log P_\theta (x^{(i)})
+            \end{equation*}
+
+                
+            \end{itemize}
+
+           
+           
+If we there is a real data distribution, say, $P_r$, we want to reduce the distance between $P_r$ and $P_\theta$. How to define distance? (We describe later).
+
+        \end{column}
+
+        % --- Right Column: Visuals ---
+        \begin{column}{0.4\textwidth}
+            \begin{center}
+            \begin{tikzpicture}[scale=0.8]
+                % High Dimensional Space Boundary
+                \draw[dashed, gray] (-2,-2) rectangle (2,2);
+                \node[gray, scale=0.6] at (1.5, 1.8) {$\mathbb{R}^n$};
+                
+                % Distribution Pr
+                \draw[thick, blue, fill=blue, fill opacity=0.2] (-0.8, 0.5) circle (0.7);
+                \node[blue, font=\footnotesize] at (-0.8, 0.5) {$P_r$};
+                
+                % Distribution P theta (Disjoint)
+                \draw[thick, red, fill=red, fill opacity=0.2] (0.8, -0.5) circle (0.7);
+                \node[red, font=\footnotesize] at (0.8, -0.5) {$P_\theta$};
+                
+                % Annotation for the "No Overlap"
+                \draw[<->, >=stealth, thin, gray] (-0.1, 0.1) -- (0.2, -0.1) 
+                    node[midway, above right, scale=0.5, black] {No Overlap};
+            \end{tikzpicture}
+            \end{center}
+            
+            \begin{tcolorbox}[colback=orange!10, colframe=orange!80!black, boxrule=0.5pt]
+                \tiny
+                If $P_r$ is simple/low-dimensional, $P_\theta$ might not exist. Overlap between $P_\theta$ and $P_r$ might be zero or negligible.
+            \end{tcolorbox}
+            
+            \begin{tcolorbox}[
+        enhanced,
+        sharp corners,
+        boxrule=0pt,
+        frame hidden,
+        colback=gray!10,
+        borderline west={2pt}{0pt}{gray!80!black}
+    ]
+        \scriptsize
+        \textbf{Note:} In generative models, we add noise to make maximum likelihood approach work (so that some overlap may be found).
+    \end{tcolorbox}
+    
+        \end{column}
+    \end{columns}
+
+    
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Problem Formulation}
+
+\footnotesize
+    \begin{columns}[T]
+        % --- Left Column: Concept and Diagram ---
+        \begin{column}{0.45\textwidth}
+            \begin{tcolorbox}[
+                enhanced, 
+                colback=WGANBlue!5, 
+                colframe=WGANBlue, 
+                arc=0mm, 
+                boxrule=0.5pt,
+                leftrule=3pt, % Accent bar
+                title=\small Generator Mapping,
+                fonttitle=\bfseries
+            ]
+            \footnotesize
+            As $P_r$ may not exist, we can define the random variable $Z$ with a fixed distribution that $p(z)$ and pass it through a parametric function $g_\theta: \mathcal{Z} \to \mathcal{X}$ that can generate samples following $P_\theta$.
+            \end{tcolorbox}
+
+            % TikZ Diagram of the Mapping
+            \begin{center}
+            \begin{tikzpicture}[node distance=1.2cm, auto, >=latex']
+                \node[circle, draw=WGANOrange, fill=WGANOrange!10, inner sep=2pt] (z) {\tiny $z \sim p(z)$};
+                \node[rectangle, draw=WGANBlue, fill=WGANBlue!10, right of=z, xshift=1cm, minimum width=1.5cm] (g) {\small $g_\theta$};
+                \node[circle, draw=WGANOrange, fill=WGANOrange!10, right of=g, xshift=1cm, inner sep=2pt] (x) {\tiny $x \sim P_\theta$};
+                
+                \draw[->, thick] (z) -- node[above, scale=0.7] {Latent} (g);
+                \draw[->, thick] (g) -- node[above, scale=0.7] {Sample} (x);
+                
+                \node[below=0.2cm of z, gray, scale=0.5] {$\mathcal{Z}$ space};
+                \node[below=0.2cm of x, gray, scale=0.5] {$\mathcal{X}$ space};
+            \end{tikzpicture}
+            \end{center}
+
+            \begin{tcolorbox}[blanker, left=5pt, borderline west={1pt}{0pt}{gray!50}]
+                \scriptsize
+                We already know $g_\theta$ is a generator from GAN.
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column: Metric Theory ---
+        \begin{column}{0.55\textwidth}
+            \textbf{Measuring Closeness}
+            \vspace{0.2cm}
+            
+            {\small But how close is the model distribution to the real distribution?}
+            
+            \begin{itemize}
+                \item Closeness can be measured using a distance or divergence $\rho$.
+                \item Since GANs generate sequence of distribution (evolved during training epochs), we are interested that the sequence of distribution $P_t$ converges (iff there is $P_{\infty}$ such that $\rho(P_t, P_{\infty}) \to 0$.
+            \end{itemize}
+
+            \begin{tcolorbox}[
+                enhanced, 
+                colback=white, 
+                colframe=WGANOrange, 
+                title=\small Desired Properties of $\rho$,
+                fonttitle=\bfseries\small,
+                boxrule=0.8pt
+            ]
+            \begin{enumerate}
+                \scriptsize
+                \item $\rho$ should be weak so that it is easier to find a mapping $\theta \mapsto P_\theta$.
+                \item $\rho$ should lead to continuous mapping.
+                \item $\rho$ should lead to continuous loss function.
+            \end{enumerate}
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+
+%\begin{frame}{Measure of Closeness}
+%
+%Distance metrics obey the principles of non-negativity, identity, symmetry, and triangle inequality. But divergence is a weaker concept that doesn't follow symmetry and triangle inequality.
+%
+%
+%We will define some measure of closeness belonging to same metric set $\Xcal$ such as images $[0, 1]^d$ and $\sigma$ be the set of all Borel subsets of $\Xcal$. Borel subset is where you define your probabilities (Refer to Probability 101).
+%
+%A Borel subset is any set that belongs to the Borel $\sigma$-algebra, the standard collection of "well-behaved" sets used in measure theory and probability.  We want to assign  probabilities or measures to subsets of $\Rbb$. We cannot assign probabilities to just any kind of sets, we need a reasonable set. Borel subset is that reasonable subset. Borel sets are the sets you can actually measure.
+%
+%$\sigma$-algebra is a part of formalism for defining sets that can be measured. In probability theory, they are used to define events for which a probability can be defined. 
+%
+%From wiki: formally, $\sigma$-algebra  on a set 
+%$X$ is a nonempty collection $\Sigma$  of subsets of $X$ closed under complement, countable unions, and countable intersections. The ordered pair 
+%$(X,\Sigma )$ is called a measurable space.
+%
+%Measure in \textbf{measure theory} is generalization and formalization of geometric measures (such as length, area, volume, probability, mass, etc.) A set function $\mu$ from $\Sigma$ to the extended real number line is called a \textbf{measure} if $\mu(\emptyset) = 0$, non-negativity $\mu(E) \geq 0 \forall E\in\Sigma$, and Countable addivitity $\mu\bigg(bigcup_{k=1}^\infty E_k \bigg) = \sum_{k=1}^\infty \mu (E_k)$.
+%
+%\end{frame}
+
+
+\begin{frame}{Measure of Closeness}
+    \begin{columns}[T]
+        % --- Left Column: Distances vs Divergences ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[
+                enhanced,
+                colback=WGANBlue!5, 
+                colframe=WGANBlue,
+                title=\footnotesize Metrics vs. Divergence,
+                fonttitle=\bfseries,
+                boxrule=0.5pt,
+                arc=2pt
+            ]
+            \scriptsize
+            Distance metrics obey the principles of non-negativity, identity, symmetry, and triangle inequality. But divergence is a weaker concept that doesn't follow symmetry and triangle inequality.
+            \end{tcolorbox}
+
+            \textbf{\footnotesize The Foundation}
+            \begin{itemize}
+                \tiny
+                \item Define closeness in metric set $\mathcal{X}$ (e.g., images $[0, 1]^d$).
+                \item $\Sigma$ is the set of all Borel subsets of $\mathcal{X}$.
+                \item \textbf{Borel subsets:} Standard collection of "well-behaved" sets where you define probabilities. (Refer to Probability 101).
+
+            \end{itemize}
+
+            \begin{center}
+            \begin{tikzpicture}[scale=0.25]
+                \draw[thick, gray] (0,0) circle (1.5);
+                \draw[fill=WGANOrange!20, draw=WGANOrange] (-0.3, 0.2) circle (0.6);
+                \node at (0, -1.8) {\tiny Measurable Space $(X, \Sigma)$};
+                \node[WGANOrange] at (-0.3, 0.2) {\tiny $E \in \Sigma$};
+            \end{tikzpicture}
+
+                       \begin{tcolorbox}[blanker, left=5pt, borderline west={1.5pt}{0pt}{WGANOrange}]
+                \tiny
+            A Borel subset is any set that belongs to the Borel $\sigma$-algebra, the standard collection of "well-behaved" sets used in measure theory and probability.  We want to assign  probabilities or measures to subsets of $\Rbb$. We cannot assign probabilities to just any kind of sets, we need a reasonable set. Borel subset is that reasonable subset. Borel sets are the sets you can actually measure.
+                        \end{tcolorbox}
+            \end{center}
+        \end{column}
+
+        % --- Right Column: Formal Definitions ---
+        \begin{column}{0.5\textwidth}
+            \begin{tcolorbox}[
+                enhanced,
+                colback=gray!5, 
+                colframe=gray!80,
+                title=\footnotesize Formality: $\sigma$-algebra \& Measure,
+                fonttitle=\bfseries,
+                boxrule=0.5pt
+            ]
+            \tiny
+            \textbf{$\sigma$-algebra:} Nonempty collection $\Sigma$ of subsets of $X$ closed under complement, countable unions, and countable intersections. 
+            
+            \vspace{0.1cm}
+            \textbf{Measure Theory:} Generalization of geometric measures (length, area, probability). A function $\mu: \Sigma \to \mathbb{R}$ is a \textbf{measure} if:
+            \begin{enumerate}
+                \item $\mu(\emptyset) = 0$
+                \item $\mu(E) \geq 0 \quad \forall E \in \Sigma$
+                \item $\mu(\bigcup_{k=1}^\infty E_k) = \sum_{k=1}^\infty \mu(E_k)$
+            \end{enumerate}
+            \end{tcolorbox}
+            
+
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+%\begin{frame}{Distance and Divegences as Measure of Closeness}
+%
+%\scriptsize
+%
+%% Add a diagram
+%The \textbf{Total Variation} distance between two distribution $P_r$ and $P_g$
+%\begin{align*}
+%\delta (P_r, P_g) = \sup_{A\in \Sigma}[ P_r(A) - P_g(A)]
+%\end{align*}
+%
+%Note: The \textbf{sup} (supremum) finds the least upper bound of a set of values. It's the "maximum" generalized to cases where a maximum might not exist. E.g. there is no maximum in the set $(0,1)$ but supremum is $1$
+%
+%% Add a diagram
+%The Kullback-Leibler (KL) divergence:
+%
+%\begin{align*}
+%KL(P_r \| P_g) = \int \log\left(\frac{P_r(x)}{P_g(x)}\right) \mathbb{P}_r(x) \, d\mu(x)
+%\end{align*}
+%Here, $P_r$ and $P_g$ are assumed to be absolutely continuous. $\mu$ is some \textit{measure}. 
+%
+%But KL divergence is assymetric and possibly infinite when there are points such that $P_g(x) = 0$ and $P_r(x) > 0$.
+%
+%% Add a diagram
+%The Jensen-Shannon Divergence is
+%\begin{align*}
+%JS(P_r, P_g) = KL(P_r \| P_m) + KL(P_g\|P_m) 
+%\end{align*}
+%where $P_m$ is the mixture $(P_r + P_g)/2$. The divergence is symmetrical and always defined as we can choose $\mu = P_m$.
+%
+%% Add a diagram
+%Wasserstein Distance (Earth-Mover Distance):
+%\begin{align*}
+%W(P_r, P_g) = \inf_{\gamma \in \Pi(P_r, P_g) } \Ebb_{(x, y) ~\gamma} [ \| x - y\|]
+%\end{align*}
+%where $\Pi$ denotes set of all joint probability distributions $\gamma(x, y)$ whose marginals are $P_r$ and $P_g$. Essentially, you can say that $\gamma(x,y)$ is how much mass can be transported from $x$ to $y$ in order to transform $P_r$ to $P_g$. The EM distance is the cost of this \textbf{optimal transport} plan. We will revisit this later separately.
+%
+%\end{frame}
+
+\begin{frame}{Distance and Divergences as Measures of Closeness}
+    \begin{columns}[T]
+        % --- Column 1: Classical Metrics ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[enhanced, colback=blue!5, colframe=blue!60!black, title=\small Total Variation (TV), fonttitle=\bfseries, boxrule=0.5pt, arc=2pt]
+                \scriptsize
+                $\delta (P_r, P_g) = \sup_{A\in \Sigma}[ P_r(A) - P_g(A)]$
+                \vspace{0.1cm}
+                \hrule
+                \vspace{0.1cm}
+                \textbf{Note:} The \textbf{sup} finds the least upper bound. It's the "maximum" generalized to cases where a max might not exist. E.g., no max in $(0,1)$ but sup is $1$.
+            \end{tcolorbox}
+
+            \begin{tcolorbox}[enhanced, colback=red!5, colframe=red!60!black, title=\small Kullback-Leibler (KL), fonttitle=\bfseries, boxrule=0.5pt]
+                \scriptsize
+                $KL(P_r \| P_g) = \int \log\left(\frac{P_r(x)}{P_g(x)}\right) P_r(x) \, d\mu(x)$
+                \vspace{0.1cm}
+                \textit{Assumes absolute continuity.} KL is asymmetric and can be $\infty$ if $P_g(x)=0$ while $P_r(x)>0$.
+            \end{tcolorbox}
+             % Diagram for Optimal Transport
+    \begin{center}
+    \begin{tikzpicture}[scale=0.75]
+        \draw[thick, blue] plot [domain=-2:1, samples=50] (\x, {exp(-(\x+0.5)^2)}) node[left] {\tiny $P_r$};
+        \draw[thick, WGANOrange] plot [domain=-1:2, samples=50] (\x, {exp(-(\x-0.5)^2)}) node[right] {\tiny $P_g$};
+        \draw[->, gray, thick] (-0.6, 0.4) to[out=30, in=150] (0.6, 0.4);
+        \node[gray, scale=0.5] at (0, 0.8) {Transporting $\gamma(x,y)$};
+    \end{tikzpicture}
+    \end{center}
+        \end{column}
+
+        % --- Column 2: Advanced Metrics ---
+        \begin{column}{0.48\textwidth}
+            \begin{tcolorbox}[enhanced, colback=teal!5, colframe=teal!60!black, title=\small Jensen-Shannon (JS), fonttitle=\bfseries, boxrule=0.5pt]
+                \scriptsize
+                $JS(P_r, P_g) = KL(P_r \| P_m) + KL(P_g\|P_m)$
+                \vspace{0.1cm}
+                Where $P_m = (P_r + P_g)/2$. Symmetrical and always defined as we can choose $\mu = P_m$.
+            \end{tcolorbox}
+
+            \begin{tcolorbox}[enhanced, colback=WGANOrange!5, colframe=WGANOrange, title=\small Wasserstein (EM Distance), fonttitle=\bfseries, boxrule=0.8pt]
+                \scriptsize
+                $W(P_r, P_g) = \inf_{\gamma \in \Pi(P_r, P_g) } \mathbb{E}_{(x, y) \sim \gamma} [ \| x - y\|]$
+                \vspace{0.1cm}
+                $\Pi$ is the set of joint distributions $\gamma(x,y)$ with marginals $P_r, P_g$. Essentially, you can say that $\gamma(x,y)$ is how much mass can be transported from $x$ to $y$ in order to transform $P_r$ to $P_g$. The EM distance is the cost of this \textbf{optimal transport} plan. We will revisit this later separately.
+                \hrule
+                \vspace{0.1cm}
+                
+                \textbf{Inf} infimum is opposite of supremum, it iss the greatest lower bound. For example, in $(0, 1]$, $0$ is the \textbf{inf}.
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+
+   
+\end{frame}
+
+\begin{frame}{Not all measures are the same: Vanishing Gradients in KL and JS Divergence}
+
+       \scriptsize
+       
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+            \begin{tcolorbox}[enhanced, colback=red!5, colframe=red!60!black, title=\small The Gradient Issue, fonttitle=\bfseries, boxrule=0.5pt]
+                \scriptsize
+                When the distributions $p$ and $q$ are disjoint (have no overlap), the divergences saturate.
+                \begin{itemize}
+                    \item As the mean of $q$ increases, the divergence increases but flattens.
+                    \item The gradient eventually \textbf{diminishes} to zero.
+                    \item \textbf{Result:} The generator learns nothing from gradient descent.
+                \end{itemize}
+            \end{tcolorbox}
+            
+            \begin{equation*}
+                 D_{KL}(P\|Q) = \sum_{x=1}^N P(x) \log \frac{P(x)}{Q(x)}
+            \end{equation*}
+        \end{column}
+
+        \begin{column}{0.55\textwidth}
+            \centering
+            \begin{tikzpicture}[scale=1.0]
+            % Small Gaussian Diagram
+            \begin{axis}[hide axis, width=6cm, height=3cm, xmin=-10, xmax=40]
+                \addplot[blue, thick, domain=-5:5, samples=50] {exp(-x^2/4)}; % p
+                \addplot[orange, thick, domain=15:25, samples=50] {exp(-(x-20)^2/4)}; % q1
+                \addplot[green!60!black, thick, domain=25:35, samples=50] {exp(-(x-30)^2/4)}; % q2
+                \node[blue, scale=0.7] at (axis cs: 0, 0.5) {$p$};
+                \node[orange, scale=0.7] at (axis cs: 20, 0.5) {$q_1$};
+                \node[green!60!black, scale=0.7] at (axis cs: 30, 0.5) {$q_2$};
+            \end{axis}
+        \end{tikzpicture}
+        
+        $p$ is the real data distribution and $q$ is the one estimated from the model. 
+        
+            \begin{tikzpicture}[scale=0.65]
+                \begin{axis}[
+                    title={\footnotesize Divergence vs. Distance ($\mu$)},
+                    xlabel={\small mean of $q$},
+                    ylabel={\small Divergence},
+                    axis lines=left,
+                    grid=both,
+                    grid style={line width=.1pt, draw=gray!10},
+                    height=6cm, width=7cm,
+                    xmin=0, xmax=35,
+                    ymin=0, ymax=1200,
+                    ytick={0, 400, 800, 1100},
+                    legend pos=south east,
+                    legend style={font=\small}
+                ]
+                % Simulated KL Divergence Curve
+                \addplot[thick, WGANBlue, smooth] coordinates {
+                    (0,0) (5,100) (10,400) (15,950) (20,1100) (25,1110) (30,1110) (35,1110)
+                };
+                \addlegendentry{KL}
+
+                % Simulated JS Divergence (scaled for visibility on same axis)
+                \addplot[thick, WGANOrange, smooth] coordinates {
+                    (0,0) (2,50) (5,400) (10,800) (15,980) (20,1000) (25,1000) (30,1000) (35,1000)
+                };
+                \addlegendentry{JS (Scaled)}
+                
+                % Vanish Gradient Zone
+                \draw[dashed, red, thick] (axis cs:20,0) -- (axis cs:20,1200);
+                \node[red, rotate=90, anchor=south, scale=0.6] at (axis cs:22, 600) {Vanishing Gradient Zone};
+                
+                \draw [decorate, decoration={brace,amplitude=5pt,mirror,raise=2pt}, red]
+                (axis cs:20,1150) -- (axis cs:35,1150) node [midway, yshift=0.4cm, scale=0.6] {$\nabla \approx 0$};
+                
+                \end{axis}
+            \end{tikzpicture}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.2cm}
+    \begin{tcolorbox}[blanker, left=5pt, borderline west={1.5pt}{0pt}{red!70!black}]
+        \tiny
+        \textbf Traditional divergences do not provide a smooth, linear gradient for non-overlapping distributions, leading to training instability in GANs.
+    \end{tcolorbox}
+\end{frame}
+
+
+\begin{frame}{JS Divergence in the Original GAN}
+
+\begin{center}
+
+\LARGE
+Minimizing the GAN objective function with an optimal discriminator is equivalent to minimizing the JS-divergence. 
+
+
+\end{center}
+\end{frame}
+
+\begin{frame}{Using Wasserstein Distance with GAN}
+
+
+    \begin{columns}[T]
+        \begin{column}{0.45\textwidth}
+        
+         \resizebox{0.95\textwidth}{!}{
+\begin{tikzpicture}
+\begin{axis}[
+    width=10cm, height=7cm,
+    axis lines=middle,
+    xmin=-8, xmax=8,
+    ymin=-0.5, ymax=1.1,
+    xlabel={$x$},
+    ylabel={Value},
+    xtick={-8,-6,-4,-2,0,2,4,6,8},
+    ytick={-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.0},
+    tick label style={font=\tiny},
+    legend style={at={(0.97,0.95)}, anchor=north east, font=\tiny, cells={anchor=west}},
+    grid=both,
+    grid style={line width=.1pt, draw=gray!10}
+]
+
+% 1. Density of Real (Violet Gaussian) - p
+\addplot[blue!50!red, thick, domain=-8:8, samples=100] {0.4*exp(-(x+5)^2/2)};
+\addlegendentry{Density of real}
+
+% 2. Density of Fake (Emerald Gaussian) - q
+\addplot[green!60!black, thick, domain=-8:8, samples=100] {0.4*exp(-(x-5)^2/2)};
+\addlegendentry{Density of fake}
+
+% 3. GAN Discriminator (Burgundy Sigmoid-like Step)
+% New color for the standard discriminator.
+\addplot[red!70!black, thick, domain=-8:8, samples=200] {1/(1+exp(10*x))};
+\addlegendentry{GAN Discriminator}
+
+% 4. WGAN Critic (Cyan Linear-like Slope)
+% This color is already distinct and common for WGAN visualization.
+\addplot[orange, thick, domain=-8:8, samples=100] {0.08*x - 0.1 + 0.1*exp(-abs(x)/2)};
+\addlegendentry{WGAN Critic}
+
+% Annotations (Updated colors to match functions)
+\node[red!70!black, font=\scriptsize, align=center] at (axis cs: 5, -0.38) {Vanishing gradients\\in regular GAN};
+\draw[->, >=stealth, red!70!black] (axis cs: 4.5, -0.27) -- (axis cs: 4.5, -0.05);
+
+\node[orange!90!black, font=\scriptsize, align=center] at (axis cs: -6.0, -0.25) {Linear gradients\\in a WGAN};
+\draw[->, >=stealth, orange!90!black] (axis cs: -4.0, -0.2) -- (axis cs: -2, -0.25);
+
+% Tripled Real Data Points (24 points, Violet)
+\addplot[only marks, mark=*, mark size=0.5pt, Violet] coordinates {
+    (-4.6,0.03) (-5.1,0.01) (-4.5,0.03) (-3.8,0.01) (-5.2,0.01) (-5.2,0.04) 
+    (-3.7,0.04) (-4.4,0.03) (-5.4,0.02) (-4.6,0.01) (-5.4,0.03) (-5.4,0.02) 
+    (-4.8,0.01) (-6.5,0.02) (-6.4,0.01) (-5.4,0.04) (-5.8,0.01) (-4.7,0.03) 
+    (-5.7,0.02) (-6.1,0.02) (-3.8,0.02) (-5.2,0.01) (-4.9,0.04) (-6.1,0.03)
+};
+
+% Tripled Fake Data Points (24 points, Emerald)
+\addplot[only marks, mark=*, mark size=0.5pt, Emerald] coordinates {
+    (5.6,0.03) (5.1,0.03) (4.9,0.04) (4.8,0.02) (3.8,0.01) (4.4,0.03) 
+    (4.6,0.03) (5.8,0.02) (5.3,0.03) (3.6,0.02) (5.3,0.02) (4.7,0.02) 
+    (4.5,0.01) (5.5,0.01) (5.8,0.01) (5.7,0.03) (4.3,0.02) (4.8,0.02) 
+    (5.3,0.04) (5.8,0.01) (4.6,0.02) (4.9,0.03) (4.1,0.01) (4.0,0.01)
+};
+
+\end{axis}
+\end{tikzpicture}
+}
+
+\scriptsize
+  \begin{tcolorbox}[enhanced, colback=red!5, colframe=red!60!black,]
+    In WGAN, the discriminator is replaced by a \textit{critic}
+    $f_w$, which \textbf{scores} real and fake samples rather
+    than classifying them.
+  \end{tcolorbox}
+
+ \end{column}
+\begin{column}{0.55\textwidth}
+
+\scriptsize
+
+
+  \begin{tcolorbox}[enhanced, colback=purple!5, colframe=red!60!yellow, title={Direct $W$ is Intractable}]
+
+    Further, Wasserstein Distance shown earlier is intractable as the set $\Pi(P_r, P_g)$ is infinitely large and high-dimensioanl data makes $\gamma$, and infimum requires solving Combinatorial Optimization Problem which is very difficult. Hence, instead, we opt for a dual version of Wasserstein distance as per for \textbf{Kantorovic-Rubinstein duality}:
+    
+    \begin{align*}
+      W(P_r, P_\theta) = \sup_{||f||_L \leq 1}\Ebb_{x\sim P_r}[f(x)] - \Ebb_{x\sim P_\theta}[f(x)]
+    \end{align*}
+  With this dual, Instead of optimizing over an infinite set of transport plans $\gamma$, we optimize over a neural network  $f$ (the Critic) — a finite-dimensional parameterization of 1-Lipschitz functions. The dual problem is differentiable (neural networks are differentiable), so we can use gradient descent to train the Critic.
+  \end{tcolorbox}
+
+\end{column}
+    \end{columns}
+
+\end{frame}
+
+
+\begin{frame}{1-Lipschitz Function}
+
+\footnotesize
+
+\begin{definition}[1-Lipschitz]
+A function $f: \mathcal{X} \to \mathbb{R}$ is 1-Lipschitz if
+\begin{align*}
+\forall x_1, x_2 \in \mathcal{X}: \quad
+|f(x_2) - f(x_1)| \le \|x_2 - x_1\|.
+\end{align*}
+\end{definition}
+
+\vspace{0.3cm}
+\begin{itemize}
+    \item Output changes \textbf{no faster} than input changes.
+    \item If differentiable: $\|\nabla f(x)\| \le 1$ everywhere.  % Fixed: added opening \| and math delimiters
+    \item Ensures the Critic $f$ is \textbf{stable and well-behaved}.
+    \item Required for the \textbf{Kantorovich--Rubinstein duality} in WGAN.
+\end{itemize}
+
+\centering
+\begin{tikzpicture}[scale=0.7]
+\draw[->] (-0.5,0) -- (4,0);
+\draw[->] (0,-0.5) -- (0,3);
+\draw[thick, blue] plot[domain=0:3.5] (\x, {0.4*\x + 0.5});
+\node at (4, 2.3) {$|f(x_2)-f(x_1)| \le \|x_2-x_1\|$};
+\end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}{WGAN Architecture}
+
+\begin{center}
+
+We can also go for K-Lipschitz then we get $K\dot W(P_r, P_g)$. Then we can have parametrized family of functions $\{f_w\}_{w\in \Wcal}$ that are K-Lipschitz and we can think of solving 
+
+\begin{align*}
+     \max_{w\in \Wcal}\Ebb_{x\sim P_r}[f_w(x)] - \Ebb_{z\sim p(z)}[f_w(g_\theta(z)]
+    \end{align*}
+    
+\end{center}
+
+
+
+ \resizebox{0.95\textwidth}{!}{
+\begin{tikzpicture}[
+    node distance=1.8cm and 1.7cm,
+    block/.style={rectangle, draw, thick, minimum width=2.2cm, minimum height=1cm, rounded corners=2pt, font=\sffamily\bfseries},
+    smallblock/.style={rectangle, draw, thick, minimum width=1.2cm, minimum height=0.6cm, font=\sffamily},
+    arrow/.style={-Stealth, thick},
+    dashedarrow/.style={-Stealth, thick, dashed, gray!70!black}
+]
+
+    % --- Nodes ---
+    % Input Latent Vector
+    \node (latent) [align=center, font=\scriptsize] {$z \sim \mathcal{N}(0, 1)$ \\ \text{or} \\ $z \sim \text{U}(-1, 1)$};
+    
+    % Generator
+    \node (gen) [block, right=of latent] {Generator};
+    
+    % Switch mechanism points
+    \node (switch_in_fake) [circle, fill, inner sep=1.5pt, right=1.5cm of gen, yshift=-1.5cm] {};
+    \node (switch_in_real) [circle, fill, inner sep=1.5pt, right=1.5cm of gen, yshift=1.5cm] {};
+    \node (switch_out) [circle, fill, inner sep=1.5pt, right=1cm of switch_in_fake, yshift=0.5cm] {};
+    
+    % Real Image Input
+    \node (real_img) [left=1.2cm of switch_in_real, font=\sffamily\small] {Real image $x$};
+    
+    % Critic
+    \node (critic) [block, right=1.2cm of switch_out] {Critic};
+    
+    % Function f and Cost
+    \node (f) [right=0.7cm of critic, font=\Huge\itshape] {$f$};
+    \node (cost) [smallblock, right=0.7cm of f] {cost};
+
+    % --- Paths ---
+    \draw [arrow] (latent) -- (gen);
+    \draw [arrow] (real_img) -- (switch_in_real);
+    
+    % Path from Gen to switch
+    \draw [thick] (gen.east) -- ++(0.5,0) |- (switch_in_fake);
+    
+    % Switch Arm (pointing to real)
+    \draw [ultra thick] (switch_in_real) -- (switch_out);
+    
+    \draw [arrow] (switch_out) -- (critic);
+    \draw [arrow] (critic) -- (f);
+    \draw [arrow] (f) -- (cost);
+
+    % --- Gradient Feedback Loops ---
+    % Path for Critic Gradient (Top)
+    \draw [dashed, gray!70!black, thick] (cost.east) -- ++(0.5,0) |- ([yshift=1.8cm]critic.north);
+    \draw [dashedarrow] ([yshift=1.8cm]critic.north) -- (critic.north);
+    
+    % Label for Critic Gradient
+    \node [above=1.9cm of critic, xshift=1.5cm] (grad_w) 
+        {$\nabla_w \left[ \frac{1}{m} \sum_{i=1}^m f_w(x^{(i)}) - \frac{1}{m} \sum_{i=1}^m f_w(g_\theta(z^{(i)})) \right]$};
+
+    % Path for Generator Gradient (Bottom)
+    \draw [dashed, gray!70!black, thick] (cost.east) -- ++(0.5,0) |- ([yshift=-1.5cm]gen.south);
+    \draw [dashedarrow] ([yshift=-1.5cm]gen.south) -- (gen.south);
+    
+    % Label for Generator Gradient
+    \node [below=1.6cm of switch_out] (grad_theta) 
+        {$\nabla_\theta \frac{1}{m} \sum_{i=1}^m f_w(g_\theta(z^{(i)}))$};
+
+\end{tikzpicture}
+}
+
+\end{frame}
+
+\begin{frame}[fragile]{WGAN Algorithm}
+    \begin{tcolorbox}[
+        enhanced,
+        colback=white,
+        colframe=WGANBlue,
+        title=\small Algorithm,
+        fonttitle=\bfseries,
+        boxrule=0.8pt,
+        arc=2pt
+    ]
+    \scriptsize
+    % Define the custom command to fix the undefined control sequence
+    \SetKwInOut{Require}{Require} 
+    
+    \begin{algorithm}[H]
+        \Require{$\alpha$ (LR), $c$ (clipping), $m$ (batch), $n_{\text{critic}}$ (no. of iterations of the critic per generator iteration)}
+        \Require{$w_0$ (initial critic), $\theta_0$ (initial generator's parameter)}
+        
+        \While{$\theta$ not converged}{
+            \For{$t = 0, \dots, n_{\text{critic}}$}{
+                Sample $\{x^{(i)}\}_{i=1}^m \sim \mathbb{P}_r$ a batch from the real data\;
+                Sample $\{z^{(i)}\}_{i=1}^m \sim p(z)$ a batch of prior samples\;
+                $g_w \leftarrow \nabla_w [\frac{1}{m}\sum_{i=1}^m f_w(x^{(i)}) - \frac{1}{m}\sum_{i=1}^m f_w(g_\theta(z^{(i)}))]$\;
+                $w \leftarrow w + \alpha \cdot \text{RMSProp}(w, g_w)$\;
+                $w \leftarrow \text{clip}(w, -c, c)$ \textcolor{WGANOrange}{\footnotesize $\leftarrow$ \textit{Lipschitz}}\;
+            }
+            Sample $\{z^{(i)}\}_{i=1}^m \sim p(z)$\;
+            $g_\theta \leftarrow - \nabla_\theta  \frac{1}{m}\sum_{i=1}^m f_w(g_\theta(z^{(i)}))$\;
+            $\theta \leftarrow \theta - \alpha \cdot \text{RMSProp}(\theta,g_\theta)$\;
+        }
+    \end{algorithm}
+    \end{tcolorbox}
+
+    \begin{itemize}
+        \item \tiny All experiments used $\alpha = 0.00005, c = 0.01, m = 64, n_{\text{critic}} = 5$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Reference}
+
+\begin{enumerate}
+\item  Arjovsky, Martin, Soumith Chintala, and Léon Bottou. "Wasserstein GAN." arXiv preprint arXiv:1701.07875 (2017).    \url{https://arxiv.org/abs/1701.07875}
+\end{enumerate}
+
+\end{frame}
+
+
+\section{Data Privacy and GANs}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+\begin{frame}{Privacy issues with GANs}
+
+\scriptsize
+
+GANs are trained to \textbf{model the real data distribution}.
+
+But in doing so, they can:
+\begin{itemize}
+    \item \textbf{Memorize} training samples (faces, medical data, text)
+    \item \textbf{Reconstruct} exact or near‑exact training data
+    \item Leak \textbf{sensitive attributes}: gender, disease, location, ID
+    \item Comply with no privacy by default
+\end{itemize}
+
+\begin{tcolorbox}[]
+GANs \textbf{implicitly store information} about training data
+in the generator and discriminator weights.
+\end{tcolorbox}
+
+\textbf{Examples of leakage:}
+\begin{itemize}
+    \item Face GANs: reproduce exact faces from training set
+    \item Medical GANs: reveal unique patient biomarkers
+    \item Text GANs: regurgitate private sentences
+\end{itemize}
+
+\textbf{Membership Inference Attacks:}
+
+Given a sample $x$, attacker asks: Was $x$  in the training set?
+
+How it works:
+\begin{itemize}
+    \item Use discriminator confidence $D(x)$
+    \item Training samples have \textbf{unusually high/low confidence}
+    \item Attacker trains a classifier to detect this
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Privacy Issues with GANs}
+    \begin{columns}[T]
+        % --- Left Column ---
+        \begin{column}{0.5\textwidth}
+            \begin{tcolorbox}[
+                enhanced,
+                colback=red!5,
+                colframe=red!75!black,
+                title=\small Modeling vs. Memorization,
+                fonttitle=\bfseries,
+                arc=2pt,
+                boxrule=0.5pt
+            ]
+            \scriptsize
+            GANs are trained to \textbf{model the real data distribution}. 
+            \vspace{0.1cm}
+            
+            But in doing so, they can:
+            \begin{itemize}
+                \item \textbf{Memorize} training samples (faces, medical data, text)
+                \item \textbf{Reconstruct} exact or near‑exact training data
+                \item Leak \textbf{sensitive attributes}: gender, disease, location, ID
+                \item Comply with no privacy by default
+            \end{itemize}
+            \end{tcolorbox}
+
+            \begin{tcolorbox}[blanker, left=5pt, borderline west={1.5pt}{0pt}{red!75!black}]
+                \tiny
+                GANs \textbf{implicitly store information} about training data in the generator and discriminator weights.
+            \end{tcolorbox}
+        \end{column}
+
+        % --- Right Column ---
+        \begin{column}{0.48\textwidth}
+            \textbf{\footnotesize Examples of Leakage:}
+            \begin{itemize}
+                \footnotesize
+                \item \textbf{Face GANs:} reproduce exact faces
+                \item \textbf{Medical GANs:} reveal unique biomarkers
+                \item \textbf{Text GANs:} regurgitate private sentences
+            \end{itemize}
+
+            \begin{tcolorbox}[
+                enhanced,
+                colback=gray!5,
+                colframe=gray!80!black,
+                title=\small Membership Inference Attacks,
+                fonttitle=\bfseries,
+                arc=2pt
+            ]
+            \scriptsize
+            Given a sample $x$, attacker asks: \textit{Was $x$ in the training set?}
+            \end{tcolorbox}
+
+            % DIAGRAM: Encapsulated to avoid beamer parser errors
+            \begin{center}
+            \begin{tikzpicture}[scale=0.5, every node/.style={scale=0.6}]
+                \node[draw, circle, fill=gray!10] (x) at (0,0) {$x$};
+                \node[draw, rectangle, fill=red!10, minimum width=1.2cm] (D) at (2,0) {Disc.};
+                \node[draw, diamond, fill=orange!20, aspect=2] (A) at (4.5,0) {Attacker};
+                
+                \draw[->, thick] (x.east) -- (D.west);
+                \draw[->, thick] (D.east) -- (A.west);
+                \draw[->, thick] (A.east) -- ++(1,0) node[right] {\footnotesize Yes/No};
+            \end{tikzpicture}
+            \end{center}
+
+\vspace{-10pt}
+
+            \textbf{\footnotesize How it works:}
+            \begin{itemize}
+                \scriptsize
+                \item Use discriminator confidence $D(x)$
+                \item Training samples have \textbf{unusually high/low confidence}
+                \item Attacker trains a classifier to detect this
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
 %------------------------------------------------
+
+\begin{frame}{Application of GANs in Industrial Settings}
+
+\textbf{Some Examples:}
+
+\begin{enumerate}
+\item Manufacturing Defect Detection \& Quality Control
+\item Synthetic Data Augmentation
+\item Digital Twins and Virtual Prototyping
+\item 3D Modeling and Design: 2D $\to$ 3D
+\item Image Enhancement and Restoration
+\item Denoising
+\end{enumerate}
+
+\end{frame}
+
 %------------------------------------------------
 
 \begin{frame}{Code}
@@ -1167,6 +2379,8 @@ Cycle GAN has four networks:
             \bibitem[Radford, 2015]{p4} Radford, Alec, Luke Metz, and Soumith Chintala. "Unsupervised representation learning with deep convolutional generative adversarial networks." arXiv preprint arXiv:1511.06434 (2015). \url{https://arxiv.org/pdf/1511.06434}
             
             \bibitem[Zhu, 2017]{p5} Zhu, Jun-Yan, Taesung Park, Phillip Isola, and Alexei A. Efros. "Unpaired image-to-image translation using cycle-consistent adversarial networks." In Proceedings of the IEEE international conference on computer vision, pp. 2223-2232. 2017. \url{https://arxiv.org/pdf/1703.10593}
+            
+           \bibitem[Arjovsky, 2017]{p6}  Arjovsky, Martin, Soumith Chintala, and Léon Bottou. "Wasserstein GAN." arXiv preprint arXiv:1701.07875 (2017).    \url{https://arxiv.org/abs/1701.07875}
             
             
             
