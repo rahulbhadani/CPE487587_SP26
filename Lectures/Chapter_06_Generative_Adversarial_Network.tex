@@ -193,8 +193,8 @@ frame=none
 %------------------------------------------------
 \begin{frame}{Lecture Overview}
     \begin{itemize}
-        \item In this lecture we discussed generative models (briefly) and how to model distributions of data using density estimation techniques. One advantage to these generative models is that we can generate data from the distribution once we have the model.   
-        \item Our goal in this lecture is to introduce {\em \color{MediumRed}Generative Adversarial Networks} (GANs) for generating data from a distribution $p_{data}(\x)$. GANs are able to model complex distributions of data that would be incredible challenging to model using the density estimation approaches discussed in previous lectures. 
+        \item In this lecture, we discussed generative models (briefly) and how to model distributions of data using density estimation techniques. One advantage of these generative models is that we can generate data from the distribution once we have the model.   
+        \item Our goal in this lecture is to introduce {\em \color{MediumRed}Generative Adversarial Networks} (GANs) for generating data from a distribution $p_{data}(\x)$. GANs are able to model complex distributions of data that would be incredibly challenging to model using the density estimation approaches discussed in previous lectures. 
         \item Modeling $p_{data}(\x)$ is increasingly challenging for complex data, such as real scenes, people, etc. 
     \end{itemize}
 \end{frame}
@@ -261,7 +261,7 @@ frame=none
             \end{tcolorbox}
 
             \begin{itemize}
-                \item \textbf{Data Assumption:} Conventional training is based on IID assumption, but however someone can supply non-IID data.
+                \item \textbf{Data Assumption:} Conventional training is based on the IID assumption; however, someone can supply non-IID data.
                 \item \textbf{Exploitation:} Adversaries may attempt to exploit a learning mechanism either to cause it to misbehave or to extract or misuse information.
             \end{itemize}
             
@@ -279,7 +279,7 @@ frame=none
     \end{columns}
 
   \begin{tcolorbox}[colback=red!5, colframe=red!75!black, boxrule=0.5pt]
-                \footnotesize While we won't delve in Secure Machine Learning, we serve this as a motivation for \textbf{Generative Adversarial Network (GAN)}.
+                \footnotesize While we won't delve into Secure Machine Learning, we serve this as a motivation for \textbf{Generative Adversarial Network (GAN)}.
             \end{tcolorbox}
 
     \begin{tcolorbox}[colback=green!5, colframe=green!60!black]
@@ -408,9 +408,9 @@ There are hundreds(?) of different types of GANs; however, this lecture only pre
     \small
 \begin{block}{}
 \begin{itemize}
-    \item We have two neural network in a GAN
+    \item We have two neural networks in a GAN
     \begin{itemize}
-        \item The network $G$'s goal is to generate sample that look like they came from $p_{data}(\x)$. 
+        \item The network $G$'s goal is to generate samples that look like they came from $p_{data}(\x)$. 
         \item The network $D$'s goal is to effectively discriminate between real samples from $p_{data}(\x)$ and fake samples from $G$. 
     \end{itemize}
     \item The goals of $G$ and $D$ are different! We can view this scenario as a game between $D$ and $G$. 
@@ -438,7 +438,7 @@ The optimization of $\theta_g$ and $\theta_d$ can be cast as a $\min$-$\max$ tas
 \min_{G}\max_{D} V (D, G) = \left\{ \Ebb_{\xbf\sim p_{data}}\left[ \log(D(\x)) \right] + \Ebb_{\zbf\sim p_{\zbf}}\left[\log(1 - D(G(\zbf)))\right]\right\}
 \end{multiequation}
 
-$V$ is called as value function.
+$V$ is called the value function.
 
 \end{tblock}
 
@@ -446,7 +446,7 @@ From the original paper: alternate between $k$ steps of optimizing $D$ and one s
 
 \begin{texample}{}
  
- In the beginning $G$ is poor, so $D$ will reject samples with a high confidence, and 
+ In the beginning, $G$ is poor, so $D$ will reject samples with a high confidence, and 
  $\log(1 - D(G(z)))$ saturates. So, rather than training $G$ to minimize $\log(1 - D(G(z)))$ , $G$ is trained to maximize $\log D(G(z))$.
  
 \end{texample}
@@ -496,7 +496,7 @@ C(G) & = \max_{D} V (D, G) \\
 & = \Ebb_{\xbf\sim p_{data}}\left[ \log   \frac{p_{data}(\xbf)}{p_{data}(\xbf) + p_g(\xbf)} \right] + \Ebb_{\xbf\sim p_g}\left[\log  \frac{p_{\xbf}(\xbf)}{p_{data}(\xbf) + p_g(\xbf)} \right]
 \end{align*}
 
-Here, training objective of $D$ can be interpreted as maximizing the log-likelihood for estimating the conditional probability $P(Y = y|\xbf)$ where $Y$ is the random variable denoting where $\xbf$ comes from $p_{data}$ with $y=1$ or from $p_g$ with $y=0$.
+Here, the training objective of $D$ can be interpreted as maximizing the log-likelihood for estimating the conditional probability $P(Y = y|\xbf)$ where $Y$ is the random variable denoting where $\xbf$ comes from $p_{data}$ with $y=1$ or from $p_g$ with $y=0$.
 
 \end{frame}
 
@@ -574,8 +574,8 @@ One issue associated with training a GAN is the form of the loss. Observe above 
 \log(1 - D(G(\zbf)))
 \end{multiequation}\vspace{-2em}
 \begin{itemize}
-    \item The problem with this is that if the generator sample is really bad, then the discriminator’s prediction is close to zero, and since $\log(1-D)$ is very flat when $D\approx0$ there is not enough ``signal'' to move the generator weights meaningfully. 
-    \item Increasing learning rates do not seem to help. This is called the {\em saturation problem} in GANs. 
+    \item The problem with this is that if the generator sample is really bad, then the discriminator’s prediction is close to zero, and since $\log(1-D)$ is very flat when $D\approx0$, there is not enough ``signal'' to move the generator weights meaningfully. 
+    \item Increasing learning rates does not seem to help. This is called the {\em saturation problem} in GANs. 
     \item To fix this, while updating generator weights, it is common to heuristically replace the second term in the GAN loss with $-\log D(G(\zbf))$
 \end{itemize}
 \end{block}
@@ -593,7 +593,7 @@ One issue associated with training a GAN is the form of the loss. Observe above 
 \begin{tblock}{Challenge}
 Stably training GANs was a challenge faced by the community for quite some time (and continues to be a challenge), and a common resolution is to use {\em Wasserstein GANs. }
 \begin{itemize}
-    \item The GAN loss is a  form of distance between probability distributions (called the Jensen-Shannon divergence), and this can be generated to other distances. 
+    \item The GAN loss is a form of distance between probability distributions (called the Jensen-Shannon divergence), and this can be generalized to other distances. 
     \item A common alternative is the Earth-mover or Wasserstein distance, leading to a different type of GAN model called Wasserstein GAN. The WGAN was shown to improve stability of the optimization process
 \end{itemize}
 \end{tblock}
@@ -690,7 +690,7 @@ class Generator(nn.Module):
             \begin{tcolorbox}[colback=blue!5, colframe=red!50!black, title=Conceptual Flow, fonttitle=\bfseries\small]
                 \footnotesize
 
-			The discriminator takes generated image and guess whether it is fake or real through binary classification.                
+			The discriminator takes a generated image and guesses whether it is fake or real through binary classification.                
                 
             \end{tcolorbox}
 
@@ -761,7 +761,7 @@ class Discriminator(nn.Module):
 \scriptsize
 
 \begin{tcolorbox}[colback=blue!5, colframe=theoryblue, arc=2pt]
-    Training loss is actually just Binary Cross Entropy loss effectively.
+    Training loss is actually just Binary Cross-Entropy loss effectively.
     $$\mathcal{L}_{BCE}(y, \hat{y}) = -[y \cdot \log(\hat{y}) + (1-y) \cdot \log(1-\hat{y})]$$
 \end{tcolorbox}
 
@@ -926,8 +926,8 @@ $\mathbb{E}[\log(1-D(G(z)))]$ & \texttt{criterion(D(G(z)), 0)} \\ \bottomrule
 \begin{itemize}
 \item DALL-E 2 is a new AI system that can create realistic images and art from a description in natural language.
 DALL-E 2 can create original, realistic images and art from a text description. It can combine concepts, attributes, and styles.
-% DALL-E's model is a multimodal implementation of GPT-3[16] with 12 billion parameters[1] which "swaps text for pixels", trained on text-image pairs from the Internet.[17] DALL-E 2 uses 3.5 billion parameters, a smaller number than its predecessor
-\item DALL-E's uses multimodal version of GPT-3 with 12 billion parameters. The concept is that it swaps text for pixels and it is trained on trained on text-image pairs from the Internet. DALL-E 2 uses 3.5 billion parameters. 
+% DALL-E's model is a multimodal implementation of GPT-3 with 12 billion parameters, which "swaps text for pixels", trained on text-image pairs from the Internet. DALL-E 2 uses 3.5 billion parameters, a smaller number than its predecessor
+\item DALL-E uses a multimodal version of GPT-3 with 12 billion parameters. The concept is that it swaps text for pixels, and it is trained on text-image pairs from the Internet. DALL-E 2 uses 3.5 billion parameters. 
 \end{itemize}
 \end{block}
 
@@ -1050,7 +1050,7 @@ style of Claude Monet''\\
     0 & 0 & 0 & 0\\
     \end{bmatrix}
     \]
-    Then we apply regular convolution operation.
+    Then we apply a regular convolution operation.
 \end{tcolorbox}
 
     \end{column}
@@ -1068,7 +1068,7 @@ From the original paper:
 \item  Replace any pooling layers with strided convolutions (discriminator) and fractional-strided convolutions (generator).
 \item Use batchnorm in both the generator and the discriminator.
 \item Remove fully connected hidden layers for deeper architectures.
-\item Use ReLU activation in generator for all layers except for the output, which uses Tanh.
+\item Use ReLU activation in the generator for all layers except for the output, which uses Tanh.
 \item  Use LeakyReLU activation in the discriminator for all layers.
 \end{enumerate}
 
@@ -1091,7 +1091,7 @@ The DCGAN made possible vector arithmetic for image maniuplation: vector("King")
 
 \begin{frame}{Cycle GAN Architecture}
 
-It is used for image to image translation to transfer some interesting features from image to another image, as we saw earlier. Examples: Horse to Zebra, Summer to Winter, etc.
+It is used for image-to-image translation to transfer some interesting features from one image to another image, as we saw earlier. Examples: Horse to Zebra, Summer to Winter, etc.
 
 Cycle GAN introduces \textbf{Cycle Consistency Loss} in addition to adversarial Loss seen in the original GAN.
 
@@ -1100,7 +1100,7 @@ Cycle GAN has four networks:
 \begin{enumerate}
 \item $G_{A\to B}$ : a generator for translating images from domain $ A \to B$.
 
-\item $D_B$: a discriminator if an image is real or fake in $B$.
+\item $D_B$: a discriminator of whether an image is real or fake in $B$.
 
 \item $G_{B\to A}$ : a generator for translating images from domain $ B \to A$.
 
@@ -1108,7 +1108,7 @@ Cycle GAN has four networks:
 
   
         \begin{tcolorbox}[colback=gray!10, boxrule=0pt, frame hidden, left=0pt, right=0pt, top=2pt, bottom=2pt]
-    \tiny \textcolor{gray}{Zhu, Jun-Yan, Taesung Park, Phillip Isola, and Alexei A. Efros. "Unpaired image-to-image translation using cycle-consistent adversarial networks." In Proceedings of the IEEE international conference on computer vision, pp. 2223-2232. 2017. \url{https://arxiv.org/pdf/1703.10593}}
+    \tiny \textcolor{gray}{Zhu, Jun-Yan, Taesung Park, Phillip Isola, and Alexei A. Efros. "Unpaired image-to-image translation using cycle-consistent adversarial networks." In Proceedings of the IEEE International Conference on Computer Vision, pp. 2223-2232. 2017. \url{https://arxiv.org/pdf/1703.10593}}
 \end{tcolorbox}
 
 
@@ -1132,7 +1132,7 @@ Cycle GAN has four networks:
 %
 %Alternatively, we can learn $F: Y \to X$, and using a new kind of loss \textit{cycle consistency loss} to enforce $F(G(X)) \approx X$.
 %
-%Cycle consistency mean that if we translate from English to French, and then back from French to English, we should get the same sentence.
+%Cycle consistency means that if we translate from English to French, and then back from French to English, we should get the same sentence.
 %
 %
 %\tikzset{
@@ -1198,7 +1198,7 @@ Cycle GAN has four networks:
             
      
             \textbf{Mapping Objective:} \\
-            Find a mapping, $G:X \to Y$ such that the distribution of images from $G(X)$ is indistinguishable from $Y$ using an adversarial loss.
+            Find a mapping, $G:X \to Y$, such that the distribution of images from $G(X)$ is indistinguishable from $Y$ using an adversarial loss.
             
             \begin{itemize}
                 \item Output $\hat{y}=G(x), \quad x \in X$
@@ -1222,7 +1222,7 @@ Cycle GAN has four networks:
             \vspace{1em}
             
             \begin{tcolorbox}[analogybox, title=~~]
-                Cycle consistency mean that if we translate from English to French, and then back from French to English, we should get the same sentence.
+                Cycle consistency means that if we translate from English to French and then back from French to English, we should get the same sentence.
             \end{tcolorbox}
         \end{column}
     \end{columns}
@@ -1325,7 +1325,7 @@ Cycle GAN has four networks:
 }
 
 \begin{center}
-Cycle consistency in domain to domain mapping for image style transfer
+Cycle consistency in domain-to-domain mapping for image style transfer
 \end{center}
 
 \end{frame}
@@ -1399,7 +1399,7 @@ Cycle consistency in domain to domain mapping for image style transfer
                 \begin{equation*}
                 \Ebb_{x\sim p_{x}}[ || F(G(x)) - x||_1] + \Ebb_{y\sim p_{y}}[ || G(F(y)) - y||_1]
                 \end{equation*}
-                It captures differences of pixel values among generated and original images.
+                It captures differences in pixel values among generated and original images.
             \end{tcolorbox}
         \end{column}
     \end{columns}
@@ -1412,7 +1412,7 @@ Cycle consistency in domain to domain mapping for image style transfer
         Full loss function is $
         \Lcal(G, F, D_X, D_Y) = \Lcal_{GAN}(G, D_Y, X, Y) + \Lcal_{GAN}(F, D_X, Y, X) + \lambda \Lcal_{cyc}(G, F) $
         
-        and objective is 
+        and the objective is 
         \begin{equation*}
         G^{*}, F^{*} = \arg\min_{G,F} \max_{D_{x},D_{Y}} \mathcal{L}(G, F, D_{X}, D_{Y}).
         \end{equation*}
@@ -1445,7 +1445,7 @@ Cycle consistency in domain to domain mapping for image style transfer
 
 \begin{frame}{Training Hacks}
 
-\textbf{Replacing Negative Log-likelihood with Least Square Loss}
+\textbf{Replacing Negative Log-likelihood with Least Squares Loss}
 
 
 \begin{enumerate}
@@ -1466,7 +1466,7 @@ Cycle consistency in domain to domain mapping for image style transfer
 
 \begin{enumerate}
 
-\item Update discriminators using history of images rather the one just produced by the latest generators. Buffer of the last 50 images are kept.
+\item Update discriminators using the history of images rather than the one just produced by the latest generators. A buffer of the last 50 images is kept.
 \item $\lambda = 10$, learning rate $\eta = 0.0002$.
 \item Gaussian weight distribution initialization $\Ncal(0, 0.02)$.
 \end{enumerate}
@@ -1536,7 +1536,7 @@ Cycle consistency in domain to domain mapping for image style transfer
             \end{tcolorbox}
 
             \begin{itemize}
-                \item We define a parametric family of densities $P_\theta$ such that $\theta \in \Rbb^d$ for $d$-dimensions and find the one that mximizes the likelihood on our data.
+                \item We define a parametric family of densities $P_\theta$ such that $\theta \in \Rbb^d$ for $d$-dimensions and find the one that maximizes the likelihood on our data.
                 
                 \item For a given data samples $\{ x^{(i)} \}_{i=1}^m$, we would want
                 
@@ -1549,7 +1549,7 @@ Cycle consistency in domain to domain mapping for image style transfer
 
            
            
-If we there is a real data distribution, say, $P_r$, we want to reduce the distance between $P_r$ and $P_\theta$. How to define distance? (We describe later).
+If there is a real data distribution, say, $P_r$, we want to reduce the distance between $P_r$ and $P_\theta$. How to define distance? (We describe later).
 
         \end{column}
 
@@ -1557,7 +1557,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
         \begin{column}{0.4\textwidth}
             \begin{center}
             \begin{tikzpicture}[scale=0.8]
-                % High Dimensional Space Boundary
+                % High-Dimensional Space Boundary
                 \draw[dashed, gray] (-2,-2) rectangle (2,2);
                 \node[gray, scale=0.6] at (1.5, 1.8) {$\mathbb{R}^n$};
                 
@@ -1589,7 +1589,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
         borderline west={2pt}{0pt}{gray!80!black}
     ]
         \scriptsize
-        \textbf{Note:} In generative models, we add noise to make maximum likelihood approach work (so that some overlap may be found).
+        \textbf{Note:} In generative models, we add noise to make the maximum likelihood approach work (so that some overlap may be found).
     \end{tcolorbox}
     
         \end{column}
@@ -1617,7 +1617,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
                 fonttitle=\bfseries
             ]
             \footnotesize
-            As $P_r$ may not exist, we can define the random variable $Z$ with a fixed distribution that $p(z)$ and pass it through a parametric function $g_\theta: \mathcal{Z} \to \mathcal{X}$ that can generate samples following $P_\theta$.
+            As $P_r$ may not exist, we can define the random variable $Z$ with a fixed distribution $p(z)$ and pass it through a parametric function $g_\theta: \mathcal{Z} \to \mathcal{X}$ that can generate samples following $P_\theta$.
             \end{tcolorbox}
 
             % TikZ Diagram of the Mapping
@@ -1650,7 +1650,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
             
             \begin{itemize}
                 \item Closeness can be measured using a distance or divergence $\rho$.
-                \item Since GANs generate sequence of distribution (evolved during training epochs), we are interested that the sequence of distribution $P_t$ converges (iff there is $P_{\infty}$ such that $\rho(P_t, P_{\infty}) \to 0$.
+                \item Since GANs generate a sequence of distributions (evolved during training epochs), we are interested in whether the sequence of distributions $P_t$ converges (iff there is $P_{\infty}$ such that $\rho(P_t, P_{\infty}) \to 0$.
             \end{itemize}
 
             \begin{tcolorbox}[
@@ -1664,8 +1664,8 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
             \begin{enumerate}
                 \scriptsize
                 \item $\rho$ should be weak so that it is easier to find a mapping $\theta \mapsto P_\theta$.
-                \item $\rho$ should lead to continuous mapping.
-                \item $\rho$ should lead to continuous loss function.
+                \item $\rho$ should lead to a continuous mapping.
+                \item $\rho$ should lead to a continuous loss function.
             \end{enumerate}
             \end{tcolorbox}
         \end{column}
@@ -1676,12 +1676,12 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
 
 %\begin{frame}{Measure of Closeness}
 %
-%Distance metrics obey the principles of non-negativity, identity, symmetry, and triangle inequality. But divergence is a weaker concept that doesn't follow symmetry and triangle inequality.
+%Distance metrics obey the principles of non-negativity, identity, symmetry, and triangle inequality. But divergence is a weaker concept that doesn't follow symmetry and the triangle inequality.
 %
 %
-%We will define some measure of closeness belonging to same metric set $\Xcal$ such as images $[0, 1]^d$ and $\sigma$ be the set of all Borel subsets of $\Xcal$. Borel subset is where you define your probabilities (Refer to Probability 101).
+%We will define some measure of closeness belonging to the same metric set $\Xcal$, such as images $[0, 1]^d$, and $\sigma$ be the set of all Borel subsets of $\Xcal$. A Borel subset is where you define your probabilities (Refer to Probability 101).
 %
-%A Borel subset is any set that belongs to the Borel $\sigma$-algebra, the standard collection of "well-behaved" sets used in measure theory and probability.  We want to assign  probabilities or measures to subsets of $\Rbb$. We cannot assign probabilities to just any kind of sets, we need a reasonable set. Borel subset is that reasonable subset. Borel sets are the sets you can actually measure.
+%A Borel subset is any set that belongs to the Borel $\sigma$-algebra, the standard collection of "well-behaved" sets used in measure theory and probability.  We want to assign probabilities or measures to subsets of $\Rbb$. We cannot assign probabilities to just any kind of set; we need a reasonable set. A Borel subset is a reasonable subset. Borel sets are the sets you can actually measure.
 %
 %$\sigma$-algebra is a part of formalism for defining sets that can be measured. In probability theory, they are used to define events for which a probability can be defined. 
 %
@@ -1689,7 +1689,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
 %$X$ is a nonempty collection $\Sigma$  of subsets of $X$ closed under complement, countable unions, and countable intersections. The ordered pair 
 %$(X,\Sigma )$ is called a measurable space.
 %
-%Measure in \textbf{measure theory} is generalization and formalization of geometric measures (such as length, area, volume, probability, mass, etc.) A set function $\mu$ from $\Sigma$ to the extended real number line is called a \textbf{measure} if $\mu(\emptyset) = 0$, non-negativity $\mu(E) \geq 0 \forall E\in\Sigma$, and Countable addivitity $\mu\bigg(bigcup_{k=1}^\infty E_k \bigg) = \sum_{k=1}^\infty \mu (E_k)$.
+%Measure in \textbf{measure theory} is a generalization and formalization of geometric measures (such as length, area, volume, probability, mass, etc.) A set function $\mu$ from $\Sigma$ to the extended real number line is called a \textbf{measure} if $\mu(\emptyset) = 0$, non-negativity $\mu(E) \geq 0 \forall E\in\Sigma$, and Countable addivitity $\mu\bigg(bigcup_{k=1}^\infty E_k \bigg) = \sum_{k=1}^\infty \mu (E_k)$.
 %
 %\end{frame}
 
@@ -1708,7 +1708,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
                 arc=2pt
             ]
             \scriptsize
-            Distance metrics obey the principles of non-negativity, identity, symmetry, and triangle inequality. But divergence is a weaker concept that doesn't follow symmetry and triangle inequality.
+            Distance metrics obey the principles of non-negativity, identity, symmetry, and triangle inequality. But divergence is a weaker concept that doesn't follow symmetry and the triangle inequality.
             \end{tcolorbox}
 
             \textbf{\footnotesize The Foundation}
@@ -1730,7 +1730,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
 
                        \begin{tcolorbox}[blanker, left=5pt, borderline west={1.5pt}{0pt}{WGANOrange}]
                 \tiny
-            A Borel subset is any set that belongs to the Borel $\sigma$-algebra, the standard collection of "well-behaved" sets used in measure theory and probability.  We want to assign  probabilities or measures to subsets of $\Rbb$. We cannot assign probabilities to just any kind of sets, we need a reasonable set. Borel subset is that reasonable subset. Borel sets are the sets you can actually measure.
+            A Borel subset is any set that belongs to the Borel $\sigma$-algebra, the standard collection of "well-behaved" sets used in measure theory and probability.  We want to assign probabilities or measures to subsets of $\Rbb$. We cannot assign probabilities to just any kind of set; we need a reasonable set. A Borel subset is a reasonable subset. Borel sets are the sets you can actually measure.
                         \end{tcolorbox}
             \end{center}
         \end{column}
@@ -1783,7 +1783,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
 %\end{align*}
 %Here, $P_r$ and $P_g$ are assumed to be absolutely continuous. $\mu$ is some \textit{measure}. 
 %
-%But KL divergence is assymetric and possibly infinite when there are points such that $P_g(x) = 0$ and $P_r(x) > 0$.
+%But KL divergence is asymmetric and possibly infinite when there are points such that $P_g(x) = 0$ and $P_r(x) > 0$.
 %
 %% Add a diagram
 %The Jensen-Shannon Divergence is
@@ -1837,7 +1837,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
                 \scriptsize
                 $JS(P_r, P_g) = KL(P_r \| P_m) + KL(P_g\|P_m)$
                 \vspace{0.1cm}
-                Where $P_m = (P_r + P_g)/2$. Symmetrical and always defined as we can choose $\mu = P_m$.
+                Where $P_m = (P_r + P_g)/2$. Symmetrical and always defined, as we can choose $\mu = P_m$.
             \end{tcolorbox}
 
             \begin{tcolorbox}[enhanced, colback=WGANOrange!5, colframe=WGANOrange, title=\small Wasserstein (EM Distance), fonttitle=\bfseries, boxrule=0.8pt]
@@ -1848,7 +1848,7 @@ If we there is a real data distribution, say, $P_r$, we want to reduce the dista
                 \hrule
                 \vspace{0.1cm}
                 
-                \textbf{Inf} infimum is opposite of supremum, it iss the greatest lower bound. For example, in $(0, 1]$, $0$ is the \textbf{inf}.
+                \textbf{Inf} infimum is the opposite of supremum, it is the greatest lower bound. For example, in $(0, 1]$, $0$ is the \textbf{inf}.
             \end{tcolorbox}
         \end{column}
     \end{columns}
@@ -2034,12 +2034,12 @@ Minimizing the GAN objective function with an optimal discriminator is equivalen
 
   \begin{tcolorbox}[enhanced, colback=purple!5, colframe=red!60!yellow, title={Direct $W$ is Intractable}]
 
-    Further, Wasserstein Distance shown earlier is intractable as the set $\Pi(P_r, P_g)$ is infinitely large and high-dimensioanl data makes $\gamma$, and infimum requires solving Combinatorial Optimization Problem which is very difficult. Hence, instead, we opt for a dual version of Wasserstein distance as per for \textbf{Kantorovic-Rubinstein duality}:
+    Further, the Wasserstein Distance shown earlier is intractable as the set $\Pi(P_r, P_g)$ is infinitely large, and high-dimensional data makes $\gamma$, and the infimum requires solving a Combinatorial Optimization Problem, which is very difficult. Hence, instead, we opt for a dual version of Wasserstein distance as per \textbf{Kantorovic-Rubinstein duality}:
     
     \begin{align*}
       W(P_r, P_\theta) = \sup_{||f||_L \leq 1}\Ebb_{x\sim P_r}[f(x)] - \Ebb_{x\sim P_\theta}[f(x)]
     \end{align*}
-  With this dual, Instead of optimizing over an infinite set of transport plans $\gamma$, we optimize over a neural network  $f$ (the Critic) — a finite-dimensional parameterization of 1-Lipschitz functions. The dual problem is differentiable (neural networks are differentiable), so we can use gradient descent to train the Critic.
+  With this dual, instead of optimizing over an infinite set of transport plans $\gamma$, we optimize over a neural network  $f$ (the Critic) — a finite-dimensional parameterization of 1-Lipschitz functions. The dual problem is differentiable (neural networks are differentiable), so we can use gradient descent to train the Critic.
   \end{tcolorbox}
 
 \end{column}
@@ -2082,7 +2082,7 @@ A function $f: \mathcal{X} \to \mathbb{R}$ is 1-Lipschitz if
 
 \begin{center}
 
-We can also go for K-Lipschitz then we get $K\dot W(P_r, P_g)$. Then we can have parametrized family of functions $\{f_w\}_{w\in \Wcal}$ that are K-Lipschitz and we can think of solving 
+We can also go for K-Lipschitz, then we get $K\dot W(P_r, P_g)$. Then we can have parametrized family of functions $\{f_w\}_{w\in \Wcal}$ that are K-Lipschitz and we can think of solving 
 
 \begin{align*}
      \max_{w\in \Wcal}\Ebb_{x\sim P_r}[f_w(x)] - \Ebb_{z\sim p(z)}[f_w(g_\theta(z)]
@@ -2233,14 +2233,14 @@ in the generator and discriminator weights.
 
 \textbf{Examples of leakage:}
 \begin{itemize}
-    \item Face GANs: reproduce exact faces from training set
+    \item Face GANs: reproduce exact faces from the training set
     \item Medical GANs: reveal unique patient biomarkers
     \item Text GANs: regurgitate private sentences
 \end{itemize}
 
 \textbf{Membership Inference Attacks:}
 
-Given a sample $x$, attacker asks: Was $x$  in the training set?
+Given a sample $x$, the attacker asks: Was $x$  in the training set?
 
 How it works:
 \begin{itemize}
@@ -2302,10 +2302,10 @@ How it works:
                 arc=2pt
             ]
             \scriptsize
-            Given a sample $x$, attacker asks: \textit{Was $x$ in the training set?}
+            Given a sample $x$, the attacker asks: \textit{Was $x$ in the training set?}
             \end{tcolorbox}
 
-            % DIAGRAM: Encapsulated to avoid beamer parser errors
+            
             \begin{center}
             \begin{tikzpicture}[scale=0.5, every node/.style={scale=0.6}]
                 \node[draw, circle, fill=gray!10] (x) at (0,0) {$x$};
@@ -2365,7 +2365,7 @@ How it works:
 
 
 \begin{frame}{References}
-    % Beamer does not support BibTeX so references must be inserted manually as below
+    % Beamer does not support BibTeX, so references must be inserted manually as below
     \scriptsize{
         \begin{thebibliography}{99}
             \bibitem[Goodfellow, 2013]{p1} Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, Yoshua Bengio (2013)
@@ -2378,7 +2378,7 @@ How it works:
             
             \bibitem[Radford, 2015]{p4} Radford, Alec, Luke Metz, and Soumith Chintala. "Unsupervised representation learning with deep convolutional generative adversarial networks." arXiv preprint arXiv:1511.06434 (2015). \url{https://arxiv.org/pdf/1511.06434}
             
-            \bibitem[Zhu, 2017]{p5} Zhu, Jun-Yan, Taesung Park, Phillip Isola, and Alexei A. Efros. "Unpaired image-to-image translation using cycle-consistent adversarial networks." In Proceedings of the IEEE international conference on computer vision, pp. 2223-2232. 2017. \url{https://arxiv.org/pdf/1703.10593}
+            \bibitem[Zhu, 2017]{p5} Zhu, Jun-Yan, Taesung Park, Phillip Isola, and Alexei A. Efros. "Unpaired image-to-image translation using cycle-consistent adversarial networks." In Proceedings of the IEEE International Conference on Computer Vision, pp. 2223-2232. 2017. \url{https://arxiv.org/pdf/1703.10593}
             
            \bibitem[Arjovsky, 2017]{p6}  Arjovsky, Martin, Soumith Chintala, and Léon Bottou. "Wasserstein GAN." arXiv preprint arXiv:1701.07875 (2017).    \url{https://arxiv.org/abs/1701.07875}
             
