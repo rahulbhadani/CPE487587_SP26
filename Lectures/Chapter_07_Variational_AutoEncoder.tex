@@ -106,7 +106,7 @@ apple/.pic={
 \usetikzlibrary{calc}
 
 \usetikzlibrary{positioning}
-
+\newcommand{\vect}[1]{\mathbf{#1}}
 % Define styles
 \tikzset{
     box/.style={
@@ -472,20 +472,334 @@ There are two ways to add noise to DAE:
 
 \end{frame}
 
-\begin{frame}{Stacked AutoEncoder}
 
 
+\begin{frame}{Stacked Autoencoders}
+    \begin{tcolorbox}[colback=boxblue, colframe=deepblue, title=~]
+        The stacked autoencoder is a \textit{hack} to obtain a deep model by training only shallow ones in a \textbf{layer-wise, greedy fashion}.
+    \end{tcolorbox}
 
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item \textbf{Phase 1:} Train the outermost encoder and decoder as a single shallow AE.
+        \item \textbf{Phase 2:} Encode the dataset; use the result to train the next inner shallow AE.
+        \item \textbf{Phase 3:} Repeat until reaching the innermost layers.
+        \item \textbf{Result:} Stack the pre-trained layers into one deep architecture.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Visualizing the Greedy Training Process}
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.8cm and 1.2cm,
+        layer/.style={circle, draw=black, thick, minimum size=0.65cm, font=\tiny\sffamily},
+        e1/.style={layer, fill=layer1!20}, d1/.style={layer, fill=layer1!20},
+        e2/.style={layer, fill=layer2!20}, d2/.style={layer, fill=layer2!20},
+        e3/.style={layer, fill=layer3!20}, d3/.style={layer, fill=layer3!20},
+        data_flow/.style={-{Stealth[scale=0.8]}, thick, gray!60},
+        train_box/.style={draw=red!40, dashed, thick, rounded corners=3pt, fill=red!5, fill opacity=0.2}
+    ]
+
+    % --- Step 1: Layer 1 ---
+    \node (s1_t) at (0,0) {\tiny \textbf{1. Train Outermost (E1, D1)}};
+    \node[layer, below=0.2cm of s1_t, xshift=-1cm] (x1) {$\mathbf{x}$};
+    \node[e1, right=of x1] (e1) {$E_1$}; \node[d1, right=of e1] (d1) {$D_1$};
+    \node[layer, right=of d1] (xr1) {$\mathbf{x}^d$};
+    \draw[data_flow] (x1) -- (e1); \draw[data_flow] (e1) -- (d1); \draw[data_flow] (d1) -- (xr1);
+    \node[train_box, fit=(e1) (d1)] {};
+
+    % --- Step 2: Layer 2 ---
+    \node[below=1.1cm of s1_t] (s2_t) {\tiny \textbf{2. Train Middle (E2, D2)}};
+    \node[e1, below=0.2cm of s2_t, xshift=-1.4cm, opacity=0.3] (e1_f) {$E_1$};
+    \node[e2, right=of e1_f] (e2) {$E_2$}; \node[d2, right=of e2] (d2) {$D_2$};
+    \node[d1, right=of d2, opacity=0.3] (d1_f) {$D_1$};
+    \draw[data_flow, dashed] (e1_f) -- (e2); \draw[data_flow] (e2) -- (d2); \draw[data_flow, dashed] (d2) -- (d1_f);
+    \node[train_box, fit=(e2) (d2), draw=green!50, fill=green!5] {};
+
+    % --- Step 3: Layer 3 ---
+    \node[below=1.1cm of s2_t] (s3_t) {\tiny \textbf{3. Train Innermost (E3, D3)}};
+    \node[e2, below=0.2cm of s3_t, xshift=-1.4cm, opacity=0.3] (e2_f) {$E_2$};
+    \node[e3, right=of e2_f] (e3) {$E_3$}; \node[d3, right=of e3] (d3) {$D_3$};
+    \node[d2, right=of d3, opacity=0.3] (d2_f) {$D_2$};
+    \draw[data_flow, dashed] (e2_f) -- (e3); \draw[data_flow] (e3) -- (d3); \draw[data_flow, dashed] (d3) -- (d2_f);
+    \node[train_box, fit=(e3) (d3), draw=blue!50, fill=blue!5] {};
+
+    % --- Step 4: Final Stack ---
+    \node[below=1.1cm of s3_t] (s4_t) {\tiny \textbf{4. Final Deep Hacked Stack}};
+    \node[layer, below=0.2cm of s4_t, xshift=-2.4cm] (fx) {$\mathbf{x}$};
+    \node[e1, right=0.4cm of fx] (fe1) {$E_1$}; \node[e2, right=0.4cm of fe1] (fe2) {$E_2$};
+    \node[e3, right=0.4cm of fe2] (fe3) {$E_3$}; \node[d3, right=0.4cm of fe3] (fd3) {$D_3$};
+    \node[d2, right=0.4cm of fd3] (fd2) {$D_2$}; \node[d1, right=0.4cm of fd2] (fd1) {$D_1$};
+    \node[layer, right=0.4cm of fd1] (fxd) {$\mathbf{x}^d$};
+    \draw[data_flow] (fx) -- (fe1); \draw[data_flow] (fe1) -- (fe2); \draw[data_flow] (fe2) -- (fe3);
+    \draw[data_flow] (fe3) -- (fd3); \draw[data_flow] (fd3) -- (fd2); \draw[data_flow] (fd2) -- (fd1); \draw[data_flow] (fd1) -- (fxd);
+
+    \end{tikzpicture}
 \end{frame}
 
 \begin{frame}{Reading List}
 
+\scriptsize
+
 \begin{enumerate}
 \item Vincent, P., Larochelle, H., Bengio, Y., \& Manzagol, P. A. (2008, July). Extracting and composing robust features with denoising autoencoders. In Proceedings of the 25th international conference on Machine learning (pp. 1096-1103). \url{https://dl.acm.org/doi/pdf/10.1145/1390156.1390294}
 \item Alain, Guillaume, and Yoshua Bengio. "What regularized auto-encoders learn from the data-generating distribution." The Journal of Machine Learning Research 15, no. 1 (2014): 3563-3593. \url{https://www.jmlr.org/papers/volume15/alain14a/alain14a.pdf}
+\item Vincent, Pascal, Hugo Larochelle, Isabelle Lajoie, Yoshua Bengio, Pierre-Antoine Manzagol, and Léon Bottou. "Stacked denoising autoencoders: Learning useful representations in a deep network with a local denoising criterion." Journal of machine learning research 11, no. 12 (2010).
+\item Zhai, J., Zhang, S., Chen, J. and He, Q., 2018, October. Autoencoder and its various variants. In 2018 IEEE international conference on systems, man, and cybernetics (SMC) (pp. 415-419). IEEE.
+\item Li, Pengzhi, Yan Pei, and Jianqiang Li. "A comprehensive survey on design and application of autoencoder in deep learning." Applied Soft Computing 138 (2023): 110176.
+\item Michelucci, Umberto. "An introduction to autoencoders." arXiv preprint arXiv:2201.03898 (2022).
+\item Bank, Dor, Noam Koenigstein, and Raja Giryes. "Autoencoders." Machine learning for data science handbook: data mining and knowledge discovery handbook (2023): 353-374.
 \end{enumerate}
 
 \end{frame}
 
+
+\section{Variational Inference}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+
+
     
+\newtcolorbox{mathframe}{
+    colback=LightBlue,
+    colframe=MainBlue,
+    arc=3pt,
+    boxrule=0.8pt,
+    enhanced,
+    drop shadow
+}
+
+\begin{frame}{Motivation}
+
+\footnotesize
+
+    \begin{itemize}
+        \item[] We are interested in \textbf{posterior distribution calculation}.
+    \end{itemize}
+
+    \begin{tcolorbox}[colback=white, colframe=MainBlue!10, title=\small Recall: Bayesian Framework, fonttitle=\bfseries, coltitle=MainBlue]
+        Given the parameter $\theta$ for a data distribution, we have prior as $p(\theta)$, a likelihood, if we write dataset as $\mathcal{D}$, then the posterior distribution can be calculated as:
+        
+        \begin{equation*}
+            \Large p(\theta | \mathcal{D}) = \frac{p(\mathcal{D} | \theta)p(\theta)}{p(\mathcal{D})}
+        \end{equation*}
+        
+        with $p(\mathcal{D}) = \int p(\mathcal{D} |\theta)p(\theta)d\theta$ as the \textit{marginal distribution}.
+    \end{tcolorbox}
+
+    \begin{columns}
+        \begin{column}{0.9\textwidth}
+            \textbf{\color{AccentOrange}So, what's the problem?}
+        \end{column}
+    \end{columns}
+
+    \pause
+    
+    \begin{tcolorbox}[enhanced, borderline west={2pt}{0pt}{red!70!black}, colback=red!5, frame hidden, sharp corners]
+        Computing $p(\mathcal{D})$ is \textbf{hard}, \textbf{intractable} due to the volume of data needed, and hence as a result, computing the posterior is hard too.
+    \end{tcolorbox}
+
+    \vfill
+    \begin{center}
+        \textit{Variational Inference (VI) is one way to do so.}
+    \end{center}
+
+
+\end{frame}
+
+%\begin{frame}{Variational Objective: The ELBO}
+%
+%\tiny
+%
+%We turn VI into an optimization problem: we choose a family of tractable distribution s $Q$ and find a member $q(\theta) \in Q$ that is as close to $p(\theta|\Dcal)$ as possible.
+%
+%What's the criteria for measuring the closeness between two distributions?
+%
+%\pause
+%
+%\textbf{KL-Divergence, JS-divergence, etc.}
+%
+%We want to minimize the KL divergence from $q(\theta)$ to $p(\theta|\Dcal)$
+%
+%\begin{align*}
+%KL(q(\theta)  || p(\theta|\Dcal)) = \Ebb_q[ \log q(\theta) ] -  \Ebb_q[ \log p(\theta | \Dcal) ]
+%\end{align*}
+%
+%Expanding the posterior, 
+%
+%\begin{align*}
+%KL(q(\theta)  || p(\cdot|\Dcal)) = \Ebb_q[ \log q(\theta) ] -  \Ebb_q[ \log p(\Dcal|\theta)] - \Ebb_q[ \log p(\theta)] + \log p(\Dcal)
+%\end{align*}
+%
+%We can rearrange equations as 
+%
+%\begin{align*}
+%\log p(\Dcal) = ELBO(q) + KL(q(\theta)  || p(\cdot|\Dcal))
+%\end{align*}
+%
+%where ELBO stands for Evidence Lower Bound (ELBO) is defined as 
+%
+%\begin{align*}
+%ELBO(q) =  \Ebb_q[ \log p(\Dcal|\theta)] - KL(q|(theta)  || p(\theta|\Dcal))
+%\end{align*}
+%
+%A $\log p (\Dcal)$ is constant wrt $q$, hence minimizing $KL(q(\theta)  || p(\theta|\Dcal)) $ is equivalent to maximizing ELBO.
+%
+%ELBO consists of two terms:
+%
+%\begin{enumerate}
+%\item Expected log-likelihood: Encourages $q$ to  place mass on parameters that explain the data well.
+%\item Negative KL divergence to the prior: Encourages $q$ to be as close to the prior as possible and act as a regulariser.
+%\end{enumerate}
+%We can see that the VI maximises a lower bound on the log marginal likelihood.
+%
+%
+%
+%\end{frame}
+
+\definecolor{DeepBlue}{RGB}{10, 50, 100}
+\definecolor{SoftGold}{RGB}{255, 248, 220}
+\definecolor{Emerald}{RGB}{46, 139, 87}
+
+% TColorBox Styles
+\tcbset{
+    formula style/.style={
+        colback=DeepBlue!5, colframe=DeepBlue, 
+        left=2pt, right=2pt, top=2pt, bottom=2pt,
+        sharp corners, boxrule=0.5pt
+    },
+    highlight style/.style={
+        enhanced, colback=Emerald!5, colframe=Emerald,
+        drop fuzzy shadow, arc=2pt
+    }
+}
+
+\begin{frame}{Variational Objective: The ELBO}
+
+
+\footnotesize
+
+    \begin{itemize}
+        \item[] We turn VI into an optimization problem: we choose a family of tractable distributions $\mathcal{Q}$ and find a member $q(\theta) \in \mathcal{Q}$ that is as close to $p(\theta|\mathcal{D})$ as possible.
+    \end{itemize}
+
+    \begin{tcolorbox}[colback=gray!5, colframe=gray!30, boxrule=0.5pt, size=small]
+        \centering \small What's the criteria for measuring the closeness between two distributions?
+    \end{tcolorbox}
+
+    \pause
+    \begin{columns}
+        \begin{column}{0.45\textwidth}
+            \textbf{KL-Divergence, JS-divergence, etc.}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+             \textit{Goal: Minimize KL divergence from $q(\theta)$ to $p(\theta|\mathcal{D})$}
+        \end{column}
+    \end{columns}
+
+    \begin{mathframe}
+\begin{align*}
+\text{KL}(q(\theta)  || p(\theta|\Dcal)) = \Ebb_q[ \log q(\theta) ] -  \Ebb_q[ \log p(\theta | \Dcal) ]
+\end{align*}
+
+Expanding the posterior, 
+
+\begin{align*}
+\text{KL}(q(\theta)  || p(\cdot|\Dcal)) = \Ebb_q[ \log q(\theta) ] -  \Ebb_q[ \log p(\Dcal|\theta)] - \Ebb_q[ \log p(\theta)] + \log p(\Dcal)
+\end{align*}
+    \end{mathframe}
+
+    We can rearrange the equations as:
+    
+    \begin{tcolorbox}[formula style]
+        \centering
+        $\log p(\mathcal{D}) = \text{ELBO}(q) + \text{KL}(q(\theta) \parallel p(\cdot|\mathcal{D}))$
+    \end{tcolorbox}
+
+    
+
+\end{frame}
+
+\begin{frame}{Variational Objective: The ELBO}
+
+
+The \textbf{Evidence Lower Bound (ELBO)} is defined as:
+    
+    \begin{tcolorbox}[highlight style]
+        \centering
+        $\text{ELBO}(q) = \mathbb{E}_q[ \log p(\mathcal{D}|\theta)] - \text{KL}(q(\theta) \parallel p(\theta))$
+    \end{tcolorbox}
+    
+    
+    \begin{small}
+   A $\log p (\Dcal)$ is constant wrt $q$, hence minimizing $KL(q(\theta)  || p(\theta|\Dcal)) $ is equivalent to maximizing ELBO. ELBO consists of two terms:
+    \begin{itemize}
+        \item[\textcolor{DeepBlue}{\tiny $\blacksquare$}] \textbf{Expected log-likelihood:} Encourages $q$ to place mass on parameters that explain the data well.
+        \item[\textcolor{DeepBlue}{\tiny $\blacksquare$}] \textbf{Negative KL to prior:} Encourages $q$ to be close to the prior (regularizer).
+    \end{itemize}
+    \end{small}
+
+    \vspace{0.1cm}
+    \centering \footnotesize \color{DeepBlue} \textit{VI maximizes a lower bound on the log marginal likelihood.}
+
+\end{frame}
+
+\begin{frame}{Mean-field Family}
+
+\footnotesize
+
+The next question, how do we choose $Q$.  A common choice for the variational family $Q$ is the mean-field family. Other options are \textit{full-covariance Gaussians}, and \textit{Normalizing Flows}.
+
+\begin{tcolorbox}[highlight style]
+The mean-field variational family assumes that the latent variables are independent of each other in the approximate posterior. Mathematically, if we have parameters $\theta = (\theta_1, \theta_2, \ldots, \theta_M)$, the mean-field approximation factorizes as:
+
+
+\begin{align*}
+q(\theta ) = \Pi_{j=1}^M q_j(\theta_j)
+\end{align*}
+
+\end{tcolorbox}
+
+\scriptsize
+
+ \begin{tcolorbox}[colback=white, colframe=MainBlue!10, title=~, fonttitle=\bfseries, coltitle=MainBlue]
+Each $q_j$ is a marginal variational distribution for the $j$-th parameter or group of parameters. The key point is that there are no cross-terms or dependencies between different $\theta_j$'s in the approximation.
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[blanker, borderline west={2pt}{0pt}{gray!40}, left=10pt]
+\tiny
+The term "mean-field" comes from physics, specifically from statistical mechanics. In physics, mean-field theory approximates a many-body problem by replacing interactions with an average or "mean" field. Similarly, in variational inference, we're approximating a complex posterior where variables are dependent by a simpler distribution where they're independent.
+\end{tcolorbox}
+
+
+\end{frame}
+
+\begin{frame}{Stochastic Gradients for VI}
+
+We can use gradient descent based methods for optimizing ELBO.
+
+
+    \begin{tcolorbox}[colback=softblue, colframe=mainblue, arc=4pt, boxrule=1pt, left=10pt, right=10pt, top=8pt, bottom=8pt]
+    
+We need to compute gradients of the ELBO wrt to the parameters of $q$.
+
+\begin{align*}
+\Lcal (\lambda) = \text{ELBO}(q_\lambda) = \mathbb{E}_{q_{\lambda}(\theta)}[ \log p(\mathcal{D}|\theta)] - \text{KL}(q_{\lambda}(\theta) \parallel p(\theta))
+\end{align*}
+where $\lambda$ is the variational parameters such  as mean and log-std of a Gaussian.
+\end{tcolorbox}
+
+The KL term can often be computed analytically (e.g., when both $q$ and $p$ are Gaussians). The expected log‑likelihood term, however, usually requires approximation.
+
+
+    \begin{tcolorbox}[highlight style]
+In PyTorch, we can use reparameterization trick to estimate the gradients of the expectation.
+\end{tcolorbox}
+
+\end{frame}
+
 \end{document}
