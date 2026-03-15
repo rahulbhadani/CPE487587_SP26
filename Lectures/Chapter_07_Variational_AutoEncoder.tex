@@ -590,6 +590,8 @@ There are two ways to add noise to DAE:
         with $p(\mathcal{D}) = \int p(\mathcal{D} |\theta)p(\theta)d\theta$ as the \textit{marginal distribution}.
     \end{tcolorbox}
 
+$\theta$ denotes latent parameters that we want to infer.
+
     \begin{columns}
         \begin{column}{0.9\textwidth}
             \textbf{\color{AccentOrange}So, what's the problem?}
@@ -602,7 +604,8 @@ There are two ways to add noise to DAE:
         Computing $p(\mathcal{D})$ is \textbf{hard}, \textbf{intractable} due to the volume of data needed, and hence as a result, computing the posterior is hard too.
     \end{tcolorbox}
 
-    \vfill
+\vspace{-10pt}
+ 
     \begin{center}
         \textit{Variational Inference (VI) is one way to do so.}
     \end{center}
@@ -677,7 +680,7 @@ There are two ways to add noise to DAE:
     }
 }
 
-\begin{frame}{Variational Objective: The ELBO}
+\begin{frame}{Variational Objective}
 
 
 \footnotesize
@@ -699,28 +702,100 @@ There are two ways to add noise to DAE:
              \textit{Goal: Minimize KL divergence from $q(\theta)$ to $p(\theta|\mathcal{D})$}
         \end{column}
     \end{columns}
+    
+\end{frame}
 
-    \begin{mathframe}
+\begin{frame}[allowframebreaks]{KL Divergence}
+
+\begin{definition}
+
 \begin{align*}
-\text{KL}(q(\theta)  || p(\theta|\Dcal)) = \Ebb_q[ \log q(\theta) ] -  \Ebb_q[ \log p(\theta | \Dcal) ]
+KL( q(\theta) || p(\theta | \Dcal) ) = \bigint q(\theta) \log \frac{q(\theta)}{p(\theta | \Dcal)} d\theta
 \end{align*}
 
-Expanding the posterior, 
+\end{definition}
+
+
+
+
+
+But KL divergence still depends on $p(\Dcal) = \int p(\Dcal | \theta) p(\theta)\theta$.
+
+To see, how, we can rewrite the KL integral using the definition of Expectation.
+
+\begin{tcolorbox}[
+    enhanced,                          % Enables advanced skin features
+    colback=gray!5!white,              % Light gray background
+    colframe=teal!75!black,            % Dark teal frame
+    boxrule=0.5pt,                     % Thin outer border
+    left=4mm,                          % Extra space for the accent bar
+    enlarge left by=0.1mm,               % Slight offset from margin
+    sharp corners,                     % Professional, clean edges
+    borderline west={3pt}{0pt}{teal},  % The "Steel" accent bar
+    drop lifted shadow=black!30!white, % Subtle "lifted" shadow for depth
+    fonttitle=\bfseries\sffamily,      % Bold, clean title font
+    coltitle=white,                    % White text on teal background
+    attach boxed title to top left={   % The "Ribbon" effect
+        xshift=0.1mm, 
+        yshift=-0.1mm, 
+        yshifttext=-0.1mm 
+    },
+    boxed title style={
+        colback=teal!75!black, 
+        sharp corners, 
+        boxrule=0pt
+    },
+    title={}    % Your title here
+]
 
 \begin{align*}
-\text{KL}(q(\theta)  || p(\cdot|\Dcal)) = \Ebb_q[ \log q(\theta) ] -  \Ebb_q[ \log p(\Dcal|\theta)] - \Ebb_q[ \log p(\theta)] + \log p(\Dcal)
+\text{KL}(q(\theta)  || p(\theta|\Dcal))  & = \Ebb_q \bigg[ \log \frac{q(\theta)}{p(\theta | \Dcal)} \bigg]\\
+& = \Ebb_q [ \log q(\theta) ]  - \Ebb_q [ \log p(\theta | \Dcal)\\
+& = \Ebb_q [ \log q(\theta) ]  - \Ebb_q \bigg[ \log \frac{p(\theta , \Dcal)}{p(\Dcal)}\bigg]\\
+& = \Ebb_q [ \log q(\theta) ]  - \Ebb_q[\log p(\theta, \Dcal) ]  + \Ebb_q[ \log p(\Dcal) ] \\
+& = \Ebb_q [ \log q(\theta) ]  - \Ebb_q[\log p(\theta, \Dcal) ]  + \int q(\theta) \log p(\Dcal) d \theta\\
+& = \Ebb_q [ \log q(\theta) ]  - \Ebb_q[\log p(\theta, \Dcal) ]  + \log p(\Dcal) 
 \end{align*}
-    \end{mathframe}
+\end{tcolorbox}
+The last step is because $\log p(\Dcal)$ is a constant with respect to $q(\theta)$. 
 
-    We can rearrange the equations as:
-    
-    \begin{tcolorbox}[formula style]
-        \centering
-        $\log p(\mathcal{D}) = \text{ELBO}(q) + \text{KL}(q(\theta) \parallel p(\cdot|\mathcal{D}))$
-    \end{tcolorbox}
+\vspace{10pt}
 
-    
+We can ignore $\log p(\Dcal)$ in our optimization problem.
 
+\vspace{10pt}
+
+Minimizing a quantity means maximizing its negative, and so we maximize the following quantity:
+
+\begin{align*}
+\text{ELBO}(q) & = -( \text{KL}(q(\theta)  || p(\theta|\Dcal))  - \log p(\Dcal) ) \\
+& = - \bigg( \Ebb_q [ \log q(\theta) ]  - \Ebb_q[\log p(\theta, \Dcal) ]  + \log p(\Dcal)  - \log p(\Dcal) \bigg)\\
+& =  \Ebb_q[\log p(\theta, \Dcal) ] - \Ebb_q [ \log q(\theta) ]
+\end{align*}
+
+We could expand joint probability and rewrite
+
+\begin{align*}
+\text{ELBO}(q) & = \Ebb_q[ \log p(\Dcal | \theta)] + \Ebb_q[ \log p(\theta)] - \Ebb_q [ \log q(\theta) ]\\
+& = \Ebb_q[ \log p(\Dcal | \theta)] + \Ebb_q \bigg[ \log \frac{p(\theta)}{q(\theta)} \bigg]\\
+& = \Ebb_q[ \log p(\Dcal | \theta)] - \Ebb_q \bigg[ \log \frac{q(\theta)}{p(\theta)} \bigg]\\
+& = \Ebb_q[ \log p(\Dcal | \theta)] - \text{KL}( q(\theta) || p(\theta))
+\end{align*}
+
+
+
+We could also note that 
+\begin{align*}
+p(\Dcal, \theta) = p(\Dcal)p(\theta, \Dcal) \text{ from the  Bayes' rule.}
+\end{align*}
+Hence, 
+\begin{align*}
+\text{ELBO}(q) & = \Ebb_q[\log p(\theta| \Dcal) + \log p(\Dcal) ] - \Ebb_q [ \log q(\theta) ] \\
+& {\text{\color{decoderPurple} Taking constant out of the expectation, and distributing the expectation}}\\
+\text{ELBO}(q) & = \Ebb_q[\log p(\theta| \Dcal) ] - \Ebb_q [ \log q(\theta) ] +  \log p(\Dcal)\\
+& \text{Since } \Dcal \text{ is fixed } , \log p(\Dcal) \text{ is a constant with respect to } q\\
+  \text{ELBO}(q) & = \Ebb_q[\log p(\theta| \Dcal) ] - \Ebb_q [ \log q(\theta) ] + constant
+\end{align*}
 \end{frame}
 
 \begin{frame}{Variational Objective: The ELBO}
@@ -732,6 +807,8 @@ The \textbf{Evidence Lower Bound (ELBO)} is defined as:
         \centering
         $\text{ELBO}(q) = \mathbb{E}_q[ \log p(\mathcal{D}|\theta)] - \text{KL}(q(\theta) \parallel p(\theta))$
     \end{tcolorbox}
+
+because the marginal is called \textit{evidence} as well.    
     
     
     \begin{small}
@@ -747,18 +824,173 @@ The \textbf{Evidence Lower Bound (ELBO)} is defined as:
 
 \end{frame}
 
-\begin{frame}{Mean-field Family}
+
+\begin{frame}{Question !}
+
+Show that $\log p(\Dcal) \geq \text{ELBO}(q)$.
+
+\pause 
+
+\begin{tcolorbox}[
+    enhanced,
+    breakable,                          % Allows the proof to span multiple pages
+    frame hidden,                       % Removes the standard outer box
+    interior hidden,                    % Transparent background (or use colback=gray!5)
+    borderline west={2pt}{0pt}{black},  % Main vertical line
+    borderline west={0.75pt}{3pt}{black!30}, % Secondary thinner "echo" line
+    sharp corners,
+    boxrule=0pt,
+    left=10pt,                          % Space between lines and text
+    right=0pt,
+    top=0pt,
+    bottom=0pt,
+    coltitle=black,
+    fonttitle=\bfseries\sffamily\small,
+    attach title to upper,              % Places "Proof" at the start of the text
+    title={PROOF.\quad},                % The label
+    after title={\textit{---}\medskip}, % Decorative separator
+    after upper={\hfill\scalebox{0.8}{$\square$}} % The Q.E.D. symbol at the end
+]
+
+\begin{align*}
+\text{ELBO}(q) & = -( \text{KL}(q(\theta)  || p(\theta|\Dcal))  - \log p(\Dcal) ) \\
+& \log p(\Dcal) = \text{ELBO}(q)  + ( \text{KL}(q(\theta)  || p(\theta|\Dcal))\\
+& \log p(\Dcal) \geq \text{ELBO}(q)
+\end{align*}
+\end{tcolorbox}
+
+{\color{mainblue}
+Maximizing ELBO finds approx distribution $p(\theta)$ for latent parameters $\theta$ that allows data to be predicted really well, but penalty occurs when $q(\theta)$ is far away from the prior $p(\theta)$.
+}
+
+\end{frame}
+
+
+\begin{frame}{What is Variational in VI?}
+    
+    \begin{tcolorbox}[title=]
+We are not looking to find a single best value that maximizes the log likelihood, but rather a single best function. 
+    \end{tcolorbox}
+
+    \vspace{0.5cm}
+
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \textbf{Moving Beyond MLE}
+            \begin{itemize}
+                \item We are \textbf{not} looking to find a single best value that maximizes the log-likelihood.
+                \item Instead, we seek to identify the single \textbf{best function} (distribution).
+            \end{itemize}
+        \end{column}
+        
+        \vrule{}
+        
+        \begin{column}{0.45\textwidth}
+            \textbf{The Methodology}
+            \begin{itemize}
+                \item To achieve this, we employ \textbf{variational calculus}.
+                \item The term "Variational" is derived directly from this mathematical framework.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.8cm}
+    
+    \begin{center}
+        \footnotesize
+        \textit{Goal: Approximate a complex posterior by finding the closest member of a simpler family of distributions.}
+    \end{center}
+
+\end{frame}
+
+
+\begin{frame}{Variational Calculus, Briefly}
 
 \footnotesize
 
-The next question, how do we choose $Q$.  A common choice for the variational family $Q$ is the mean-field family. Other options are \textit{full-covariance Gaussians}, and \textit{Normalizing Flows}.
+%  Decorative header rule with tikz 
+\begin{tikzpicture}[overlay, remember picture]
+  \draw[vcGold, line width=1.8pt]
+    ([yshift=-0.08cm, xshift=0.3cm]current page.north west)
+    -- ([yshift=-0.08cm, xshift=-0.3cm]current page.north east);
+  \fill[vcDeep, opacity=0.06]
+    ([yshift=-0.4cm]current page.north west)
+    rectangle
+    ([yshift=-1.6cm]current page.north east);
+\end{tikzpicture}
+
+%  Intro box 
+\begin{tcolorbox}[vcLight]
+\scriptsize
+  Variational calculus (Calc is concerned with finding the functions that minimize
+  or maximize quantities expressed as integrals. \textbf{[Pattern Recognition and Machine Learning (Christopher M. Bishop), Section 10.1]}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[vcAccent, title={\faCalculator\enspace Basic Calculus}]
+      \color{vcSilver}
+      Unlike basic calculus, which focuses on derivatives of functions, variational calculus focuses on finding the function itself that produces the optimal outcome.
+
+    \end{tcolorbox}
+
+
+\vspace{6pt}
+
+%  Problem statement 
+\begin{tcolorbox}[vcHighlight, title={\color{vcDeep}\bfseries\small In Variational Calculus, }]
+  Find a function $y(x)$ that minimizes the functional  $J[y] = \int F(x, y, y') dx$.
+  
+  Here, $J[y]$ is not just a number but a \textbf{functional} —
+  a mapping from functions to numbers.
+\end{tcolorbox}
+
+%  What the integral can represent 
+{\small\color{vcMid}%
+The integral might represent things like total energy, time, or distance and our goal is to minimize it.}
+
+
+\end{frame}
+
+
+\begin{frame}{Some examples where Variational Calculus are useful}
+
+\begin{enumerate}
+\item What is the shortest or smoothest path to the goal in case of autonomous navigation?
+
+\item How do navigate while consuming the least energy?
+
+\item How to avoid collision while being efficient?
+\end{enumerate}
+
+
+\end{frame}
+
+\begin{frame}{The Euler-Lagrange Equation}
+
+The main tool in variational calculus is the Euler-Lagrange equation
+
+    \begin{tcolorbox}[vcAccent, title={\faCalculator\enspace Basic Calculus}]
+    \color{vcSilver}
+    \Large
+\begin{align*}
+\frac{d}{dx}\pdv{F}{y'} - \pdv{F}{y} = 0
+\end{align*}
+\end{tcolorbox}
+which tells us the condition a function $y(x)$ mut satisfy to  minimize/maximize a given functional. In robotics, $y(x)$ could be robot's trajectory. $F$ could be energy, cost, control effort, distance, etc.
+
+\end{frame}
+
+\begin{frame}{Mean-field Variational Family}
+
+\footnotesize
+
+The next question, how do we choose {\color{red}$Q$}.  A common choice for the variational family $Q$ is the \textbf{mean-field family}. Other options are \textit{full-covariance Gaussians}, and \textit{Normalizing Flows}.
 
 \begin{tcolorbox}[highlight style]
 The mean-field variational family assumes that the latent variables are independent of each other in the approximate posterior. Mathematically, if we have parameters $\theta = (\theta_1, \theta_2, \ldots, \theta_M)$, the mean-field approximation factorizes as:
 
 
 \begin{align*}
-q(\theta ) = \Pi_{j=1}^M q_j(\theta_j)
+q(\theta ) = \prod_{j=1}^M q_j(\theta_j)
 \end{align*}
 
 \end{tcolorbox}
@@ -776,9 +1008,166 @@ The term "mean-field" comes from physics, specifically from statistical mechanic
 \end{tcolorbox}
 
 
+
 \end{frame}
 
-\begin{frame}{Stochastic Gradients for VI}
+
+%%%
+
+\tcbset{
+    sharp corners,
+    colback=white,
+    colframe=theoryBlue!75!black,
+    fonttitle=\bfseries,
+    boxrule=0.5pt
+}
+
+
+
+%\begin{frame}[allowframebreaks]{Mean-field Variational Inference with ELBO}
+%
+%\tiny
+%
+% Recall:
+% \begin{align*}
+% \text{ELBO}(q) & = \Ebb_q[ \log p(\theta, \Dcal)] - \Ebb_q[\log q(\theta) ]\\
+% & = \int \prod_{i=j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta - \int \prod_{i=j}^M q_j(\theta_j)
+% \end{align*}
+% 
+% We optimize ELBO with respect to a single variational density $q_j(\theta_i)$ and keep others fixed.
+% 
+% 
+% 
+% \begin{align*}
+% \text{ELBO}(q_j) & = \int \prod_{i=j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta - \int \prod_{i=j}^M q_j(\theta_j) \log \Pi_{i=j}^M q_j(\theta_j) d\theta \\
+% & = \int \prod_{i=j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta  - \int  q_j(\theta_j) \log q_j(\theta_j) d\theta_j  - \underbrace{\int \prod_{i\neq j}^M q_j(\theta_j) \log \Pi_{i=j}^M q_j(\theta_j) d\theta_{-j}}_{\color{blue}\text{Fixed with respect to }q_j{\theta_j}}\\
+% & \propto \int \prod_{i=j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta  - \int  q_j(\theta_j) \log q_j(\theta_j) d\theta_j \\
+% & = \int q_j(\theta_j) \bigg( \int \prod_{i\neq j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta_{-j}  \bigg)d\theta_j - \int  q_j(\theta_j) \log q_j(\theta_j) d\theta_j\\
+% & = q_j(\theta_j) \Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j - \int q_j(\theta_j) \log q_j(\theta_j) d\theta_j
+% \end{align*}
+% 
+%We could use variational calculus to find the optimal variational density $q^*_j (\theta_j)$.
+% 
+% We can further define $\log \tilde{p} (\Dcal, \theta_j) =  \Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j + Constant$.
+% 
+%The constant is from the previous step just before the proportional.
+% 
+% Hence, 
+% 
+% \begin{align*}
+%  \text{ELBO}(q_j) & \propto \int  q_j(\theta_j) \log \tilde{p} (\Dcal, \theta_j)d\theta_j   - \int q_j(\theta_j) \log q_j(\theta_j) d\theta_j \\
+% & \text{\color{uiRose} Merge the integral due to common integraion variable}\\
+%& =   \int  q_j(\theta_j) \log\cfrac{\tilde{p} (\Dcal, \theta_j)}{q_j(\theta_j)}d\theta_j \\
+%& = - \int  q_j(\theta_j) \log\cfrac{q_j(\theta_j)}{\tilde{p} (\Dcal, \theta_j)}d\theta_j\\
+%& = - KL( q_j(\theta_j)  || \tilde{p} (\Dcal, \theta_j)) \quad \text{\color{rnnNavy}(Using the definition of KL Divergence)}
+% \end{align*}
+% 
+%Hence, maximizing the ELBO is equivalent to minimizing the KL Divergence between $q_j(\theta_j)$  and $\tilde{p} (\Dcal, \theta_j)$.
+%
+%Hence, under the mean-field assumption, the optimal variational density is given by 
+%
+%\begin{align*}
+%q_j^* & = exp\bigg(\Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j + Constant \bigg)\\
+%& = \cfrac{\Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j)}{\int \Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j}
+%\end{align*}
+%
+%Note that this is not an explicit solution because each optimal variational density depends on all others. Hence, the true solution will be iterative ones.
+%
+%\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]{Mean-field Variational Inference with ELBO}
+
+\begin{tcolorbox}[title=Recall: The ELBO Definition, colframe=theoryBlue]
+\footnotesize
+ \begin{align*}
+ \text{ELBO}(q) & = \Ebb_q[ \log p(\theta, \Dcal)] - \Ebb_q[\log q(\theta) ]\\
+ & = \int \prod_{i=j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta - \int \prod_{i=j}^M q_j(\theta_j)
+ \end{align*}
+\end{tcolorbox}
+
+\vspace{0.2cm}
+
+\small
+ We optimize ELBO with respect to a single variational density $q_j(\theta_i)$ and keep others fixed.
+
+\begin{tcolorbox}[colback=gray!5, colframe=gray!50, title=Derivation for $q_j$]
+\scriptsize
+ \begin{align*}
+ \text{ELBO}(q_j) & = \int \prod_{i=j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta - \int \prod_{i=j}^M q_j(\theta_j) \log \prod_{i=j}^M q_j(\theta_j) d\theta \\
+ & = \int \prod_{i=j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta  - \int  q_j(\theta_j) \log q_j(\theta_j) d\theta_j  - \underbrace{\int \prod_{i\neq j}^M q_j(\theta_j) \log \prod_{i\neq j}^M q_j(\theta_j) d\theta_{-j}}_{\color{blue}\text{Fixed with respect to }q_j{\theta_j}}\\
+ & \propto \int \prod_{i=j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta  - \int  q_j(\theta_j) \log q_j(\theta_j) d\theta_j \\
+ & = \int q_j(\theta_j) \bigg( \int \prod_{i\neq j}^M q_j(\theta_j) \log p(\theta, \Dcal) d\theta_{-j}  \bigg)d\theta_j - \int  q_j(\theta_j) \log q_j(\theta_j) d\theta_j\\
+ & = q_j(\theta_j) \Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j - \int q_j(\theta_j) \log q_j(\theta_j) d\theta_j
+ \end{align*}
+\end{tcolorbox}
+
+\small
+
+We could use variational calculus to find the optimal variational density $q^*_j (\theta_j)$.
+ 
+ We can further define $\log \tilde{p} (\Dcal, \theta_j) =  \Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j + Constant$.
+ 
+The constant is from the previous step just before the proportional.
+ 
+ Hence, 
+ 
+ 
+\begin{tcolorbox}[colframe=uiRose, title=Relation to KL Divergence]
+\tiny
+ \begin{align*}
+  \text{ELBO}(q_j) & \propto \int  q_j(\theta_j) \log \tilde{p} (\Dcal, \theta_j)d\theta_j   - \int q_j(\theta_j) \log q_j(\theta_j) d\theta_j \\
+ & \text{\color{uiRose} Merge the integral due to common integraion variable}\\
+& =   \int  q_j(\theta_j) \log\cfrac{\tilde{p} (\Dcal, \theta_j)}{q_j(\theta_j)}d\theta_j \\
+& = - \int  q_j(\theta_j) \log\cfrac{q_j(\theta_j)}{\tilde{p} (\Dcal, \theta_j)}d\theta_j\\
+& = - KL( q_j(\theta_j)  || \tilde{p} (\Dcal, \theta_j)) \quad \text{\color{rnnNavy}(Using the definition of KL Divergence)} \\
+& 
+\quad \text{The ELBO is equal to the negative KL divergence up to an additive constant.}
+ \end{align*}
+\end{tcolorbox}
+
+\footnotesize
+Hence, maximizing the ELBO is equivalent to minimizing the KL Divergence between $q_j(\theta_j)$  and $\tilde{p} (\Dcal, \theta_j)$.
+
+Hence, under the mean-field assumption, the optimal variational density is given by 
+
+\begin{tcolorbox}[colframe=proofGreen, title=The Optimal Mean-Field Update]
+\begin{align*}
+q_j^* & = exp\bigg(\Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j + Constant \bigg)\\
+& = \cfrac{\Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j)}{\int \Ebb_{q(\theta_{-j})}[ \log p(\theta, \Dcal)] d\theta_j}
+\end{align*}
+\end{tcolorbox}
+
+Note that this is not an explicit solution because each optimal variational density depends on all others. Hence, the true solution will be iterative ones.
+
+This process is called \textbf{Coordinated Ascent Variational Inference}.
+
+\end{frame}
+
+%\subsection{Stochastic Variational Inference}
+%
+%\begin{frame}
+%    \subsectionpage
+%\end{frame}
+%
+%
+%\begin{frame}{Coordinated Ascent Variational Inference is Slow}
+%
+%CAVI is slow.
+%
+%\begin{enumerate}
+%\item CAVI iterates between re-analyzing every data point in the data set and re-estimating its hidden structure. 
+%
+%\item This is inefficient for large data sets, however, because it requires a full pass through the data at each iteration.
+%\end{enumerate}
+%
+%
+%
+%\end{frame}
+
+\begin{frame}{Stochastic Gradients for Variational Inference}
 
 We can use gradient descent based methods for optimizing ELBO.
 
@@ -801,5 +1190,186 @@ In PyTorch, we can use reparameterization trick to estimate the gradients of the
 \end{tcolorbox}
 
 \end{frame}
+
+\begin{frame}[allowframebreaks]{Example: KL Divergence between Two Gaussians}
+
+
+\footnotesize
+
+\begin{tcolorbox}[colframe=uiRose, title=~~]
+
+Derive the closed-form $KL(q \| p)$ where:
+\begin{align*}
+    q(z) &= \mathcal{N}(z;\, m,\, s^2)
+           = \frac{1}{\sqrt{2\pi s^2}} \exp\!\left(-\frac{(z-m)^2}{2s^2}\right) \\[6pt]
+    p(z) &= \mathcal{N}(z;\, \mu_0,\, \sigma_0^2)
+           = \frac{1}{\sqrt{2\pi\sigma_0^2}} \exp\!\left(-\frac{(z-\mu_0)^2}{2\sigma_0^2}\right)
+\end{align*}
+\end{tcolorbox}
+
+
+
+
+\begin{tcolorbox}[title=Solution, colframe=theoryBlue, breakable]
+
+\begin{align*}
+    KL(q \| p)
+    &= \int_{-\infty}^{\infty} q(z)\, \log \frac{q(z)}{p(z)}\, dz \\
+    &= \int_{-\infty}^{\infty} q(z)\, \log q(z)\, dz
+       - \int_{-\infty}^{\infty} q(z)\, \log p(z)\, dz
+\end{align*}
+
+ \end{tcolorbox}
+
+\pause
+
+
+\begin{tcolorbox}[colframe=theoryBlue, breakable]
+
+ 
+Taking the log of $q(z)$:
+\begin{align*}
+    \log q(z)
+    &= \log \left[ \frac{1}{\sqrt{2\pi s^2}}
+       \exp\!\left(-\frac{(z-m)^2}{2s^2}\right) \right] \\
+    &= -\frac{1}{2}\log(2\pi) - \frac{1}{2}\log(s^2) - \frac{(z-m)^2}{2s^2}
+\end{align*}
+ 
+ 
+ Taking the log of $p(z)$:
+\begin{align*}
+    \log p(z)
+    &= \log \left[ \frac{1}{\sqrt{2\pi\sigma_0^2}}
+       \exp\!\left(-\frac{(z-\mu_0)^2}{2\sigma_0^2}\right) \right] \\
+    &= -\frac{1}{2}\log(2\pi) - \frac{1}{2}\log(\sigma_0^2) - \frac{(z-\mu_0)^2}{2\sigma_0^2}
+\end{align*}
+
+ \end{tcolorbox}
+
+\pause
+
+
+\begin{tcolorbox}[colframe=theoryBlue, breakable]
+
+Taking the difference:
+\begin{align*}
+    \log q(z) - \log p(z)
+    &= \left[-\frac{1}{2}\log(2\pi) - \frac{1}{2}\log(s^2) - \frac{(z-m)^2}{2s^2}\right] \\
+    &\quad - \left[-\frac{1}{2}\log(2\pi) - \frac{1}{2}\log(\sigma_0^2) - \frac{(z-\mu_0)^2}{2\sigma_0^2}\right] \\[6pt]
+    &= \frac{1}{2}\log(\sigma_0^2) - \frac{1}{2}\log(s^2)
+       - \frac{(z-m)^2}{2s^2} + \frac{(z-\mu_0)^2}{2\sigma_0^2} \\[6pt]
+    &= \log\frac{\sigma_0}{s}
+       - \frac{(z-m)^2}{2s^2}
+       + \frac{(z-\mu_0)^2}{2\sigma_0^2}
+\end{align*}
+
+ \end{tcolorbox}
+
+\pause
+
+
+\begin{tcolorbox}[colframe=theoryBlue, breakable]
+
+\begin{align*}
+    KL
+    &= \mathbb{E}_q\!\left[\log q(z) - \log p(z)\right] \\
+    &= \mathbb{E}_q\!\left[
+         \log\frac{\sigma_0}{s}
+         - \frac{(z-m)^2}{2s^2}
+         + \frac{(z-\mu_0)^2}{2\sigma_0^2}
+       \right] \\[6pt]
+    &= \log\frac{\sigma_0}{s}
+       - \frac{1}{2s^2}\,\mathbb{E}_q\!\left[(z-m)^2\right]
+       + \frac{1}{2\sigma_0^2}\,\mathbb{E}_q\!\left[(z-\mu_0)^2\right]
+\end{align*}
+ 
+ 
+  \end{tcolorbox}
+
+\pause
+
+
+\begin{tcolorbox}[colframe=theoryBlue, breakable]
+ 
+ This is the variance of $q$:
+\begin{align*}
+    \mathbb{E}_q\!\left[(z - m)^2\right] &= s^2
+\end{align*}
+ 
+ 
+ Add and subtract $m$ inside the square:
+\begin{align*}
+    \mathbb{E}_q\!\left[(z - \mu_0)^2\right]
+    &= \mathbb{E}_q\!\left[(z - m + m - \mu_0)^2\right] \\
+    &= \mathbb{E}_q\!\left[(z-m)^2\right]
+       + 2(m-\mu_0)\,\mathbb{E}_q\!\left[z - m\right]
+       + (m - \mu_0)^2 \\
+    &= s^2 + 2(m - \mu_0) \cdot 0 + (m - \mu_0)^2 \\
+    &= s^2 + (m - \mu_0)^2
+\end{align*}
+ 
+where $\mathbb{E}_q[z - m] = 0$ since $m$ is the mean of $q$.
+ 
+  \end{tcolorbox}
+
+\pause
+
+
+\begin{tcolorbox}[colframe=theoryBlue, breakable]
+
+ \begin{align*}
+    KL
+    &= \log\frac{\sigma_0}{s}
+       - \frac{1}{2s^2} \cdot s^2
+       + \frac{1}{2\sigma_0^2}\left[s^2 + (m - \mu_0)^2\right] \\[6pt]
+    &= \log\frac{\sigma_0}{s}
+       - \frac{1}{2}
+       + \frac{s^2 + (m - \mu_0)^2}{2\sigma_0^2} \\[10pt]
+    & = \log\frac{\sigma_0}{s}
+            + \frac{s^2 + (m - \mu_0)^2}{2\sigma_0^2}
+            - \frac{1}{2}
+\end{align*}
+ 
+  \end{tcolorbox}
+
+\pause
+
+
+\begin{tcolorbox}[colframe=theoryBlue, breakable]
+
+ Substituting $\mu_0 = 0$ and $\sigma_0 = 1$:
+\begin{align*}
+    KL
+    &= \log\frac{1}{s} + \frac{s^2 + m^2}{2 \cdot 1} - \frac{1}{2} \\[6pt]
+    &= -\log s + \frac{s^2 + m^2}{2} - \frac{1}{2}
+\end{align*}
+ 
+
+\end{tcolorbox}
+
+
+
+\end{frame}
+
+\begin{frame}{References}
+
+\begin{itemize}
+
+\item Section 10.1 of Pattern Recognition and Machine Learning (Christopher M. Bishop 2006)
+\item Stochastic Variational Inference \url{https://arxiv.org/pdf/1206.7051}
+
+
+\end{itemize}
+
+
+
+\end{frame}
+
+\section{Variational AutoEncoder}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
 
 \end{document}

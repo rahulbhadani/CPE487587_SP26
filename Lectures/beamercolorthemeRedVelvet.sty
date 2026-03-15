@@ -295,6 +295,22 @@
 \definecolor{darkgray}{RGB}{50, 50, 50}
 
 
+\definecolor{deepblue}{RGB}{0, 51, 102}
+\definecolor{boxblue}{RGB}{235, 245, 255}
+\definecolor{layerorange}{RGB}{255, 153, 51}
+\definecolor{layergreen}{RGB}{76, 153, 0}
+
+
+\definecolor{layer1}{RGB}{255, 153, 51} % Orange
+\definecolor{layer2}{RGB}{76, 153, 0}   % Green
+\definecolor{layer3}{RGB}{0, 153, 204}  % Blue
+
+\definecolor{MainBlue}{RGB}{0, 51, 102}
+\definecolor{LightBlue}{RGB}{235, 245, 255}
+\definecolor{AccentOrange}{RGB}{255, 140, 0}
+
+\definecolor{mainaccent}{RGB}{0, 114, 178} % Professional Blue
+\definecolor{backblue}{RGB}{245, 249, 255} % Very light wash
 
 \usecolortheme[named=cashblue]{structure}
 \setbeamercolor{titlelike}{parent=structure}
@@ -305,7 +321,43 @@
 \setbeamercolor{block title alerted}{bg=cpelime}      % Using softer lavender instead of lime
 \setbeamercolor{block body alerted}{bg=cpeyellow}     % Using beige instead of yellow
 
+\tcbuselibrary{skins, breakable, theorems}
 
+
+
+%  Custom palette 
+\definecolor{vcDeep}{HTML}{1A1F3A}   % deep navy
+\definecolor{vcGold}{HTML}{E8B84B}   % warm gold
+\definecolor{vcTeal}{HTML}{2ABAAD}   % vivid teal
+\definecolor{vcSilver}{HTML}{E8ECF2} % light silver-grey
+\definecolor{vcMid}{HTML}{3D4A6B}    % mid blue-grey
+
+\definecolor{theoryBlue}{RGB}{0, 102, 204}
+\definecolor{mathGold}{RGB}{218, 165, 32}
+\definecolor{proofGreen}{RGB}{34, 139, 34}
+\definecolor{uiRose}{RGB}{190, 40, 80}
+\definecolor{rnnNavy}{RGB}{0, 0, 128}
+
+%  Shared box styles 
+\tcbset{
+  vcBase/.style={
+    enhanced, arc=4pt, boxrule=0pt, left=8pt, right=8pt,
+    top=6pt, bottom=6pt, fontupper=\small
+  },
+  vcAccent/.style={
+    vcBase, colback=vcDeep, colframe=vcGold,
+    boxrule=1.5pt, coltitle=vcGold, fonttitle=\bfseries\small
+  },
+  vcLight/.style={
+    vcBase, colback=vcSilver, colframe=vcTeal, boxrule=1pt
+  },
+  vcHighlight/.style={
+    vcBase, colback=vcGold!18, colframe=vcGold,
+    boxrule=1.5pt, leftrule=4pt
+  },
+}
+
+\usepackage{derivative}
 
 \usepackage{hyperref}
 
