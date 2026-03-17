@@ -537,21 +537,7 @@ There are two ways to add noise to DAE:
     \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Reading List}
 
-\scriptsize
-
-\begin{enumerate}
-\item Vincent, P., Larochelle, H., Bengio, Y., \& Manzagol, P. A. (2008, July). Extracting and composing robust features with denoising autoencoders. In Proceedings of the 25th international conference on Machine learning (pp. 1096-1103). \url{https://dl.acm.org/doi/pdf/10.1145/1390156.1390294}
-\item Alain, Guillaume, and Yoshua Bengio. "What regularized auto-encoders learn from the data-generating distribution." The Journal of Machine Learning Research 15, no. 1 (2014): 3563-3593. \url{https://www.jmlr.org/papers/volume15/alain14a/alain14a.pdf}
-\item Vincent, Pascal, Hugo Larochelle, Isabelle Lajoie, Yoshua Bengio, Pierre-Antoine Manzagol, and Léon Bottou. "Stacked denoising autoencoders: Learning useful representations in a deep network with a local denoising criterion." Journal of machine learning research 11, no. 12 (2010).
-\item Zhai, J., Zhang, S., Chen, J. and He, Q., 2018, October. Autoencoder and its various variants. In 2018 IEEE international conference on systems, man, and cybernetics (SMC) (pp. 415-419). IEEE.
-\item Li, Pengzhi, Yan Pei, and Jianqiang Li. "A comprehensive survey on design and application of autoencoder in deep learning." Applied Soft Computing 138 (2023): 110176.
-\item Michelucci, Umberto. "An introduction to autoencoders." arXiv preprint arXiv:2201.03898 (2022).
-\item Bank, Dor, Noam Koenigstein, and Raja Giryes. "Autoencoders." Machine learning for data science handbook: data mining and knowledge discovery handbook (2023): 353-374.
-\end{enumerate}
-
-\end{frame}
 
 
 \section{Variational Inference}
@@ -1351,13 +1337,733 @@ where $\mathbb{E}_q[z - m] = 0$ since $m$ is the mean of $q$.
 
 \end{frame}
 
-\begin{frame}{References}
+
+\section{Variational AutoEncoder}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+\begin{frame}{Data Generating Process and a Neural Network}
+
+
+\begin{flowbox}{}
+Two primary ways to generate: 
+
+\begin{itemize}
+
+\item Probability Distribution Functions
+\item (Ordinary/Partial) Differential Equations
+\end{itemize}
+
+\end{flowbox}
+
+
+\begin{tcolorbox}[colframe=uiRose, title=~~]
+\textbf{Variational Inference} provides an elegant framework for modeling a generative process. But we always talked about a fixed form of PDF for data models (e.g. mean-field families).
+\end{tcolorbox}
+
+However, for a very high-dimensional data, just thinking about a PDF of that scale is tiring.
+
+Thus comes a Neural Network into the picture!
+
+\end{frame}
+
+\begin{frame}{Why AutoEncoder is Insufficient?}
+
+ \begin{tcolorbox}[vcAccent, title=~]
+    \color{vcSilver}
+    
+A regular AutoEncoder maps $\xbf \in \Dcal \mapsto \zbf \in \Zcal$, the latent space deterministically, which is not sufficient to model  a generative process to get more synthentic dataset.
+\end{tcolorbox}
+
+\vspace{10pt}
+
+\begin{center}
+\begin{columns}[c]
+
+        \begin{column}{0.4\textwidth}
+        \centering
+        		\includegraphics[width=0.5\linewidth]{figures/cat_blurred.png}
+        \end{column}
+        
+        \begin{column}{0.15\textwidth}
+        \centering
+        {{\color{vcGold}\Huge $\mapsto$}}
+        \end{column}
+        
+           \begin{column}{0.4\textwidth}
+           \centering
+        		\includegraphics[width=0.5\linewidth]{figures/cat_1.jpg}
+        \end{column}
+        
+        
+\end{columns}
+
+\end{center}
+
+\end{frame}
+
+\begin{frame}{What is Variational AutoEncoder?}
+
+ \begin{tcolorbox}[vcLight, title=~]
+    \color{vcDeep}
+    
+Variational AutoEncoder (VAE) is a probabilistic framework that combines deep learning with Variational Inference.
+\end{tcolorbox}
+
+Let's consider latent vector as $\zbf$ which provides the latent representation as seen earlier in AutoEncoder scheme.
+
+\vspace{10pt}
+
+\centering
+
+\textit{The goal in Bayesian framework is to learn posterior $p(\zbf | \xbf)$.}
+
+\end{frame}
+
+\begin{frame}{Steps in VAE}
+
+
+\begin{enumerate}
+\item Use a neural network $f_\wbf$ parametrized by $\wbf$ to compute the posterior 
+
+\begin{align*}
+q_\wbf(\zbf | \xbf)
+\end{align*}
+
+\item Draw $L$ random $\zbf$ vectors from  the distribution.
+
+\item Using another neural network $g_\vbf$ parameterized by $\vbf$ the Estimate $p_\vbf(\xbf | \zbf)$ .
+
+\item Update $\wbf$ and $\vbf$ using gradient ascent/descent.
+
+\end{enumerate}
+
+\centering
+\resizebox{0.8\textwidth}{!}
+{
+\begin{tikzpicture}
+
+  % Define colors - distinct and aesthetic
+  \definecolor{encoderColor}{HTML}{00CCFF} % Cyan-blue for Encoder
+  \definecolor{latentColor}{HTML}{FF9933}  % Warm orange for Latent Space
+  \definecolor{decoderColor}{HTML}{9933FF} % Vivid violet for Decoder
+
+  % --- Block 1: ENCODER ---
+  \begin{scope}[local bounding box=encoder]
+    \node[anchor=center] at (0,0) {\huge $\diamond$}; 
+    % Note: A simple robust geometric symbol used.
+    
+    \node[below=2mm of {(0,0)}, text=encoderColor, font=\bfseries\Large] (encTitle) {Encoder};
+    \node[below=1.5mm of encTitle, align=center, text width=5cm, font=\normalsize] {
+      Maps data $\xbf$ to a\\ 
+      distribution $q_\wbf(\zbf|x)$ over\\ 
+      the latent space
+    };
+  \end{scope}
+
+  \draw[rounded corners=8pt, line width=1pt, draw=encoderColor] 
+    ($(encoder.south west) + (-0.2,-0.2)$) rectangle ($(encoder.north east) + (0.2,0.2)$);
+
+  % --- Block 2: LATENT SPACE ---
+  \begin{scope}[local bounding box=latent, xshift=7cm]
+    \node[anchor=center] at (0,0) {\huge $\odot$}; % Concentric circles
+
+    \node[below=2mm of {(0,0)}, text=latentColor, font=\bfseries\Large] (latTitle) {Latent Space};
+    \node[below=1.5mm of latTitle, align=center, text width=5.2cm, font=\normalsize] {
+      A structured, continuous\\ 
+      space where each point $\zbf$\\ 
+      represents a data concept
+    };
+  \end{scope}
+
+  \draw[rounded corners=8pt, line width=1pt, draw=latentColor] 
+    ($(latent.south west) + (-0.2,-0.2)$) rectangle ($(latent.north east) + (0.2,0.2)$);
+
+  % --- Block 3: DECODER ---
+  \begin{scope}[local bounding box=decoder, xshift=14cm]
+    \node[anchor=center] at (0,0) {\huge $\diamond$}; % Distinct block shape
+    
+    \node[below=2mm of {(0,0)}, text=decoderColor, font=\bfseries\Large] (decTitle) {Decoder};
+    \node[below=1.5mm of decTitle, align=center, text width=5.2cm, font=\small] {
+      Maps a latent code $\zbf$ back\\ 
+      to data space via $p_\vbf(\xbf|\zbf)$
+    };
+  \end{scope}
+
+  \draw[rounded corners=8pt, line width=1pt, draw=decoderColor] 
+    ($(decoder.south west) + (-0.2,-0.2)$) rectangle ($(decoder.north east) + (0.2,0.2)$);
+
+\end{tikzpicture}
+}
+
+\footnotesize
+
+The presence of an encoder and decoder is what makes it an AutoEncoder.
+
+Encoder is also called inference model. Decoder is called generative model.
+\end{frame}
+
+\begin{frame}{Objective in VAE}
+
+
+We want to maximize $\log p_\vbf(\xbf)$, the log-likelihood of our data. But as this is intractable and difficult, we optimize a lower bound instead through ELBO.
+
+    \begin{tcolorbox}[colback=softblue, colframe=mainblue, arc=4pt, boxrule=1pt, left=10pt, right=10pt, top=8pt, bottom=8pt]
+
+\begin{align*}
+ELBO(\wbf, \vbf, \xbf) = \Ebb_{q_\wbf(\zbf|\xbf)}[ \log p_\vbf (\xbf | \zbf)] -  KL( q_\wbf(\zbf|\xbf) || p(\zbf) )
+\end{align*}
+ which needs to be maxmized.   
+    \end{tcolorbox}
+
+\end{frame}
+
+\begin{frame}{The Reparameterization Trick in VAE}
+
+\footnotesize
+
+
+\begin{flowbox}
+
+To train VAE, we need gradients to flow back through the sampling operation. However, the sampling operation $z \sim q_\wbf(\zbf | \xbf)$ is not differentiable, as the randomness blocks the gradient. The flow of the information is disconnected due to randomness.
+\end{flowbox}
+
+\vspace{3pt}
+
+\begin{columns}
+
+\pause 
+
+\column{0.48\linewidth}
+
+Hence, we have a reparameterization trick
+\begin{reparambox}
+Reparameterize the sample: separate the random part from the learned parameters:
+\begin{align*}
+\zbf = \bm\mu + \bm\sigma \odot \varepsilon, \quad \varepsilon \sim \Ncal (0, \Ibf)
+\end{align*}
+\end{reparambox}
+
+\pause
+
+Now, $\varepsilon$ is a fixed random variable drawn from a standard normal distribution and the network parameters $\mu$ and $\sigma$ are deterministic functions of $\xbf$, so gradients can flow through them, thus, 
+\begin{align*}
+q_\wbf(\zbf | \xbf) = \Ncal (\zbf ; \bm\mu(\xbf), diag(\bm\sigma^2(\xbf)))
+\end{align*}
+
+\pause 
+\column{0.48\linewidth}
+
+
+
+
+For numerical stability, we output $\log \bm\sigma^2$ which can be any real number, $\bm\sigma > 0$ would require constraint. 
+
+\pause 
+\vspace{5pt}
+
+\scriptsize
+
+
+ \begin{tcolorbox}[colback=softblue, colframe=mainblue, arc=4pt, boxrule=1pt, left=10pt, right=10pt, top=8pt, bottom=8pt]
+For this to work, each dimension of $\zbf$ is assumed \textbf{independent} making the covariance matrix diagonal. The encoder learns the mean and standard deviation (uncertainty) of each latent dimension.
+\end{tcolorbox}
+
+ \end{columns}
+
+
+
+
+\end{frame}
+
+
+\begin{frame}{The reparameterization Trick in VAE}
+\tikzset{
+  base/.style={draw,rounded corners=5pt,align=center,
+    minimum width=2.0cm,minimum height=0.68cm,font=\small\sffamily},
+  io/.style={base,fill=blue!8,draw=blue!35},
+  mubox/.style={base,fill=blue!8,draw=blue!35,minimum width=2.2cm},
+  stoch/.style={base,fill=red!18,draw=red!55,
+    minimum width=3.0cm,minimum height=0.78cm},
+  determ/.style={base,fill=teal!12,draw=teal!45,
+    minimum width=3.0cm,minimum height=0.78cm},
+  noise/.style={base,fill=gray!10,draw=gray!45,minimum width=2.4cm},
+  lossbox/.style={base,fill=orange!10,draw=orange!35},
+  fwd/.style={-{Stealth[length=5pt,width=4pt]},thick,black!50},
+  blk/.style={-{Stealth[length=5pt,width=4pt]},thick,red!60,dashed,
+    line width=0.9pt},
+  flw/.style={-{Stealth[length=5pt,width=4pt]},thick,
+    green!55!black,dashed,line width=0.9pt},
+  lbl/.style={font=\tiny\sffamily,text=gray!65,align=center},
+  rlbl/.style={font=\tiny\sffamily,text=red!65,align=center},
+  glbl/.style={font=\tiny\sffamily,text=green!45!black,align=center},
+}
+ 
+\resizebox{1.0\textwidth}{!}
+{
+\begin{tikzpicture}
+ 
+ \node[io]     (Bx)    {Input $x$};
+\node[io,     right=1.55cm of Bx]    (Benc)  {Encoder};
+\node[mubox,  right=1.45cm of Benc]  (Bmu)   {$\mu(x),\,\sigma(x)$};
+\node[stoch,  right=1.55cm of Bmu]   (Bsamp)
+  {Sample $z\!\sim\!\mathcal{N}(\mu,\sigma^2)$\\[-1pt]
+   {\fontsize{6.5}{8}\selectfont\sffamily(Stochastic Node)}};
+\node[io,     right=1.55cm of Bsamp] (Bz)    {Latent $z$};
+\node[io,     right=1.45cm of Bz]    (Bdec)  {Decoder};
+\node[lossbox,right=1.45cm of Bdec]  (Bloss)
+  {Reconstruction $\hat{x}$\\[-1pt]
+   {\fontsize{6.5}{8}\selectfont\sffamily(Loss)}};
+ 
+% Forward arrows
+\draw[fwd] (Bx)    -- (Benc);
+\draw[fwd] (Benc)  -- (Bmu);
+\draw[fwd] (Bmu)   -- (Bsamp)
+  node[midway,above,lbl,yshift=1pt]{defines\\[-2pt]distribution};
+\draw[blk] (Bsamp) -- (Bz)
+  node[midway,above,rlbl,yshift=1pt]{Gradient\\[-2pt]blocked here};
+\draw[fwd] (Bz)    -- (Bdec);
+\draw[fwd] (Bdec)  -- (Bloss);
+ 
+% Backward gradient — blocked, sweeps below
+\draw[blk]
+  (Bdec.south) to[out=-90,in=-90,looseness=0.5]
+  node[midway,below,rlbl,yshift=-3pt]
+    {$\partial\text{Loss}/\partial z$ (from decoder)}
+  (Bz.south);
+
+
+ 
+\end{tikzpicture}
+}
+
+\begin{center}
+Before Reparameterization
+\end{center}
+
+\resizebox{1.0\textwidth}{!}
+{
+\begin{tikzpicture}
+\begin{scope}[yshift=-5.8cm]
+ 
+\node[io]      (Ax)   {Input $x$};
+\node[io,      right=1.55cm of Ax]   (Aenc)  {Encoder};
+\node[mubox,   right=1.45cm of Aenc] (Amu)   {$\mu(x),\,\sigma(x)$};
+\node[determ,  right=1.55cm of Amu]  (Adet)
+  {$z = \mu + \sigma \cdot \varepsilon$\\[-1pt]
+   {\fontsize{6.5}{8}\selectfont\sffamily(Deterministic Function)}};
+\node[io,      right=1.55cm of Adet] (Az)    {Latent $z$};
+\node[io,      right=1.45cm of Az]   (Adec)  {Decoder};
+\node[lossbox, right=1.45cm of Adec] (Aloss)
+  {Reconstruction $\hat{x}$\\[-1pt]
+   {\fontsize{6.5}{8}\selectfont\sffamily(Loss)}};
+ 
+% Noise source above the deterministic node
+\node[noise,above=1.2cm of Adet] (Aeps)
+  {$\varepsilon\!\sim\!\mathcal{N}(0,I)$\\[-1pt]
+   {\fontsize{6.5}{8}\selectfont\sffamily(Fixed Noise Source)}};
+ 
+% Forward arrows
+\draw[fwd] (Ax)   -- (Aenc);
+\draw[fwd] (Aenc) -- (Amu);
+\draw[fwd] (Amu)  -- (Adet)
+  node[midway,above,lbl,yshift=1pt]{parameters};
+\draw[fwd] (Aeps) -- (Adet)
+  node[midway,right,lbl,xshift=3pt]{noise\\[-2pt]input};
+\draw[fwd] (Adet) -- (Az);
+\draw[fwd] (Az)   -- (Adec);
+\draw[fwd] (Adec) -- (Aloss);
+ 
+% Backward gradient — flows, green dashed
+% 1. Decoder → Latent z (below)
+\draw[flw]
+  (Adec.south) to[out=-90,in=-90,looseness=0.5]
+  node[midway,below,glbl,yshift=-3pt]
+    {$\partial\text{Loss}/\partial z$ (from decoder)}
+  (Az.south);
+ 
+% 2. Det.node → mu/sigma (above)
+\draw[flw]
+  (Adet.north) to[out=90,in=90,looseness=0.65]
+  node[midway,above,glbl,yshift=3pt]
+    {$\partial L/\partial\mu,\ \partial L/\partial\sigma$}
+  (Amu.north);
+ 
+% 3. mu/sigma → Encoder (above, further left)
+\draw[flw]
+  ([xshift=4pt]Amu.north west) to[out=130,in=50,looseness=0.85]
+  node[midway,above,glbl,yshift=3pt]{to encoder weights}
+  ([xshift=-4pt]Aenc.north east);
+ 
+
+ 
+\end{scope}
+ 
+\end{tikzpicture}
+}
+
+\begin{center}
+After Reparameterization
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Encoder in VAE}
+
+Thus, the encoder in VAE predict two set of values: $\bm\mu$ and $\log \bm\sigma^2$.
+
+\centering
+      \begin{tikzpicture}[
+        every node/.style={font=\small},
+        n/.style={circle,minimum size=10pt,inner sep=0,draw,line width=0.5pt},
+        arr/.style={-{Stealth[length=3pt]},line width=0.4pt},
+      ]
+        % Input layer
+        \foreach \y/\i in {3.6/1,2.8/2,2.0/3,1.2/4,0.4/5}{
+          \node[n,fill=slateGray,draw=embedDark!60](i\i) at (0,\y) {};
+        }
+        \node[color=vcDeep] at (-0.5,2.0) {$\xbf$};
+
+        % Hidden layer 1
+        \foreach \y/\i in {3.4/1,2.6/2,1.8/3,1.0/4}{
+          \node[n,fill=enc!12,draw=enc!60](h1\i) at (1.6,\y) {};
+        }
+
+        % Hidden layer 2
+        \foreach \y/\i in {3.4/1,2.6/2,1.8/3,1.0/4}{
+          \node[n,fill=enc!12,draw=enc!60](h2\i) at (3.0,\y) {};
+        }
+
+        % mu output nodes
+        \node[n,fill=discred!15,draw=discred!80](mu1) at (4.4,3.2) {};
+        \node[n,fill=discred!15,draw=discred!80](mu2) at (4.4,2.6) {};
+        \node[color=discred] at (5.0,2.9) {$\bm\mu$};
+
+        % sigma output nodes
+        \node[n,fill=AccentOrange!15,draw=AccentOrange!70](s1) at (4.4,1.8) {};
+        \node[n,fill=AccentOrange!15,draw=AccentOrange!70](s2) at (4.4,1.2) {};
+        \node[color=AccentOrange] at (5.0,1.5) {$\log\bm\sigma^2$};
+
+        % Connections i->h1 (sample)
+        \foreach \a in {1,2,3,4,5}{
+          \foreach \b in {1,2,3,4}{
+            \draw[enc!90,line width=0.3pt] (i\a.east)--(h1\b.west);
+          }
+        }
+
+        % Connections h1->h2
+        \foreach \a in {1,2,3,4}{
+          \foreach \b in {1,2,3,4}{
+            \draw[enc!90,line width=0.3pt] (h1\a.east)--(h2\b.west);
+          }
+        }
+
+        % h2->mu
+        \foreach \a in {1,2}{
+          \draw[discred!90,line width=0.4pt] (h2\a.east)--(mu1.west);
+          \draw[discred!90,line width=0.4pt] (h2\a.east)--(mu2.west);
+        }
+
+        % h2->sigma
+        \foreach \a in {3,4}{
+          \draw[AccentOrange!90,line width=0.4pt] (h2\a.east)--(s1.west);
+          \draw[AccentOrange!90,line width=0.4pt] (h2\a.east)--(s2.west);
+        }
+
+        % Layer labels
+        \node[color=decOrange,rotate=90] at (0,-0.3) {\small\ttfamily Input};
+        \node[color=WGANBlue!90,rotate=90] at (1.6,-0.3) {\small\ttfamily Hidden};
+        \node[color=WGANBlue!90,rotate=90] at (3.0,-0.3) {\small\ttfamily Hidden};
+        \node[color=discred!60,rotate=90] at (4.4,-0.3) {\small\ttfamily $\bm\mu,\log\bm\sigma^2$};
+
+        % Output boxes
+        \node[fill=discred!10,draw=discred!30,rounded corners=2pt,inner sep=3pt]
+          at (4.4,-1.3) {\color{discred!80}\footnotesize\ttfamily $\bm\mu$ vector};
+        \node[fill=AccentOrange!10,draw=AccentOrange!30,rounded corners=2pt,inner sep=3pt]
+          at (4.4,-2.0) {\color{AccentOrange!80}\footnotesize\ttfamily $\log\bm\sigma^2$ vector};
+      \end{tikzpicture}
+
+\end{frame}
+
+
+\begin{frame}{Decoder in VAE}
+
+\footnotesize
+
+\begin{columns}
+
+\column{0.48\linewidth}
+
+Decoder models $p_\vbf(\xbf | \zbf)$. Think that the Neural Network to model $p_\vbf$ is $g_\vbf$ that takes a latent code $\zbf$ and produces either reconstrucuted $\hat{\xbf}$ in deterministic fashion or a parameters of a distribution over $\xbf$ probabilistically.
+
+\vspace{10pt}
+
+For continuous data, we could model 
+
+\begin{reparambox}
+\begin{align*}
+p_\vbf(\xbf | \zbf) = \Ncal (\xbf; g_\vbf(\zbf), \sigma_\xbf^2\Ibf
+\end{align*}
+\end{reparambox}
+
+\vspace{10pt}
+
+We can place the prior as $p(\zbf) = \Ncal(0, \Ibf)$,  that encourages the encoder to keep the latent representation centered and structured, enabling random generation: sample $\zbf \sim p(\zbf)$ and decode.
+
+\column{0.48\linewidth}
+
+\resizebox{0.95\textwidth}{!}
+{
+      \begin{tikzpicture}[
+        every node/.style={font=\tiny},
+        n/.style={circle,minimum size=9pt,inner sep=0,draw,line width=0.5pt},
+      ]
+        % z nodes
+        \foreach \y/\i in {3.0/1,2.2/2,1.4/3}{
+          \node[n,fill=discred!20,draw=discred!80](z\i) at (0,\y) {};
+        }
+        \node[color=discred,font=\small] at (-0.5,2.2) {$\zbf$};
+
+        % Hidden 1
+        \foreach \y/\i in {3.2/1,2.5/2,1.8/3,1.1/4}{
+          \node[n,fill=enc!12,draw=enc!60](h1\i) at (1.6,\y) {};
+        }
+
+        % Hidden 2
+        \foreach \y/\i in {3.2/1,2.5/2,1.8/3,1.1/4}{
+          \node[n,fill=enc!12,draw=enc!60](h2\i) at (3.0,\y) {};
+        }
+
+        % Output
+        \foreach \y/\i in {3.5/1,2.9/2,2.3/3,1.7/4,1.1/5,0.5/6}{
+          \node[n,fill=WGANBlue,draw=WGANBlue!60](o\i) at (4.4,\y) {};
+        }
+        \node[color=vcDeep,font=\small] at (5.0,2.0) {$\hat{\xbf}$};
+
+        % Connections
+        \foreach \a in {1,2,3}{
+          \foreach \b in {1,2,3,4}{
+            \draw[enc!88,line width=0.3pt] (z\a.east)--(h1\b.west);
+          }
+        }
+        \foreach \a in {1,2,3,4}{
+          \foreach \b in {1,2,3,4}{
+            \draw[enc!88,line width=0.3pt] (h1\a.east)--(h2\b.west);
+          }
+        }
+        \foreach \a in {1,2,3,4}{
+          \foreach \b in {1,2,3,4,5,6}{
+            \draw[decOrange!80,line width=0.25pt] (h2\a.east)--(o\b.west);
+          }
+        }
+
+        \node[color=vcDeep,rotate=90] at (0,-0.6) {\small\ttfamily Latent $z$};
+        \node[color=enc!80,rotate=90] at (1.6,-0.6) {\small\ttfamily Hidden};
+        \node[color=enc!80,rotate=90] at (3.0,-0.6) {\small\ttfamily Hidden};
+        \node[color=decOrange,rotate=90] at (4.4,-0.6) {\small\ttfamily Output};
+      \end{tikzpicture}
+}
+
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Reconstruction Loss in VAE Objective}
+In ELBO, we could rewrite reconstruction loss
+
+\begin{align*}
+\Ebb[ \log p_\vbf (\xbf| \zbf) ] \approx -\frac{1}{2} || \xbf - \hat{\xbf}||^2
+\end{align*}
+
+And interestingly, KL Divergence for two Gaussians have a closed form solution:
+
+\begin{align*}
+KL  = -\frac{1}{2} \sum_{j=1}^d  ( 1  + \log \sigma_j^2 - \mu_j^2 - \sigma_j^2)
+\end{align*}
+
+
+\end{frame}
+
+\begin{frame}{Latent Space in VAE}
+
+On a trained VAE, after the convergence, the latent space has a desirable properties:
+
+\begin{itemize}
+\item Continuity, with which nearby points in latent space decode to similar outputs;
+\item Completeness, where any sampled $\zbf \sim \Ncal(0, \Ibf)$ decodes to some plausible data thereby giving you a realistic looking synthetic data;
+\item Interpolation, where interpolating between two codes is semantically smooth;
+\end{itemize}
+
+    \begin{tcolorbox}[colback=white, colframe=MainBlue!10, title=~, fonttitle=\bfseries, coltitle=MainBlue]
+    
+    A well trained VAE organizes its latent space in such a way that similar looking concepts cluster together.
+    
+    \end{tcolorbox}
+
+\end{frame}
+
+\begin{frame}{A Note on Isotropic Gaussian in VAE}
+
+A Gaussain $\Ncal(\bm\mu, \bm\Sigma)$ is isotropic when $\Sigma = \sigma^2 \Ibf$,  its probability contours are perfect hyperspheres, not eillipsoid.
+
+\begin{columns}
+
+\column{0.49\linewidth}
+
+    \begin{tcolorbox}[enhanced, borderline west={2pt}{0pt}{red!70!black}, colback=red!5, frame hidden, sharp corners]
+    
+    Prior uses $p(\zbf) = \Ncal(0, \Ibf)$ which is full isotropic.
+  
+    \end{tcolorbox}
+
+
+\column{0.49\linewidth}
+
+    \begin{tcolorbox}[enhanced, borderline east={2pt}{0pt}{WGANBlue!70!black}, colback=WGANBlue!5, frame hidden, sharp corners]
+    
+    Posterior is modeled using $q_\wbf(\zbf|\xbf) = \Ncal(\bm\mu, diag(\bm\sigma^2))$ which is a diagonal Gaussian.
+  
+    \end{tcolorbox}
+    
+\end{columns}
+
+\begin{itemize}
+\item  The diagonal covariance means each dimension is independent, so the joint KL factors into a sum of per-dimension KLs. Each term has an exact formula, as seen earlier.
+
+\item With Isotropic Gaussain, drawing random $\varepsilon \sim \Ncal(0, \Ibf)$ is just $d$ independent standard normals.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Three Gaussians}
+
+  \begin{center}
+  \begin{tikzpicture}[scale=0.99]
+    \foreach \cx/\col/\lbl/\rx/\ry/\ang in {
+      2.0/coral/{Full covariance ($\rho$=0.75)}/1.5/0.55/38,
+      6.5/amber/{Diagonal ($\rho$=0)}/1.5/0.58/0,
+      11.0/teal/{Isotropic prior $p(z){=}\mathcal{N}(0,I)$}/0.85/0.85/0
+    }{
+      \foreach \sc/\op in {1.8/0.10, 1.2/0.14, 0.7/0.20}{
+        \draw[\col,opacity=\op,fill=\col,fill opacity=\op,
+              line width=1pt,rotate around={\ang:(\cx,0)}]
+          (\cx,0) ellipse (\sc*\rx cm and \sc*\ry cm);
+      }
+      \draw[\col,line width=1.5pt,rotate around={\ang:(\cx,0)}]
+        (\cx,0) ellipse (\rx cm and \ry cm);
+      \filldraw[\col] (\cx,0) circle (2.5pt);
+      \node[font=\tiny,color=\col!80] at (\cx,-1.3){\lbl};
+    }
+    % Axis ticks context
+    \foreach \cx in {2.0,6.5,11.0}{
+      \draw[bordertwo!60,line width=0.4pt](\cx-2.2,0)--(\cx+2.2,0);
+      \draw[bordertwo!60,line width=0.4pt](\cx,-1.0)--(\cx,1.0);
+    }
+  \end{tikzpicture}
+  
+    {\color{txtthree}\tiny\itshape
+    Left: full covariance (tilted ellipse, correlated dims).\quad
+    Centre: diagonal (axis-aligned ellipse).\quad
+    Right: isotropic (circle — VAE prior).}
+  \end{center}
+  
+  
+
+
+\end{frame}
+
+\begin{frame}{Reparameterization}
+
+\begin{center}
+\resizebox{0.37\textwidth}{!}
+{
+      \begin{tikzpicture}[scale=0.88]
+        % Grid
+        \foreach \v in {-2,-1,0,1,2}{
+          \draw[bordertwo!50,line width=0.3pt](\v,-2.8)--(\v,2.8);
+          \draw[bordertwo!50,line width=0.3pt](-2.8,\v)--(2.8,\v);
+        }
+        \draw[bordertwo!80,line width=0.5pt](-2.8,0)--(2.8,0);
+        \draw[bordertwo!80,line width=0.5pt](0,-2.8)--(0,2.8);
+ 
+        % ε circle (source)
+        \draw[txtthree!70,line width=1pt,dashed](0,0) circle (1.0cm);
+        \filldraw[txtthree!60](0,0) circle (2.5pt);
+        \node[font=\tiny,color=txtthree] at (0.15,1.3){$\bm\varepsilon\sim\mathcal{N}(0,\Ibf)$};
+ 
+        % ε sample cloud (gray dots near origin)
+        \foreach \ex/\ey in {
+          0.3/0.8, -0.5/0.6, 0.7/-0.3, -0.8/0.2,
+          0.4/-0.7, -0.3/-0.5, 0.6/0.5, -0.7/-0.4,
+          0.2/0.9, -0.6/-0.7, 0.8/0.0, -0.1/0.7
+        }{
+          \filldraw[txtthree!50,opacity=0.6](\ex,\ey) circle (1.2pt);
+        }
+ 
+
+ 
+        % z ellipse (result)
+        \draw[amber,line width=1.5pt](1.2,-0.8) ellipse (0.5cm and 1.2cm);
+        \filldraw[amber](1.2,-0.8) circle (3pt);
+        \node[font=\scriptsize,color=coral] at (1.2,-2.5)
+          {$z{=}\bm\mu{+}\bm\sigma{\odot}\bm\varepsilon$};
+          
+                  % Arrow: translate + scale
+        \draw[-{Stealth[length=5pt]},vcDeep,line width=1.2pt,dashed]
+          (0,0) -- (1.2,-0.8);
+        \node[font=\scriptsize,color=vcDeep,rotate=-34] at (0.85,-0.1){translate + scale};
+ 
+        % Transformed sample cloud
+        \foreach \ex/\ey in {
+          0.3/0.8, -0.5/0.6, 0.7/-0.3, -0.8/0.2,
+          0.4/-0.7, -0.3/-0.5, 0.6/0.5, -0.7/-0.4,
+          0.2/0.9, -0.6/-0.7, 0.8/0.0, -0.1/0.7
+        }{
+          \filldraw[amber!70,opacity=0.65](1.2+0.5*\ex,-0.8+1.2*\ey) circle (1.5pt);
+        }
+ 
+        % Axis labels
+        \node[font=\tiny,color=txtthree] at (2.7,0.2){$z_1$};
+        \node[font=\tiny,color=txtthree] at (0.2,2.7){$z_2$};
+      \end{tikzpicture}
+}
+
+\end{center}
+
+      {\color{txtthree}\small\itshape
+        $\bm\varepsilon\sim\mathcal{N}(0,\Ibf)$ (circle).
+        $\zbf{=}\bm\mu{+}\bm\sigma{\odot}\bm\varepsilon$ (axis-aligned ellipse).
+        Dashed arrow: translate $+$ scale, all differentiable.}
+\end{frame}
+
+\begin{frame}{Reading List}
+
+\scriptsize
+
+\begin{enumerate}
+\item Vincent, P., Larochelle, H., Bengio, Y., \& Manzagol, P. A. (2008, July). Extracting and composing robust features with denoising autoencoders. In Proceedings of the 25th international conference on Machine learning (pp. 1096-1103). \url{https://dl.acm.org/doi/pdf/10.1145/1390156.1390294}
+\item Alain, Guillaume, and Yoshua Bengio. "What regularized auto-encoders learn from the data-generating distribution." The Journal of Machine Learning Research 15, no. 1 (2014): 3563-3593. \url{https://www.jmlr.org/papers/volume15/alain14a/alain14a.pdf}
+\item Vincent, Pascal, Hugo Larochelle, Isabelle Lajoie, Yoshua Bengio, Pierre-Antoine Manzagol, and Léon Bottou. "Stacked denoising autoencoders: Learning useful representations in a deep network with a local denoising criterion." Journal of machine learning research 11, no. 12 (2010).
+\item Zhai, J., Zhang, S., Chen, J. and He, Q., 2018, October. Autoencoder and its various variants. In 2018 IEEE international conference on systems, man, and cybernetics (SMC) (pp. 415-419). IEEE.
+\item Li, Pengzhi, Yan Pei, and Jianqiang Li. "A comprehensive survey on design and application of autoencoder in deep learning." Applied Soft Computing 138 (2023): 110176.
+\item Michelucci, Umberto. "An introduction to autoencoders." arXiv preprint arXiv:2201.03898 (2022).
+\item Bank, Dor, Noam Koenigstein, and Raja Giryes. "Autoencoders." Machine learning for data science handbook: data mining and knowledge discovery handbook (2023): 353-374.
+\end{enumerate}
+
+\end{frame}
+
+
+\begin{frame}{Reading List}
 
 \begin{itemize}
 
 \item Section 10.1 of Pattern Recognition and Machine Learning (Christopher M. Bishop 2006)
 \item Stochastic Variational Inference \url{https://arxiv.org/pdf/1206.7051}
 
+\item 
 
 \end{itemize}
 
@@ -1365,11 +2071,23 @@ where $\mathbb{E}_q[z - m] = 0$ since $m$ is the mean of $q$.
 
 \end{frame}
 
-\section{Variational AutoEncoder}
+\begin{frame}{Code}
 
-\begin{frame}
-    \sectionpage
+\LARGE
+
+\centering
+
+\url{https://github.com/rahulbhadani/CPE487587_SP26/blob/master/Code/Chapter_07_Variational_Inference.ipynb}
+
 \end{frame}
+
+
+
+%------------------------------------------------
+\begin{frame}
+\Huge{\centerline{\color{MediumBlue}\textbf{The End}}}
+\end{frame}
+
 
 
 \end{document}
