@@ -1,0 +1,595 @@
+%%----------------------------------------------------------------------------------------
+%	PACKAGES AND THEMES
+%----------------------------------------------------------------------------------------
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[aspectratio=169,xcolor=dvipsnames,svgnames,x11names,fleqn]{beamer}
+% \documentclass[aspectratio=169,xcolor=dvipsnames,fleqn]{beamer}
+
+\usetheme{RedVelvet}
+
+\usefonttheme[onlymath]{serif}
+\newcommand{\showanswers}{yes}
+\usepackage{pifont} % For checkmarks and crosses
+
+\usepackage{setspace}
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{color}
+\usepackage{physics}
+% \usepackage{mathbb}
+\usepackage{rahul_math}
+\usepackage{bigints}
+
+\usepackage[utf8]{inputenc}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{tikz,pgfplots}
+\usepackage{mathtools}
+\usepackage{subfigure}
+\usetikzlibrary{arrows}
+\usepackage{minted}
+\definecolor{LightGray}{gray}{0.9}
+\definecolor{cream}{rgb}{0.92, 0.9, 0.55}
+\definecolor{lightblue}{rgb}{0.68, 0.85, 0.9}
+
+
+\usepackage{xcolor-material}
+\usetikzlibrary{fit}
+\usetikzlibrary{matrix}
+\tikzset{%
+apple/.pic={
+    \fill [MaterialBrown] (-1/8,0)  arc (180:120:1 and 3/2) coordinate [pos=3/5] (@)-- ++(1/6,-1/7)  arc (120:180:5/4 and 3/2) -- cycle;
+    \fill [MaterialLightGreen500] (0,-9/10)  .. controls ++(180:1/8) and ++(  0:1/4) .. (-1/3,  -1) .. controls ++(180:1/3) and ++(270:1/2) .. (  -1,   0) .. controls ++( 90:1/3) and ++(180:1/3) .. (-1/2, 3/4) .. controls ++(  0:1/8) and ++(135:1/8) .. (   0, 4/7)
+    }
+    }
+
+\newcommand{\leftdoublequote}{\textcolor{blue}{\scalebox{3}{``}}}
+
+\newcommand{\rightdoublequote}{\textcolor{blue}{\scalebox{3}{''}}}
+
+
+\usepackage{textcomp}
+\usepackage{fontawesome}
+\usepackage{tikz,pgfplots}
+\usetikzlibrary{shapes.callouts}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes.geometric, positioning}
+\usetikzlibrary{matrix,positioning,decorations.pathreplacing,calc}
+\usepackage{tikz-dependency}
+
+\pgfplotsset{compat=1.8} % or newest version
+
+\usetikzlibrary{positioning}
+
+
+\usepackage{bm}
+\usepackage{relsize}
+
+\tcbuselibrary{skins, hooks}
+
+\tikzset{basic/.style={draw,fill=MediumBlue!20,text width=1em,text badly centered}}
+\tikzset{input/.style={basic,circle}}
+\tikzset{weights/.style={basic,rectangle}}
+\tikzset{functions/.style={basic,circle,fill=MediumBlue!10}}
+
+
+
+\usepackage{listofitems} % for \readlist to create arrays
+\tikzstyle{mynode}=[thick,draw=MediumBlue,fill=MediumBlue!20,circle,minimum size=22]
+
+
+\usepackage{overpic}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\usepackage{tikz-qtree,tikz-qtree-compat}
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{calc}
+
+\usetikzlibrary{fit}
+\tikzset{%
+apple/.pic={
+    \fill [MaterialBrown] (-1/8,0)  arc (180:120:1 and 3/2) coordinate [pos=3/5] (@)-- ++(1/6,-1/7)  arc (120:180:5/4 and 3/2) -- cycle;
+    \fill [MaterialLightGreen500] (0,-9/10)  .. controls ++(180:1/8) and ++(  0:1/4) .. (-1/3,  -1) .. controls ++(180:1/3) and ++(270:1/2) .. (  -1,   0) .. controls ++( 90:1/3) and ++(180:1/3) .. (-1/2, 3/4) .. controls ++(  0:1/8) and ++(135:1/8) .. (   0, 4/7)
+}
+}
+\usepackage{tikz-qtree,tikz-qtree-compat}
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{calc}
+
+\usetikzlibrary{positioning}
+\newcommand{\vect}[1]{\mathbf{#1}}
+% Define styles
+\tikzset{
+    box/.style={
+        rectangle,
+        draw=black,
+        fill=blue!20,
+        text width=2.2cm,
+        text centered,
+        minimum height=0.8cm,
+        font=\small
+    },
+    arrow/.style={
+        ->,
+        >=Stealth,
+        line width=1.5pt,
+        draw=black
+    }
+}
+
+
+\usepackage{bm}
+\usepackage{relsize}
+
+
+
+\tikzset{basic/.style={draw,fill=MediumBlue!20,text width=1em,text badly centered}}
+\tikzset{input/.style={basic,circle}}
+\tikzset{weights/.style={basic,rectangle}}
+\tikzset{functions/.style={basic,circle,fill=MediumBlue!10}}
+\usetikzlibrary{arrows.meta, bending}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds}
+
+\usepackage{listofitems} % for \readlist to create arrays
+\tikzstyle{mynode}=[thick,draw=MediumBlue,fill=MediumBlue!20,circle,minimum size=22]
+
+
+\newmdenv[
+backgroundcolor=androidYellowLight,
+linecolor=androidYellow,
+linewidth=0.5pt,
+roundcorner=10pt,
+skipabove=\baselineskip,
+skipbelow=\baselineskip
+]{MintedFrame}
+
+% Set minted options
+\setminted{
+fontsize=\footnotesize,
+breaklines=true,
+autogobble,
+linenos,
+frame=none
+}
+
+
+\title[CPE 487/587: Deep Learning]{CPE 486/586: Deep Learning for Engineering Applications} % The short title appears at the bottom of every slide, the full title is only on the title page
+\subtitle{08 Diffusion Models}
+
+\author[Rahul Bhadani] {{\Large \textbf{Rahul Bhadani}}}
+
+\institute[UAH] % Your institution as it will appear on the bottom of every slide, maybe shorthand to save space
+{
+    Electrical \& Computer Engineering,  The University of Alabama in Huntsville
+}
+\date
+
+% \titlegraphic{
+%    \includegraphics[width=0.4\linewidth]{figures/UAH_primary.png}
+% }
+
+\begin{document}
+
+%-------------------------------------------------
+\begin{frame}
+    \titlepage
+\end{frame}
+
+%-------------------------------------------------
+\begin{frame}{Outline}
+    \backgroundtableofcontents
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{}
+    \begin{center}
+        \huge \bf \color{DarkBlue}
+        Motivation 
+    \end{center}
+    \end{frame}
+    
+    \begin{frame}{Diffusion Model as the State of the Art for Generative Models}
+    \begin{center}
+               \includegraphics[width=0.22\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_2.png}
+              \includegraphics[width=0.22\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_1.png}
+             \includegraphics[width=0.22\textwidth, trim={0 0 0 0}, clip]{figures/pilot_1.png}
+             \includegraphics[width=0.22\textwidth, trim={0 0 0 0}, clip]{figures/pilot_2.png}
+             
+                \textbf{Figures created using Midjourney v4 and GPT-4.}
+    \end{center}
+      
+       
+    \end{frame}
+    
+    \begin{frame}{Diffusion Model are non-Adversarial}
+    \begin{center}
+    \textbf{Adversarial Models such as GAN are difficult to train.}
+    
+      \includegraphics[width=0.19\textwidth, trim={0 0 0 0}, clip]{figures/hundred.png}
+    
+    \textbf{Discriminator can be too good!!}
+    \end{center}
+        
+    \end{frame}
+    
+
+    %------------------------------------------------
+    \section{Diffusion Models}
+    %------------------------------------------------
+    
+    %------------------------------------------------
+    \begin{frame}{}
+    \begin{center}
+        \huge \bf \color{DarkBlue}
+        Diffusion Models 
+    \end{center}
+    \end{frame}
+    
+    
+    %------------------------------------------------
+    \begin{frame}{Inspiration behind Diffusion Model}
+    \begin{center}
+    {
+    \Large \bf \color{DarkViolet}
+        Inspired by non-equilibrium behavior in Thermodynamics
+    }
+    
+     \includegraphics[width=0.19\textwidth, trim={0 0 0 0}, clip]{figures/inkdrop_start.png}
+     \includegraphics[width=0.19\textwidth, trim={0 0 0 0}, clip]{figures/inkdrop_later.png}
+    
+    {
+    \Large \bf \color{Magenta}
+        The drop of ink eventually diffuses into the water until it reaches equilibrium.
+    }
+    \end{center}
+    \end{frame}
+    
+    %------------------------------------------------
+    \begin{frame}{Intuition behind Diffusion Model}
+    \begin{center}
+    {
+    \large \bf \color{DarkViolet}
+        In the physical world, the reversal of the diffusion process is not possible. But that's what the diffusion model is trying to do.
+    }
+    
+    \vspace{20pt}
+    \begin{columns}
+    \column{0.44\linewidth}
+    \raggedleft
+     \includegraphics[width=0.44\textwidth, trim={0 0 0 0}, clip]{figures/inkdrop_later.png}
+     \column{0.12\linewidth}
+     \raggedleft
+    \Huge \faArrowCircleRight~~
+     \column{0.44\linewidth}
+     \raggedright
+     \includegraphics[width=0.44\textwidth, trim={0 0 0 0}, clip]{figures/inkdrop_start.png}
+    \end{columns} 
+    \end{center}
+    \end{frame}
+    
+    %------------------------------------------------
+    \begin{frame}{Intuition behind Diffusion Model}
+    \begin{center}
+    \Large \bf \color{WildStrawberry}
+        In the ink-water diffusion example, the drop of the ink at one spot includes some information.
+    \end{center}
+    \vspace{20pt}
+    \begin{center}
+    \Large \bf \color{JungleGreen}
+      As the diffusion process progresses, we lose information, and eventually, we only have noise.
+    \end{center}
+    \end{frame}
+    
+    
+    %------------------------------------------------
+    \begin{frame}{Intuition behind Diffusion Model}
+    \begin{center}
+    {\Large \bf \color{WildStrawberry}
+      In the image domain:
+    }
+    \vspace{15pt}
+      \begin{columns}
+          \column{0.3\linewidth}
+               \includegraphics[width=0.82\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_1.png}
+               Clear information
+    \column{0.3\linewidth}
+               \includegraphics[width=0.82\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_1_noisy_mid.png}
+               Some loss of information
+               \column{0.3\linewidth}
+               \includegraphics[width=0.82\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_1_noisy.png}
+               Just noise
+      \end{columns}
+      \vspace{15pt}
+      {\Large \bf \color{NavyBlue}
+      Working backward from just noise to a proper image is what a diffusion model tries to achieve.
+    }
+    \end{center}
+    \end{frame}
+    
+    %------------------------------------------------
+    \begin{frame}{The Working Principle of the Diffusion Model}
+    \begin{center}
+      {\Large \bf \color{purple}
+        Add noise to the original image and then later learn how to reverse this noise process.
+    }
+    \end{center}
+    \end{frame}
+    
+    %------------------------------------------------
+    \begin{frame}{The Working Principle of the Diffusion Model}
+    \begin{center}
+      {\Large \bf \color{purple}
+        Apply noise following a Markov chain/Markov Process.
+    }
+    \vspace{15pt}
+      \begin{columns}
+          \column{0.21\linewidth}
+               \includegraphics[width=0.82\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_1.png}
+               \column{0.05\linewidth}
+               \huge \faArrowCircleRight
+               \column{0.21\linewidth}
+               \includegraphics[width=0.82\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_1_noisy_early.png}
+                \column{0.05\linewidth}
+               \huge \faArrowCircleRight
+            \column{0.21\linewidth}
+               \includegraphics[width=0.82\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_1_noisy_mid.png}
+                \column{0.05\linewidth}
+               \huge \faArrowCircleRight
+               \column{0.21\linewidth}
+               \includegraphics[width=0.82\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_1_noisy.png}
+      \end{columns}
+      \vspace{15pt}
+        {\large \bf \color{MediumBlue}
+       At each time step, we add a little bit of noise to the image until the image only consists of the noise. We have 100-1000 long Markov chain.
+    }
+    \end{center}
+    \end{frame}
+    
+    \begin{frame}{Noise in the Diffusion Model}
+        \begin{center}
+        {\large \bf \color{MediumBlue}
+            Gaussian Noise: $\Ncal(\mu , \sigma^2)$
+        }
+         \includegraphics[width=0.32\textwidth, trim={0 0 0 0}, clip]{figures/gaussian_distribution.pdf}
+    
+          \begin{tabular}{|c|}
+    \hline
+    25 \\
+    \hline
+    67 \\
+    \hline
+    \end{tabular} + $\Ncal(\mu , \sigma^2)$  =     \begin{tabular}{|c|}
+    \hline
+    26.63 \\
+    \hline
+    66.55 \\
+    \hline
+    \end{tabular} 
+    
+      \vspace{15pt}
+    Repeat the process.
+        \end{center}
+    \end{frame}
+    
+    \begin{frame}{Idea Behind Removing the Noise (Working Backward)}
+        \begin{center}
+               \includegraphics[width=0.75\textwidth, trim={0 0 0 0}, clip]{figures/DiffusionModel.pdf}
+    
+               \vspace{15pt}
+                {\large \bf \color{MediumGreen}
+       The type of CNN used in the original paper is called UNet.
+    }
+        \end{center}
+    \end{frame}
+    
+    \begin{frame}{UNet Architecture}
+        \begin{center}
+               \includegraphics[width=0.67\textwidth, trim={100 450 120 100}, clip]{figures/UNet.pdf}
+    
+               \vspace{15pt}
+                {\large \bf \color{MediumRed}
+    Source: \url{https://arxiv.org/pdf/1505.04597.pdf}
+    }
+        \end{center}
+    \end{frame}
+    
+    \begin{frame}{UNet Architecture for Diffusion}
+    \begin{itemize}
+        \item U-net consists of a series of up/down sampling convolution blocks which are connected via residual connection, along with a middle block. This set up allow allows one to global location and context at the same time in the learning process. It works with very few training samples and provides better performance for segmentation tasks.
+    
+        \item  In the Diffusion model, UNet architecture is combined with time-step embedding called sinusoidal embedding. This is similar to the positional embedding seen in the transformer. This block combines sinusoidal embedding and convolution layers to learn the time step of the noisy images in the diffusion process.
+    \end{itemize}
+       
+    \end{frame}
+    %------------------------------------------------
+    \section{Mathematical Framework for Diffusion Models}
+    %------------------------------------------------
+    
+    %------------------------------------------------
+    \begin{frame}{}
+    \begin{center}
+        \huge \bf \color{DarkBlue}
+        Mathematical Framework for Diffusion Models
+    \end{center}
+    \end{frame}
+    
+    \begin{frame}{Formulating Diffusion Model: Forward Process}
+        \begin{center}
+        \begin{itemize}
+            \item   Consider an original image data sampled from the real distribution $\xbf_0 \sim q(\xbf)$.
+            \item We add small Gaussian noise to the sample data in $T$ steps, producing a sequence of noisy samples $\xbf_1, \xbf_2, \cdots, \xbf_T$.
+            \item The step sizes are controlled by the diffusion rate  $\{\beta_t \in (0, 1)\}$, a hyperparameter.
+            \item The data sample $\xbf_0$ slowly loses its distinguishable features as the step $t$ becomes larger. 
+        \end{itemize}
+        \end{center}
+    \end{frame}
+    
+    \begin{frame}{Forward Process: Adding Noise}
+        \begin{center}
+              \includegraphics[width=0.99\textwidth, trim={0 0 0 0}, clip]{figures/Diffusion_Model_Forward_Process.pdf}
+    
+              \begin{itemize}
+                  \item If the noise to be added is Gaussian, then we use the analytical distribution (also known as \textbf{transition kernel}) of the noisy data at time step $t$ as $q(\xbf_t | \xbf_{t-1}) = \Ncal(\xbf_t; \sqrt{1-\beta_t}\xbf_{t-1}, \beta_t\Ibf)$. \textbf{Note: this is a design choice.}
+                  \item The conditional distribution of the noisy data for the subsequent Markov chain (i.e. joint distribution of $\xbf_1, \xbf_2, \cdots, \xbf_T$) is written as $$q(\xbf_1, \xbf_2, \cdots, \xbf_T | \xbf_0) = {\prod}_{t=0}^T q(\xbf_t|\xbf_{t-1})$$.
+              \end{itemize}
+        \end{center}
+    \end{frame}
+    
+    \begin{frame}{Forward Process: Adding Noise}
+    \begin{itemize}
+        \item We sample $\xbf_t$ at any arbitrary time step $t$ in a closed form using reparameterization trick
+    
+        $$
+        \alpha_1  = 1 - \beta_t, \quad \bar{\alpha}_t = \prod_{i=1}^t   \alpha_i.
+        $$
+        This can help us write analytical form of $q(\xbf_t | \xbf_0)$ for all $t \in \{0, 1, \cdots, T\}$ as
+        $$
+        q(\xbf_t | \xbf_0) = \Ncal(\xbf_t ; \sqrt{\bar{\alpha}_t}\xbf_0, (1-\bar{\alpha}_t)\Ibf).
+        $$
+        \item Given $\xbf_0$, we can sample $\xbf_t$, by supplying small Gaussian perturbation $\varepsilon \sim\Ncal(0, \Ibf)$ and applying a transformation
+        $$
+        \xbf_t = \sqrt{\bar{\alpha}_t}\xbf_0 + \sqrt{(1-\bar{\alpha}_t)}\varepsilon.
+        $$
+        Intuitively speaking, this forward process slowly injects noise into data until all structures are
+    lost.
+        
+    \end{itemize}
+    \end{frame}
+    
+    \begin{frame}{Reverse Diffusion Process: Removing Noise}
+        \begin{center}
+              \includegraphics[width=0.99\textwidth, trim={0 0 0 0}, clip]{figures/Diffusion_Model_Reverse_Process.pdf}
+              \end{center}
+    \end{frame}
+    
+    \begin{frame}{Reverse Diffusion Process: Removing Noise}
+    \begin{itemize}
+        \item We need to learn a model $p_\theta$ to approximate these conditional probabilities $q(\xbf_{t-1}|\xbf_t)$  to run the reverse diffusion process.
+        \item We start with choosing the prior distribution $p(\xbf_T) = \Ncal(\xbf_T; 0, \Ibf)$ (because in forward process, we end up with $q(\xbf_T)\approx \Ncal(\xbf_T; 0, \Ibf)$.
+        \item The learnable transition kernel $p_\theta(\xbf_{t-1}|\xbf_t)$ can be obtained using a neural network model.
+        \item The learnable transition kernel can be mathematically written as a parametrized equation
+        $$
+        p_\theta(\xbf_{t-1}|\xbf_t) = \Ncal(\xbf_{t-1};\mu_\theta (\xbf_t, t), \Sigma_\theta (\xbf_t, t)).
+        $$
+        $\mu_\theta$ and $\Sigma_\theta$ are parameters to be learned using a neural network (UNet).
+        \item With this reverse Markov chain in hand, we can generate a data sample $\xbf_0$ by first sampling a noise vector $\xbf_T \sim p(\xbf_T )$, then iteratively sampling from the learnable
+    transition kernel $x_{t-1} \sim p_\theta(\xbf_{t-1}|\xbf_t)$ until $t = 1$.
+    \end{itemize}
+    \end{frame}
+    
+    \begin{frame}{What about the Loss Function?}
+        \begin{itemize}
+            \item The primary objective in training the UNet is the reverse Markov chain to match the
+    actual time reversal of the forward Markov chain.
+    \item We need to adjust the parameter $\theta$ in such a way so that joint probability distribution of the reverse Markov chain $p_\theta(\xbf_0,\xbf_1, \cdots,\xbf_T) = p(\xbf_T)\prod_{i=1}^T p_\theta (\xbf_{t-1}|\xbf_t)$ should closely approximate of the forward process $q_\theta(\xbf_0,\xbf_1, \cdots,\xbf_T) = q(\xbf_0)\prod_{i=1}^T q_\theta (\xbf_{t}|\xbf_{t-1})$.
+    \item This is done by minimizing the distance between these two joint probability distributions using a metric called \textbf{Kullback-Leibler (KL) divergence}.
+    \item KL-divergence.
+        \end{itemize}
+    \end{frame}
+    
+    \begin{frame}{KL Divergence as Loss Function}
+        \begin{itemize}
+            \item KL divergence for training the diffusion model is written as
+            \begin{equation}
+                \begin{aligned}
+                      \text{KL}(q, p) & = -\Ebb_q(\xbf_0,\xbf_1, \cdots,\xbf_T) [\log p_\theta(\xbf_0,\xbf_1, \cdots,\xbf_T)] + \text{constant}\\
+                      & = \Ebb_q\bigg[ -\log p(\xbf_T) - \sum_{t=1}^T\log \cfrac{p_\theta(\xbf_{t-1}| \xbf_t)}{q(\xbf_{t}| \xbf_{t-1})} \bigg] + \text{constant}\\
+                      & \geq \Ebb[-\log p_\theta(\xbf_0)] + \text{constant} 
+                \end{aligned}
+            \end{equation}
+          The last inequality comes from Jensens's Inequality, i.e. 
+    
+          $$
+          \Ebb[g(X)] \geq g( \Ebb[X] )
+          $$
+          
+        \end{itemize}
+    \end{frame}
+    
+    %------------------------------------------------
+    \section{Latent Diffusion Models}
+    %------------------------------------------------
+    
+    %------------------------------------------------
+    \begin{frame}{}
+    \begin{center}
+        \huge \bf \color{DarkBlue}
+        Latent Diffusion Models
+    \end{center}
+    \end{frame}
+    
+    \begin{frame}{Latent Diffusion Model}
+        \begin{center}
+        {\large \bf \color{MediumBlue}
+            The diffusion model runs in a latent space instead of a pixel space, making training costs lower and inference faster.
+        }
+        
+        \vspace{15pt}
+        
+        Latent: hidden or compression space (like PCA)!
+        
+        \vspace{15pt}
+        
+    
+        {\large \bf \color{MediumRed}
+            One example of the Latent Diffusion Model is StableDiffusion (the one that lets you generate images from the text).
+        }
+        
+        \end{center}    
+    \end{frame}
+    
+    \begin{frame}{Latent Diffusion Model Architecture}
+        \begin{center}
+            \includegraphics[width=0.87\textwidth, trim={300 600 50 70}, clip]{figures/LatentDiffusionModel.pdf}
+        \end{center}
+    \end{frame}
+
+    
+    \begin{frame}{Code Demo}
+        \begin{center}
+            {\large \bf\color{MediumGreen} UNet Diffusion Model on Fashion MNIST Dataset: \url{https://github.com/rahulbhadani/CPE490_590_Sp2025/blob/master/Code/Chapter_16_DiffusionModel.ipynb}
+            }
+    
+    \vspace{20pt}
+            
+    {\large \bf\color{MediumBlue} UNet Diffusion Model on Digit MNIST Dataset: \url{https://colab.research.google.com/drive/1RqgzkjEL-W3lUOhUkzAoEcVlnM0Cu1Fp?usp=sharing}
+    }
+        \end{center}
+    \end{frame}
+    \begin{frame}{References}
+    \footnotesize
+        \begin{itemize}
+        \item Original Paper on Diffusion Model, Deep Unsupervised Learning using Nonequilibrium Thermodynamics: \url{https://proceedings.mlr.press/v37/sohl-dickstein15.pdf}
+            \item Deep Learning Notes by Prof. LI Hongsheng: \url{https://dl.ee.cuhk.edu.hk/slides/diffusion.pdf}
+            
+            \item Diffusion Models: A Comprehensive Survey of Methods and Applications: \url{https://dl.acm.org/doi/full/10.1145/3626235?casa_token=tLriJS0Ll7EAAAAA:G_ue_8JwODm_PGRul_bBdK70QpTLetomFM1ioVMzebrqCaAtiozqPpcs2hV62SMAUIz01-TvweBV}
+            \item Understanding Diffusion Models: A Unified Perspective: \url{https://arxiv.org/pdf/2208.11970.pdf}
+            \item U-Net: Convolutional Networks for Biomedical Image Segmentation: \url{https://arxiv.org/pdf/1505.04597.pdf}
+            \item ConvNext: A ConvNet for the 2020s: \url{https://arxiv.org/pdf/2201.03545.pdf}
+            \item ACC-UNet: A Completely Convolutional UNet model for the 2020s: \url{https://arxiv.org/pdf/2308.13680.pdf}
+            \item Latent Diffusion Paper: \url{https://arxiv.org/pdf/2112.10752.pdf}
+        \end{itemize}
+    \end{frame}
+    
+    \begin{frame}{References}
+        \begin{itemize}
+            \item Stable Diffusion Github Repo: \url{https://github.com/CompVis/stable-diffusion?tab=readme-ov-file}
+            \item Diffusion Models Beat GANs on Image Synthesis (Guided Diffusion): \url{https://arxiv.org/pdf/2105.05233.pdf}
+            \item Guided Diffusion Github Repo: \url{https://github.com/openai/guided-diffusion}
+        \end{itemize}
+    \end{frame}
+    %------------------------------------------------
+    \begin{frame}
+        \Huge{\centerline{\color{MediumBlue}\textbf{The End}}}
+    \end{frame}
+    
+\end{document}
