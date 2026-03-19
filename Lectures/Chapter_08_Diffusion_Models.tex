@@ -197,6 +197,99 @@ frame=none
     \end{center}
     \end{frame}
     
+\begin{frame}{Generative Models}
+
+\resizebox{0.7\textwidth}{!}
+{
+\begin{tikzpicture}[
+    font=\sffamily\small,
+    >=Stealth,
+    node distance=1.0cm and 1.0cm,
+    box/.style={rectangle, draw=Blue, fill=BlueLight, minimum width=0.6cm, minimum height=2cm, thick},
+    input/.style={box, draw=Sage, fill=SageLight},
+    latent/.style={rectangle, draw=Rust, fill=RustPale, minimum size=0.6cm, thick},
+    trapezoid/.style={trapezium, draw=Sage, fill=SageLight, shape border rotate=270, minimum height=1.5cm, trapezium stretches body, thick},
+    trapezoid_inv/.style={trapezoid, draw=Blue, fill=BlueLight, shape border rotate=90},
+    label_node/.style={align=left, font=\sffamily\bfseries, text width=8cm}
+]
+
+% --- GAN ---
+\node[label_node] (gan_lab) {GAN: \textnormal{Adversarial training}};
+\node[box, right=of gan_lab] (gan_x_prime_in) {$\mathbf{x}'$};
+\node[input, right=0.2cm of gan_x_prime_in] (gan_x) {$\mathbf{x}$};
+\node[trapezoid, right=of gan_x] (disc) {\begin{tabular}{c} Discriminator \\ $D(\mathbf{x})$ \end{tabular}};
+\node[circle, draw=Ink, fill=BlueLight!50!SageLight, right=0.4cm of disc, thick] (prob) {0/1};
+\node[latent, right=0.6cm of prob] (gan_z) {$\mathbf{z}$};
+\node[trapezoid_inv, right=of gan_z] (gen) {\begin{tabular}{c} Generator \\ $G(\mathbf{z})$ \end{tabular}};
+\node[box, right=of gen] (gan_x_prime_out) {$\mathbf{x}'$};
+
+\draw[->] (gan_x) -- (disc);
+\draw[->] (disc) -- (prob);
+\draw[->] (gan_z) -- (gen);
+\draw[->] (gen) -- (gan_x_prime_out);
+
+% --- VAE ---
+\node[label_node, below=4cm of gan_lab] (vae_lab) {VAE: \textnormal{maximize variational lower bound}};
+\node[input, right=1.6cm of vae_lab] (vae_x) {$\mathbf{x}$};
+\node[trapezoid, right=of vae_x] (enc) {\begin{tabular}{c} Encoder \\ $q_\wbf(\mathbf{z}|\mathbf{x})$ \end{tabular}};
+\node[latent, right=of enc] (vae_z) {$\mathbf{z}$};
+\node[trapezoid_inv, right=of vae_z] (dec) {\begin{tabular}{c} Decoder \\ $p_\vbf(\mathbf{x}|\mathbf{z})$ \end{tabular}};
+\node[box, right=of dec] (vae_x_prime) {$\mathbf{x}'$};
+
+\draw[->] (vae_x) -- (enc);
+\draw[->] (enc) -- (vae_z);
+\draw[->] (vae_z) -- (dec);
+\draw[->] (dec) -- (vae_x_prime);
+
+% --- Flow ---
+\node[label_node, below=3cm of vae_lab] (flow_lab) {Flow-based models: \textnormal{Invertible transform of distributions}};
+\node[input, right=1.6cm of flow_lab] (flow_x) {$\mathbf{x}$};
+\node[rectangle, draw=Sage, fill=SageLight, minimum width=1.5cm, minimum height=1.5cm, thick, right=of flow_x] (flow_f) {\begin{tabular}{c} Flow \\ $f(\mathbf{x})$ \end{tabular}};
+\node[latent, right=of flow_f] (flow_z) {$\mathbf{z}$};
+\node[rectangle, draw=Blue, fill=BlueLight, minimum width=1.5cm, minimum height=1.5cm, thick, right=of flow_z] (flow_inv) {\begin{tabular}{c} Inverse \\ $f^{-1}(\mathbf{z})$ \end{tabular}};
+\node[box, right=of flow_inv] (flow_x_prime) {$\mathbf{x}'$};
+
+\draw[->] (flow_x) -- (flow_f);
+\draw[->] (flow_f) -- (flow_z);
+\draw[->] (flow_z) -- (flow_inv);
+\draw[->] (flow_inv) -- (flow_x_prime);
+
+% --- Diffusion ---
+\node[label_node, below=3cm of flow_lab] (diff_lab) {Diffusion models: \textnormal{Gradually add Gaussian noise and then reverse}};
+\node[input, right=1.6cm of diff_lab] (x0) {$\mathbf{x}_0$};
+\node[rectangle, draw=Gold, fill=GoldLight!40, minimum width=0.6cm, minimum height=2cm, thick, right=0.6cm of x0] (x1) {$\mathbf{x}_1$};
+\node[rectangle, draw=Gold, fill=GoldLight!70, minimum width=0.6cm, minimum height=2cm, thick, right=0.6cm of x1] (x2) {$\mathbf{x}_2$};
+\node[right=0.8cm of x2] (dots) {$\dots \dots$};
+\node[rectangle, draw=Rust, fill=RustPale, minimum width=0.6cm, minimum height=2cm, thick, right=0.8cm of dots] (diff_z) {$\mathbf{z}$};
+
+\draw[->] ([yshift=2mm]x0.east) -- ([yshift=2mm]x1.west);
+\draw[->, dashed] ([yshift=-2mm]x1.west) -- ([yshift=-2mm]x0.east);
+\draw[->] ([yshift=2mm]x1.east) -- ([yshift=2mm]x2.west);
+\draw[->, dashed] ([yshift=-2mm]x2.west) -- ([yshift=-2mm]x1.east);
+\draw[->] ([yshift=2mm]x2.east) -- ([yshift=2mm]dots.west);
+\draw[->, dashed] ([yshift=-2mm]dots.west) -- ([yshift=-2mm]x2.east);
+\draw[->] ([yshift=2mm]dots.east) -- ([yshift=2mm]diff_z.west);
+\draw[->, dashed] ([yshift=-2mm]diff_z.west) -- ([yshift=-2mm]dots.east);
+
+\end{tikzpicture}
+}
+
+\end{frame}
+
+\begin{frame}{Why Diffusion Model and not VAE}
+
+\begin{itemize}
+\item VAE operates on a single-step compression - expansion idea.
+\item High-frequency details like textures, sharp texts, etc are discarded in attempt to minimize the loss.
+\end{itemize}
+
+\vspace{15pt}
+\begin{center}
+Diffusion Models attempt to solve this by breaking down each step into multiple tiny steps.
+\end{center}
+
+\end{frame}
+    
     \begin{frame}{Diffusion Model as the State of the Art for Generative Models}
     \begin{center}
                \includegraphics[width=0.22\textwidth, trim={0 0 0 0}, clip]{figures/Midjourney_2.png}
@@ -386,7 +479,7 @@ frame=none
     
                \vspace{15pt}
                 {\large \bf \color{MediumGreen}
-       The type of CNN used in the original paper is called UNet.
+       The type of CNN used in the original paper is called UNet. (Transformer can also be used). In general, we call them \textit{\underline{backbone}} models.
     }
         \end{center}
     \end{frame}
@@ -410,16 +503,88 @@ frame=none
     \end{itemize}
        
     \end{frame}
+    
+    \begin{frame}{Historical Timeline}
+\small
+\resizebox{1.2\textheight}{!}
+{
+\begin{tikzpicture}
+\draw[Gold!40,line width=1pt] (0,0) -- (0,-7.8);
+\foreach \y/\yr/\title/\desc in {
+  0.0/2015/{Sohl-Dickstein et al.}/{Thermodynamic diffusion framework. Largely overlooked.},
+  -1.1/2019/{Song \& Ermon}/{Score-based models with Langevin dynamics -- a parallel track.},
+  -2.2/2020/{Ho et al.\ (DDPM)}/{Simplified $\varepsilon$-prediction; quality rivals GANs. The field ignites.},
+  -3.3/2021/{SDEs + DDIM}/{Song et al.\ unify via SDEs. DDIM gives $10$--$50\times$ speedup.},
+  -4.4/2022/{Stable Diffusion}/{Rombach et al.: latent diffusion; open-source text-to-image.},
+  -5.5/2023/{DiT + Flow Matching}/{Transformers replace U-Nets. Consistency models (1-step).},
+  -6.6/2024+/{FLUX, SD3, Sora}/{Frontier image, video, science models at production scale.}
+}{
+  \filldraw[Gold] (0,\y) circle (3.5pt);
+  \node[font=\tiny\ttfamily\bfseries,text=Gold,right=0.0cm,
+        minimum width=1.2cm,align=right] at (-2.2,\y) {\yr};
+  \node[font=\scriptsize\bfseries,text=Ink,right=0.35cm] at (0,{\y+0.15}) {\title};
+  \node[font=\scriptsize,text=InkLight,right=0.35cm,text width=10.5cm]
+    at (0,{\y-0.22}) {\desc};
+}
+\end{tikzpicture}
+}
+\end{frame}
+
     %------------------------------------------------
     \section{Mathematical Framework for Diffusion Models}
     %------------------------------------------------
+ 
+    
     
     %------------------------------------------------
     \begin{frame}{}
     \begin{center}
         \huge \bf \color{DarkBlue}
-        Mathematical Framework for Diffusion Models
+        Mathematical Framework for Diffusion Models: Denoising Diffusion Probabilistic Model (DDPM)
     \end{center}
+    \end{frame}
+    
+    \begin{frame}{Generated Samples from DDPM}
+    
+    \begin{columns}
+    
+    \column{0.48\linewidth}
+    \begin{center}
+    \includegraphics[width=0.68\linewidth]{figures/ddpm_samples.png}
+    
+    \footnotesize
+    
+    Source: Denoising Diffusion Probabilistic Models \url{https://proceedings.neurips.cc/paper/2020/file/4c5bcfec8584af0d967f1ab10179ca4b-Paper.pdf}
+    \end{center}
+    
+    
+    \column{0.5\linewidth}
+
+\begin{tcolorbox}[vcHighlight, title={\color{vcDeep}\bfseries\small Definition }]
+A diffusion probabilistic model (a \textbf{diffusion model} for brevity) is a parameterized Markov chain trained using variational inference to produce samples matching the data after finite time.
+
+\vspace{10pt}
+
+\tiny Ho, Jonathan, Ajay Jain, and Pieter Abbeel. "Denoising diffusion probabilistic models." Advances in neural information processing systems 33 (2020): 6840-6851.
+
+\end{tcolorbox}
+
+    
+    
+    \end{columns}
+    \end{frame}
+    
+    \begin{frame}{Background Terminology}
+    
+    \begin{itemize}
+    \item $\xbf_0 \sim q(\xbf_0)$: the original data.
+    \item $\xbf_1, \xbf_2, \cdots, \xbf_T$: latent dimensions of the same dimensionality as $\xbf_0$.
+    \item Joint distribution of the reverse process: $ p_\theta(\xbf_0, \xbf_1, \xbf_2, \cdots, \xbf_T)$ or  $p_\theta(\xbf_{0:T})$  in short.
+    \item Reverse process is defined s Markov chain with a learned Gaussian transition start at $p(\xbf_T) = \Ncal(\xbf_T, \bm 0, \Ibf)$.
+    \item Approximate posterior $q(\xbf_{1:T} | \xbf_0)$, called forward process or diffusion process in the realm of diffusion model.
+    \item The approximate posteror is fixed to a Markov process (or Markov chain) that adds Gaussain noise little by little according to a variance schedule $\beta_1, \beta_2, \cdots, \beta_T$.
+    \end{itemize}
+    
     \end{frame}
     
     \begin{frame}{Formulating Diffusion Model: Forward Process}
@@ -436,10 +601,12 @@ frame=none
     \begin{frame}{Forward Process: Adding Noise}
         \begin{center}
               \includegraphics[width=0.99\textwidth, trim={0 0 0 0}, clip]{figures/Diffusion_Model_Forward_Process.pdf}
+              
+              \vspace{10pt}
     
               \begin{itemize}
                   \item If the noise to be added is Gaussian, then we use the analytical distribution (also known as \textbf{transition kernel}) of the noisy data at time step $t$ as $q(\xbf_t | \xbf_{t-1}) = \Ncal(\xbf_t; \sqrt{1-\beta_t}\xbf_{t-1}, \beta_t\Ibf)$. \textbf{Note: this is a design choice.}
-                  \item The conditional distribution of the noisy data for the subsequent Markov chain (i.e. joint distribution of $\xbf_1, \xbf_2, \cdots, \xbf_T$) is written as $$q(\xbf_1, \xbf_2, \cdots, \xbf_T | \xbf_0) = {\prod}_{t=0}^T q(\xbf_t|\xbf_{t-1})$$.
+                  \item The conditional distribution of the noisy data for the subsequent Markov chain (i.e. joint distribution of $\xbf_1, \xbf_2, \cdots, \xbf_T$) is written as $$q(\xbf_1, \xbf_2, \cdots, \xbf_T | \xbf_0) = q(\xbf_{1:T} | \xbf_0) = {\prod}_{t=0}^T q(\xbf_t|\xbf_{t-1})$$.
               \end{itemize}
         \end{center}
     \end{frame}
@@ -478,12 +645,47 @@ frame=none
         \item The learnable transition kernel $p_\theta(\xbf_{t-1}|\xbf_t)$ can be obtained using a neural network model.
         \item The learnable transition kernel can be mathematically written as a parametrized equation
         $$
-        p_\theta(\xbf_{t-1}|\xbf_t) = \Ncal(\xbf_{t-1};\mu_\theta (\xbf_t, t), \Sigma_\theta (\xbf_t, t)).
+        p_\theta(\xbf_{t-1}|\xbf_t) = \Ncal(\xbf_{t-1};\bm\mu_\theta (\xbf_t, t), \bm\Sigma_\theta (\xbf_t, t)).
         $$
-        $\mu_\theta$ and $\Sigma_\theta$ are parameters to be learned using a neural network (UNet).
+        $\bm\mu_\theta$ and $\bm\Sigma_\theta$ are parameters to be learned using a neural network (UNet).  An easier option is to set $\bm\Sigma_\theta (\xbf_t, t) = \sigma_t^2 \Ibf$.
+        
         \item With this reverse Markov chain in hand, we can generate a data sample $\xbf_0$ by first sampling a noise vector $\xbf_T \sim p(\xbf_T )$, then iteratively sampling from the learnable
     transition kernel $x_{t-1} \sim p_\theta(\xbf_{t-1}|\xbf_t)$ until $t = 1$.
     \end{itemize}
+    \end{frame}
+    
+    
+    \begin{frame}{Data Scaling}
+    
+    \footnotesize
+    
+    \begin{itemize}
+    \item Image data are between 0 to 255 in integer. We scale them to $[-1, 1]$.
+    \item Since, image pixels are discrete, we want to obtain discrete log likelihood.
+    \item For that, we set the last term of the reverse process to an independent discree decoder derived from the Gaussian $\Ncal(\xbf_0, \bm\mu_\theta (\xbf_1, 1), \sigma_1^2\Ibf)$:
+
+\begin{align*}
+p_\theta = \prod_{i=1}^D \int_{\delta_{-}(x_0^i)}^{\delta_{+}(x_0^i)} \Ncal(x; \mu_\theta^i (\xbf_1, 1), \sigma_1^2) dx \quad D \text{ is the data dimensionality} 
+\end{align*}  
+
+and
+
+\begin{align*}
+\delta_+(x) = \begin{cases}
+\infty \quad \text{ if } x = 1\\
+x + \frac{1}{255} \quad \text { if } x < 1
+\end{cases}
+\end{align*}  
+ 
+\begin{align*}
+\delta_-(x) = \begin{cases}
+-\infty \quad \text{ if } x = -1\\
+x - \frac{1}{255} \quad \text { if } x > -1
+\end{cases}
+\end{align*}  
+    
+    \end{itemize}
+    
     \end{frame}
     
     \begin{frame}{What about the Loss Function?}
@@ -491,28 +693,52 @@ frame=none
             \item The primary objective in training the UNet is the reverse Markov chain to match the
     actual time reversal of the forward Markov chain.
     \item We need to adjust the parameter $\theta$ in such a way so that joint probability distribution of the reverse Markov chain $p_\theta(\xbf_0,\xbf_1, \cdots,\xbf_T) = p(\xbf_T)\prod_{i=1}^T p_\theta (\xbf_{t-1}|\xbf_t)$ should closely approximate of the forward process $q_\theta(\xbf_0,\xbf_1, \cdots,\xbf_T) = q(\xbf_0)\prod_{i=1}^T q_\theta (\xbf_{t}|\xbf_{t-1})$.
-    \item This is done by minimizing the distance between these two joint probability distributions using a metric called \textbf{Kullback-Leibler (KL) divergence}.
-    \item KL-divergence.
+    \item This is done by minimizing the distance between these two joint probability distributions using \textbf{Kullback-Leibler (KL) divergence}.
         \end{itemize}
     \end{frame}
     
     \begin{frame}{KL Divergence as Loss Function}
         \begin{itemize}
             \item KL divergence for training the diffusion model is written as
-            \begin{equation}
-                \begin{aligned}
-                      \text{KL}(q, p) & = -\Ebb_q(\xbf_0,\xbf_1, \cdots,\xbf_T) [\log p_\theta(\xbf_0,\xbf_1, \cdots,\xbf_T)] + \text{constant}\\
-                      & = \Ebb_q\bigg[ -\log p(\xbf_T) - \sum_{t=1}^T\log \cfrac{p_\theta(\xbf_{t-1}| \xbf_t)}{q(\xbf_{t}| \xbf_{t-1})} \bigg] + \text{constant}\\
-                      & \geq \Ebb[-\log p_\theta(\xbf_0)] + \text{constant} 
-                \end{aligned}
-            \end{equation}
+                \begin{align*}
+                      \text{KL}(q, p) & = -\Ebb_{q(\xbf_0,\xbf_1, \cdots,\xbf_T)} [\log p_\theta(\xbf_0,\xbf_1, \cdots,\xbf_T)] + \text{constant}\\
+                      & = \Ebb_{q(\xbf_0,\xbf_1, \cdots,\xbf_T)}\bigg[ -\log p(\xbf_T) - \sum_{t=1}^T\log \cfrac{p_\theta(\xbf_{t-1}| \xbf_t)}{q(\xbf_{t}| \xbf_{t-1})} \bigg] + \text{constant}\\
+                      & \geq \Ebb_{q(\xbf_0)}[-\log p_\theta(\xbf_0)] + \text{constant} 
+                \end{align*}
           The last inequality comes from Jensens's Inequality, i.e. 
     
           $$
           \Ebb[g(X)] \geq g( \Ebb[X] )
           $$
           
+          
         \end{itemize}
+        
+        $\Ebb_{q(\xbf_0}[-\log p_\theta(\xbf_0)]$ is variational upper bound (or negative ELBO as seen in VAE).
+        
+        \begin{center}
+        \tiny
+
+        Two random variables $A$ and $B$ are related by $P(A, B) = P(A) P (B|A)$. Hence,  $q(\mathbf{x}_0, \mathbf{x}_{1:T}) = q(\mathbf{x}_0) q(\mathbf{x}_{1:T} | \mathbf{x}_0)$ which can be used as alternative expression above.
+        
+        \end{center}
+    \end{frame}
+    
+    \begin{frame}{Parametrizing the Loss Function}
+    
+    We can rewrite $KL$ shown previously as 
+    
+    \begin{align*}
+    \Ebb_{q(\xbf_0,\xbf_1, \cdots,\xbf_T)}\bigg[\underbrace{KL( q(\xbf_T | \xbf_0) || p(\xbf_T) )}_{L_T} + \sum_{t > 1} \underbrace{KL( q(\xbf_{t-1} | \xbf_1, \xbf_0) || p_\theta(\xbf_{t-1} | \xbf_t))}_{L_{t-1}} \underbrace{- \log p_\theta(\xbf_0 | \xbf_1)}_{L_0} \bigg]
+    \end{align*}
+    
+    This equation uses KL divergence to directly compare $p_\theta(\xbf_{t-1} | \xbf_t)$ againster forward process posteriors $q(\xbf_{t-1} | \xbf_t, \xbf_0)$ which are tractable when conditioned on $\xbf_0$:
+    \begin{align*}
+    q(\xbf_{t-1} | \xbf_t, \xbf_0)  = \Ncal(\xbf_{t-1}; \tilde{\mu}(\xbf_t, \xbf_0), \tilde{\beta}_t \Ibf)
+    \end{align*}
+    
+    with $\tilde{\mu}(\xbf_t, \xbf_0):= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1- \bar{\alpha}_t}\xbf_0 + \frac{\sqrt{1 - \beta_t}(1  - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t}\xbf_t$ and $\tilde{\beta}_t : = \frac{1- \bar{\alpha}_{t-1}}{1- \bar{\alpha}_t}\beta_t$.
+    
     \end{frame}
     
     %------------------------------------------------
@@ -568,7 +794,8 @@ frame=none
     \begin{frame}{References}
     \footnotesize
         \begin{itemize}
-        \item Original Paper on Diffusion Model, Deep Unsupervised Learning using Nonequilibrium Thermodynamics: \url{https://proceedings.mlr.press/v37/sohl-dickstein15.pdf}
+        \item \textbf{Original Paper} on Diffusion Model, Deep Unsupervised Learning using Nonequilibrium Thermodynamics: \url{https://proceedings.mlr.press/v37/sohl-dickstein15.pdf}
+        \item \textbf{The Most Influential Paper:} Denoising Diffusion Probabilistic Models \url{https://arxiv.org/pdf/2006.11239}
             \item Deep Learning Notes by Prof. LI Hongsheng: \url{https://dl.ee.cuhk.edu.hk/slides/diffusion.pdf}
             
             \item Diffusion Models: A Comprehensive Survey of Methods and Applications: \url{https://dl.acm.org/doi/full/10.1145/3626235?casa_token=tLriJS0Ll7EAAAAA:G_ue_8JwODm_PGRul_bBdK70QpTLetomFM1ioVMzebrqCaAtiozqPpcs2hV62SMAUIz01-TvweBV}
