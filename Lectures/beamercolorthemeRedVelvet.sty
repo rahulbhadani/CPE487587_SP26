@@ -338,6 +338,10 @@
 \definecolor{uiRose}{RGB}{190, 40, 80}
 \definecolor{rnnNavy}{RGB}{0, 0, 128}
 
+\definecolor{encoderColor}{HTML}{00CCFF} % Cyan-blue for Encoder
+  \definecolor{latentColor}{HTML}{FF9933}  % Warm orange for Latent Space
+  \definecolor{decoderColor}{HTML}{9933FF} % Vivid violet for Decoder
+
 %  Shared box styles 
 \tcbset{
   vcBase/.style={
@@ -357,6 +361,82 @@
   },
 }
 
+% Custom Color Palette
+\definecolor{mainblue}{RGB}{0, 38, 77}
+\definecolor{accentblue}{RGB}{0, 102, 204}
+\definecolor{lightgrey}{RGB}{245, 245, 245}
+
+% Custom Block Style
+\newtcolorbox{flowbox}[1]{
+    colback=lightgrey,
+    colframe=mainblue,
+    fonttitle=\bfseries,
+    title=#1,
+    boxrule=0.5pt,
+    arc=2pt,
+    left=2pt,
+    right=2pt,
+    top=2pt,
+    bottom=2pt
+}
+
+\definecolor{boxBackground}{RGB}{10, 15, 30}   % Deep Dark Navy
+\definecolor{accentOrange}{RGB}{255, 170, 50}  % The left accent bar
+\definecolor{headerGrey}{RGB}{100, 110, 130}   % Muted grey for the label
+\definecolor{borderLine}{RGB}{30, 40, 60}      % Subtle outer border
+
+\newtcolorbox{reparambox}{
+    enhanced,
+    colback=boxBackground,
+    colframe=borderLine,
+    arc=12pt,                            % Slight rounding on the main box
+    boxrule=0.5pt,
+    leftrule=3pt,                       % Makes space for the accent bar
+    % This creates the orange vertical bar on the left:
+    borderline west={2.5pt}{0pt}{accentOrange}, 
+    fontupper=\color{white},
+    pad at break*=0mm,
+    top=12pt, bottom=14pt, left=15pt, right=15pt
+}
+
+\definecolor{bg}{HTML}{1A1208}
+\definecolor{bgtwo}{HTML}{221A0D}
+\definecolor{bgthree}{HTML}{2E2210}
+\definecolor{bgfour}{HTML}{3A2C16}
+\definecolor{paper}{HTML}{F7F0E3}
+\definecolor{amber}{HTML}{E8A020}
+\definecolor{ambertwo}{HTML}{F5C84A}
+\definecolor{amberthree}{HTML}{FBE08A}
+\definecolor{coral}{HTML}{E06040}
+\definecolor{teal}{HTML}{3DCFB8}
+\definecolor{sky}{HTML}{5AB4E8}
+\definecolor{sage}{HTML}{7DBC6A}
+\definecolor{txttwo}{HTML}{C8B896}
+\definecolor{txtthree}{HTML}{7A6848}
+\definecolor{borderc}{HTML}{3A2C16}
+\definecolor{bordertwo}{HTML}{4E3E22}
+\definecolor{Cream}{HTML}{FAF8F3}
+\definecolor{WarmWhite}{HTML}{FFFEF9}
+\definecolor{Ink}{HTML}{1A1714}
+\definecolor{InkLight}{HTML}{3D3830}
+\definecolor{InkMuted}{HTML}{7A7060}
+\definecolor{Gold}{HTML}{C9871E}
+\definecolor{GoldLight}{HTML}{F0C96B}
+\definecolor{GoldPale}{HTML}{FEF3D7}
+\definecolor{Rust}{HTML}{C44B2B}
+\definecolor{RustPale}{HTML}{FDEEE9}
+\definecolor{Sage}{HTML}{4A7C6F}
+\definecolor{SageLight}{HTML}{D4E8E4}
+\definecolor{Blue}{HTML}{2B5FAC}
+\definecolor{BlueLight}{HTML}{DCE9F8}
+\definecolor{Border}{HTML}{E2DDD4}
+\definecolor{CodeBg}{HTML}{1A1714}
+\definecolor{CodeFg}{HTML}{E8E0D0}
+\definecolor{KwColor}{HTML}{C792EA}
+\definecolor{FnColor}{HTML}{82AAFF}
+\definecolor{StColor}{HTML}{C3E88D}
+\definecolor{CmColor}{HTML}{546E7A}
+\definecolor{NmColor}{HTML}{F78C6C}
 \usepackage{derivative}
 
 \usepackage{hyperref}
