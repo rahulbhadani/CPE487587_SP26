@@ -729,10 +729,10 @@ x - \frac{1}{255} \quad \text { if } x > -1
     We can rewrite $KL$ shown previously as 
     
     \begin{align*}
-    \Ebb_{q(\xbf_0,\xbf_1, \cdots,\xbf_T)}\bigg[\underbrace{KL( q(\xbf_T | \xbf_0) || p(\xbf_T) )}_{L_T} + \sum_{t > 1} \underbrace{KL( q(\xbf_{t-1} | \xbf_1, \xbf_0) || p_\theta(\xbf_{t-1} | \xbf_t))}_{L_{t-1}} \underbrace{- \log p_\theta(\xbf_0 | \xbf_1)}_{L_0} \bigg]
+    \Ebb_{q(\xbf_0,\xbf_1, \cdots,\xbf_T)}\bigg[\underbrace{KL( q(\xbf_T | \xbf_0) || p(\xbf_T) )}_{L_T} + \sum_{t > 1} \underbrace{KL( q(\xbf_{t-1} | \xbf_t, \xbf_0) || p_\theta(\xbf_{t-1} | \xbf_t))}_{L_{t-1}} \underbrace{- \log p_\theta(\xbf_0 | \xbf_1)}_{L_0} \bigg]
     \end{align*}
     
-    This equation uses KL divergence to directly compare $p_\theta(\xbf_{t-1} | \xbf_t)$ againster forward process posteriors $q(\xbf_{t-1} | \xbf_t, \xbf_0)$ which are tractable when conditioned on $\xbf_0$:
+    This equation uses KL divergence to directly compare $p_\theta(\xbf_{t-1} | \xbf_t)$ against forward process posteriors $q(\xbf_{t-1} | \xbf_t, \xbf_0)$ which are tractable when conditioned on $\xbf_0$:
     \begin{align*}
     q(\xbf_{t-1} | \xbf_t, \xbf_0)  = \Ncal(\xbf_{t-1}; \tilde{\mu}(\xbf_t, \xbf_0), \tilde{\beta}_t \Ibf)
     \end{align*}
@@ -740,6 +740,96 @@ x - \frac{1}{255} \quad \text { if } x > -1
     with $\tilde{\mu}(\xbf_t, \xbf_0):= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1- \bar{\alpha}_t}\xbf_0 + \frac{\sqrt{1 - \beta_t}(1  - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t}\xbf_t$ and $\tilde{\beta}_t : = \frac{1- \bar{\alpha}_{t-1}}{1- \bar{\alpha}_t}\beta_t$.
     
     \end{frame}
+    
+        \begin{frame}{Parametrizing the Loss Function}
+        
+        \footnotesize
+
+Both $q(\xbf_{t-1} | \xbf_t, \xbf_0)$ and $p_\theta(\xbf_{t-1}| \xbf_t)$ are not Normal distribution, leading to a simpler KL divergence:
+\begin{align*}
+L_{t-1} = KL( q(\xbf_{t-1} | \xbf_t, \xbf_0) || p_\theta(\xbf_{t-1}| \xbf_t)) = \Ebb_q \bigg [ \frac{1}{2\sigma^2_t} || \tilde{\mu_t}(\xbf_t, \xbf_0) - \mu_\theta (\xbf_t, t) || ^2 \bigg] + C
+\end{align*}
+
+We already have one reparameterization: $\xbf_t = \sqrt{\bar{\alpha}_t}\xbf_0 + \sqrt{(1-\bar{\alpha}_t)}\epsilon$.
+
+Then,
+
+\begin{align*}
+\tilde{\mu}(\xbf_t, \xbf_0) = \frac{1}{\sqrt{1 - \beta_t}} \bigg( \xbf_t - \frac{\beta}{\sqrt{1 - \bar{\alpha}_t}}\epsilon \bigg)
+\end{align*}
+
+So the mean of denoising model can be learnt with a denoising network 
+
+\begin{align*}
+\mu_\theta(\xbf_t, t) = \frac{1}{\sqrt{1 - \beta_t}} \bigg( \xbf_t - \frac{\beta}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_\theta(\xbf_t, t) \bigg)
+\end{align*}
+        
+        \end{frame}
+
+\begin{frame}{Simplified Loss Function}
+
+With the parameterization, we have
+
+\begin{align*}
+L_{t-1} = \Ebb_{\xbf_0 \sim q(\xbf_0), \epsilon\sim \Ncal(0,\Ibf) }\bigg[ \underbrace{\frac{\beta_t^2}{2\sigma_t^2(1 - \beta_t)(1-\bar{\alpha}_t)}}_{\lambda_t} || \epsilon - \epsilon_\theta(\xbf_t, t)||^2 \bigg] + C
+\end{align*}
+
+The time dependent $\lambda_t$ enables the training objective to be weighted for the maximum data likelihood training.
+
+\vspace{10pt}
+
+The original paper simplifies even further, and set $\lambda_t = 1$, and hence
+
+
+\begin{align*}
+L_{simple} = \Ebb_{\xbf_0 \sim q(\xbf_0), \epsilon\sim \Ncal(0,\Ibf) }\bigg[ || \epsilon - \epsilon_\theta(\xbf_t, t)||^2 \bigg] + C
+\end{align*}
+
+
+\end{frame} 
+
+\newcommand{\redbox}[1]{%
+  \tikz[baseline=(char.base)]
+  \node[draw=red, rectangle, inner sep=2pt, thick] (char) {#1};
+}
+
+\begin{frame}{Training and Sample Generation Algorithm}
+
+\begin{columns}[t]
+        % Left Column: Training
+        \begin{column}{0.5\textwidth}
+            \textbf{Algorithm 1} Training
+            \hrule
+            \begin{algorithmic}[1]
+                \REPEAT
+                \STATE $\mathbf{x}_0 \sim q(\mathbf{x}_0)$
+                \STATE $t \sim \text{Uniform}(\{1, \dots, T\})$
+                \STATE $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$
+                \STATE Take gradient descent step on
+                \STATE $\nabla_\theta \left\| \boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\redbox{$\sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\boldsymbol{\epsilon}$}, t) \right\|^2$
+                \UNTIL{converged}
+            \end{algorithmic}
+            \hrule
+        \end{column}
+
+        % Right Column: Sampling
+        \begin{column}{0.5\textwidth}
+            \textbf{Algorithm 2} Sampling
+            \hrule
+            \begin{algorithmic}[1]
+                \STATE $\mathbf{x}_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$
+                \FOR{$t = T, \dots, 1$}
+                \STATE $\mathbf{z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$
+                \STATE \redbox{$\mathbf{x}_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t - \frac{1-\alpha_t}{\sqrt{1-\bar{\alpha}_t}} \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \right)$} $+ \sigma_t \mathbf{z}$
+                \ENDFOR
+                \RETURN $\mathbf{x}_0$
+            \end{algorithmic}
+            \hrule
+        \end{column}
+    \end{columns}
+    
+
+\end{frame}   
     
     %------------------------------------------------
     \section{Latent Diffusion Models}
