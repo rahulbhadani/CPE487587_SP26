@@ -1534,32 +1534,586 @@ Hence, the flow map is
     
 \end{frame}
 
-    \begin{frame}{References}
-    \footnotesize
+\begin{frame}{Lyapunov Stability}
+
+        \scriptsize
+
+    A fixed point $x^*$ is Lyapunov stable if $\forall \varepsilon > 0,~~ \exists \delta > 0$ such that $ || x - x^* || < \delta \Rightarrow || \varphi_t(x_0) - x^* || < \varepsilon$ for all $t \geq0 $. 
+
+    \begin{itemize}
+        \item A fixed point $x^*$ is asymptotically stable if additionally $\varphi_t(x_0) \to x^*$ as $t \to \infty$. \textbf{A system returns to equlibrium even after being perturbed.} 
+        \item  A fixed point $x^*$ is unstable if it is not Lyapunov stable.
+        \item  A fixed point $x^*$ is globally asymptotic stable if asymptotically stable with basin of attraction = entire state space.
+    \end{itemize}
+
+    \begin{tcolorbox}[title = Lyapunov's Direct Method]
+        
+        Let $V: U \to\Rbb$ be a smooth function in a neighborhood of $x^* = 0$ with $V(0) = 0$, $V(x) > 0$ for $x \neq 0$ , i.e. positive definition then
+
         \begin{itemize}
-        \item \textbf{Original Paper} on Diffusion Model, Deep Unsupervised Learning using Nonequilibrium Thermodynamics: \url{https://proceedings.mlr.press/v37/sohl-dickstein15.pdf}
-        \item \textbf{The Most Influential Paper:} Denoising Diffusion Probabilistic Models \url{https://arxiv.org/pdf/2006.11239}
-            \item Deep Learning Notes by Prof. LI Hongsheng: \url{https://dl.ee.cuhk.edu.hk/slides/diffusion.pdf}
-            
-            \item Diffusion Models: A Comprehensive Survey of Methods and Applications: \url{https://dl.acm.org/doi/full/10.1145/3626235?casa_token=tLriJS0Ll7EAAAAA:G_ue_8JwODm_PGRul_bBdK70QpTLetomFM1ioVMzebrqCaAtiozqPpcs2hV62SMAUIz01-TvweBV}
-            \item Understanding Diffusion Models: A Unified Perspective: \url{https://arxiv.org/pdf/2208.11970.pdf}
-            \item U-Net: Convolutional Networks for Biomedical Image Segmentation: \url{https://arxiv.org/pdf/1505.04597.pdf}
-            \item ConvNext: A ConvNet for the 2020s: \url{https://arxiv.org/pdf/2201.03545.pdf}
-            \item ACC-UNet: A Completely Convolutional UNet model for the 2020s: \url{https://arxiv.org/pdf/2308.13680.pdf}
-            \item Latent Diffusion Paper: \url{https://arxiv.org/pdf/2112.10752.pdf}
+            \item If $\dot{V}(x) = \nabla V \cdot f(x) \leq 0$ on $U /\ \{ 0 \}$ means origin is Lyapunov stable.
+            \item If $\dot{V}(x) < 0$ on  $U /\ \{ 0 \}$ means origin is asymptotically stable.
+            \item If $\dot{V}(x) > 0$ on  $U /\ \{ 0 \}$ means origin is unstable.
         \end{itemize}
-    \end{frame}
+
+        Here $V$ is called a Lyapunov function.
+
+   
+
+                \begin{tcolorbox}[
+                enhanced,
+                rounded corners,
+                % Set the base thickness for all sides
+                boxrule=0.5pt, 
+                % Specifically override the left side
+                bottomrule=2mm, 
+                rightrule = 2mm,
+                % Colors
+                colframe=white!80!blue,
+                colback=WarmWhite,
+                % Ensure no title space is reserved
+                notitle,
+                % Optional: Add some padding so text doesn't touch the thick edge
+                left=1mm ]
+
+                $$
+                \dot{V} = \frac{dV}{dt} = \nabla V(x) \cdot f(x) = \sum_i \pdv{V}{x_i} f_i(x)
+                $$
+                \end{tcolorbox}
+    \end{tcolorbox}    
+\end{frame}
+
+\begin{frame}
     
-    \begin{frame}{References}
+
+    \begin{center}
+        
+
+\begin{tcolorbox}[
+enhanced,
+rounded corners,
+% Set the base thickness for all sides
+boxrule=0.5pt, 
+% Specifically override the left side
+bottomrule=2mm, 
+rightrule = 2mm,
+% Colors
+colframe=white!80!Green,
+colback=WarmWhite,
+% Ensure no title space is reserved
+notitle,
+% Optional: Add some padding so text doesn't touch the thick edge
+left=1mm ]
+
+Flow in ODE can be used in engineering and science in applications such as population dynamics, optimal control, fluid mechanics, gradient-based methods, quantum mechanics, etc. Flow map provides a qualitative analysis of a system: fixed points are steady states, and limit cycles are oscillations.
+
+\end{tcolorbox}
+
+    \end{center}
+
+\end{frame}
+
+
+\section{Stochastic Differential Equation}
+
+\begin{frame}
+    \sectionpage
+\end{frame}
+
+
+\begin{frame}{Perturbation in the Experimentally Measured States}
+
+    \footnotesize
+
+\begin{columns}
+    \column{0.5\linewidth}
+    \begin{tcolorbox}[enhanced, colback=red!5, colframe=red!60!black, boxrule=0.5pt, rightrule = 2mm, leftrule = 0mm, toprule=0mm, bottomrule=0mm,  fonttitle=\bfseries]
+    The experimentally measured trajectories of systems modeled by (ODE) do not in fact behave as predicted: the observed state seems to more or less follow the trajectory predicted by (ODE),
+    but is apparently subject also to random perturbations.
+    
+    \vspace{10pt}
+
+    ~~~~ \hfill \indent \textit{\color{Green!70!Yellow}An Introduction to  Stochastic Differential Equations,-- Lawrence C. Evans}
+    \end{tcolorbox}
+    \column{0.5\linewidth}
+    \begin{center}
+    \includegraphics[width=1.0\linewidth]{figures/ode_sde_comparison.pdf}
+    \end{center}
+    
+\end{columns}        
+\end{frame}
+
+\begin{frame}{Stochastic Differentials}
+
+    \footnotesize
+    
+    \begin{align*}
+        \frac{d\Xbf(t)}{dt} & = \bbf(\Xbf(t)) + \Bbf(\Xbf(t))\frac{d\Wbf(t)}{dt}\\
+        \Rightarrow d\Xbf(t) & = \bbf(\Xbf(t))dt + \Bbf(\Xbf(t))d\Wbf(t)\\
+        \Xbf(0) & = x_0
+    \end{align*}
+
+    \vspace{3pt}
+    Capital bold face to denote multivariate random variable.
+    \vspace{3pt}
+
+    \begin{itemize}
+        \item $d\Xbf$ and $\Bbf d\Wbf$ are stochastic differentials.
+        \item The expression above is calld stochastic differential equation (SDE).
+        \item $\Xbf()$ solves SDE provided
+        \begin{align*}
+            \Xbf(t) = x_0 + \int_0^t \bbf (\Xbf (s))ds + \int_0^t \Bbf(\Xbf(s))d\Wbf \quad \forall t > 0
+        \end{align*}
+
+        \item $\Wbf()$ is called Brownian motion or Weiner process. $\xi$ symbol is also used sometimes.
+        \item $\int_0^t \cdots d\Wbf$ is stochastic integral.
+        \item $x_0 \in \Rbb^n$
+        \item $\bbf: \Rbb^n \to \Rbb^n$
+        \item $\Bbf: \Rbb^n \to \Mbb^{n\times m}$, = space of $n\times m$ matrices.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Stochastic Differentials}
+
+    \begin{tcolorbox}[enhanced, colback=red!5, colframe=red!60!black, boxrule=0.5pt, leftrule = 2mm, rightrule = 0mm, toprule=0mm, bottomrule=0mm,  fonttitle=\bfseries]
+    Question still remains about 
+    \begin{itemize}
+        \item \textit{Does SDE truly model the physical situation?}
+        \item What is the characteristics of $W\bf$?
+    \end{itemize}
+    
+    \end{tcolorbox}
+
+
+\end{frame}
+
+\begin{frame}{Chain Rule Revisited for Normal Calculus}
+
+    In normal calculus, functions are smooth and well-behaved. They have finite variation. Hence, if you wanna draw the trajectory, you only need finite amount of ink. As the variation is finite, to prove the Chain rule, which computes the dynamics of $f(g(t))$, you only need to take a Taylor expansion of $f(t)$ to the first order. All the higher order terms will tend to zero.
+
+    \begin{columns}
+        
+    
+        \column{0.5\linewidth}
+        Using Taylor series, we expand $f(g(t) + dg)$:
+
+            \begin{itemize}
+        \item $f'(g)dg$, \textit{keep it}
+        \item $\frac{1}{2} f''(g) (dg)^2$ $\to 0$ , $(dt^2 \approx 0)$, \textit{discard}
+        \item $\frac{1}{3!}f'''(g)(dg)^3 + \cdots$  $\to 0$, \textit{discard}
+    \end{itemize}
+    
+    For smooth functions, higher-order terms vanish.
+
+    \column{0.5\linewidth}
+
+    \resizebox{0.9\linewidth}{!}{
+        \begin{tikzpicture}[scale=1]
+            % Axes
+            \draw[->, thick] (0,0) -- (6.5,0) node[right] {$t$};
+            \draw[->, thick] (0,0) -- (0,4) node[above] {$g(t)$};
+
+            % Smooth curve
+            \draw[blue!70!black, line width=2pt, line cap=round]
+                plot[smooth, tension=0.7] coordinates {
+                (0.2,2.2) (1.0,2.4) (1.8,1.2) (2.6,1.0)
+                (3.4,1.8) (4.2,1.6) (5.0,0.9) (5.8,0.8)
+                };
+
+            % Dashed overlay (pencil lead visualisation)
+            \draw[blue!40, line width=0.8pt, dashed, line cap=round]
+                plot[smooth, tension=0.7] coordinates {
+                (0.2,2.2) (1.0,2.4) (1.8,1.2) (2.6,1.0)
+                (3.4,1.8) (4.2,1.6) (5.0,0.9) (5.8,0.8)
+                };
+
+            % Bracket below
+            \draw (0.2,-0.5) -- (5.8,-0.5);
+            \draw (0.2,-0.4) -- (0.2,-0.6);
+            \draw (5.8,-0.4) -- (5.8,-0.6);
+            \node[below] at (3.0,-0.55) {\small finite interval $[a,b]$};
+
+            % Annotation
+            \draw[->, gray] (4.8,0.9) -- (6.0,1.4);
+            \node[right, align=left] at (6.0,1.5)
+                {\small arc length\\\small (finite!)};
+
+            % Caption box
+            \draw[rounded corners=4pt, fill=gray!8, draw=gray!40, line width=0.5pt]
+                (0.5,3.2) rectangle (6.7,5.0);
+            \node[align=left, font=\small] at (3.9, 4.1) {
+                \textbf{Smooth function}\\[4pt]
+                Tracing $g(t)$ uses a finite amount of\\
+                ink - bounded arc length.
+            };
+            \node[font=\small\itshape, blue!60!black] at (3.9,2.4)
+                {Finite variation};
+            \end{tikzpicture}
+    }
+
+
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Chain Rule When Considering Brownian Motion}
+
+    Brownian motion is so irregular that it has infinite variation. We need infinite amount of ink to draw it.
+    
+    For that, we have $dW \approx (dt)^{1/2}$.
+
+    \begin{columns}
+        \column{0.5\linewidth}
+        Taylor expansion of $f(X(t) + dX)$:
+
         \begin{itemize}
-            \item Stable Diffusion Github Repo: \url{https://github.com/CompVis/stable-diffusion?tab=readme-ov-file}
-            \item Diffusion Models Beat GANs on Image Synthesis (Guided Diffusion): \url{https://arxiv.org/pdf/2105.05233.pdf}
-            \item Guided Diffusion Github Repo: \url{https://github.com/openai/guided-diffusion}
+            \item $f'(X)dX$, \textit{keep it}
+            \item $\frac{1}{2}f''(X)(dX)^2$ ,  \textit{keep it} $(dW^2 = dt)$
+            \item $(dX)^3 + \cdots  \to 0$, \textit{discard}.
         \end{itemize}
-    \end{frame}
-    %------------------------------------------------
-    \begin{frame}
-        \Huge{\centerline{\color{MediumBlue}\textbf{The End}}}
-    \end{frame}
+        Hence, $df = f'dX + \frac{1}{2}f''(dX)^2$. There is an extra correction term. That's \textbf{Ito's Chain Rule}.
+
+        \column{0.5\linewidth}
+    
+        \resizebox{1.0\linewidth}{!}{
+        \begin{tikzpicture}[scale=1]
+            % Axes
+            \draw[->, thick] (0,0) -- (6.5,0) node[right] {$t$};
+            \draw[->, thick] (0,0) -- (0,4) node[above] {$W(t)$};
+
+            % Jagged Brownian path
+            \draw[red!70!black, line width=1.6pt, line join=round, line cap=round]
+                (0.2,2.2) -- (0.5,1.9) -- (0.7,2.1) -- (0.9,1.6)
+                -- (1.1,1.9) -- (1.3,1.3) -- (1.5,1.6) -- (1.7,1.0)
+                -- (1.9,1.4) -- (2.1,0.8) -- (2.3,1.2) -- (2.5,0.7)
+                -- (2.7,1.1) -- (2.9,0.5) -- (3.1,0.9) -- (3.3,0.7)
+                -- (3.5,1.2) -- (3.7,0.9) -- (3.9,1.5) -- (4.1,1.2)
+                -- (4.3,1.7) -- (4.5,1.4) -- (4.7,1.9) -- (4.9,1.6)
+                -- (5.1,2.1) -- (5.3,1.8) -- (5.5,2.3) -- (5.7,2.0);
+
+            % Dashed zoom box on a segment
+            \draw[gray, dashed, line width=0.7pt]
+                (2.3,0.4) rectangle (3.2,1.5);
+
+            % Leader lines to zoom inset
+            \draw[gray, dashed, line width=0.5pt] (3.2,1.5) -- (6.5,3.8);
+            \draw[gray, dashed, line width=0.5pt] (3.2,0.4) -- (6.5,2.2);
+
+            % Zoom inset box
+            \draw[rounded corners=4pt, fill=gray!8, draw=gray!40, line width=0.5pt]
+                (6.5,2.2) rectangle (9.6,3.8);
+            % Mini jagged path inside zoom
+            \draw[red!60, line width=1.2pt, line join=round, line cap=round]
+                (6.6,3.2) -- (6.9,2.8) -- (7.1,3.1) -- (7.3,2.5)
+                -- (7.5,2.9) -- (7.7,2.4) -- (7.9,2.7) -- (8.1,2.3)
+                -- (8.3,2.6) -- (8.5,2.2) -- (8.7,2.5) -- (8.9,2.3)
+                -- (9.1,2.7) -- (9.3,2.4) -- (9.5,2.8);
+            \node[font=\scriptsize, align=center] at (8.05,2.0)
+                {still jagged at any zoom};
+
+            % Bracket below
+            \draw (0.2,-0.5) -- (5.7,-0.5);
+            \draw (0.2,-0.4) -- (0.2,-0.6);
+            \draw (5.7,-0.4) -- (5.7,-0.6);
+            \node[below] at (3.0,-0.55) {\small same finite interval};
+
+            % Infinite variation label
+            \node[font=\small\itshape, red!70!black] at (1.8,3.5)
+                {Infinite variation $\times$};
+            \node[font=\small, red!70!black] at (1.8,3.1)
+                {pencil lead $= \infty$};
+            \end{tikzpicture}
+        }
+
+    \end{columns}
+    
+\end{frame}
+
+
+\begin{frame}{Ito's Chain Rule (Ito's Lemma)}
+
+    \footnotesize
+
+    Assume $n = m  = 1$, and a smooth function $u(x): \Rbb \to \Rbb$, then $dX = b(X) dt + dW$
+
+    \vspace{5pt}
+    
+    We can ask what stochastic differential equation does $Y(t) := u(X(t))$ solve?
+    
+    \vspace{3pt}
+
+    From normal calculus, $dY = u'dX = u'bdt + u'dW$ where $' = \frac{d}{dx}$.
+
+    
+    \vspace{10pt}
+
+    \textbf{But that's not the cae when $W$ is a Brownian Motion. Above calculation will be wrong.}
+
+    So in Taylor series expansion, 
+
+    \begin{align*}
+        dY & = u'dX + \frac{1}{2}u'' (dX)^2\\
+            & = u'(bdt + dW) + \frac{1}{2}u''(bdt + dW)^2 + \cdots\\
+            & = \bigg ( u'b  + \frac{1}{2}u''\bigg) dt + u'dW + \{ \text{ terms of order } (dt)^{3/2} \text{ and higher } \}
+    \end{align*}
+    We used $(dW)^2 = dt$. Compared to ordinary calculus, we see an extra term $\frac{1}{2}u''dt$.
+
+
+    
+\end{frame}
+
+\begin{frame}{Example}
+
+    \scriptsize 
+
+    Find the solution to SDE:
+
+    \begin{align*}
+        dY & = YdW \\
+        Y(0) = 1
+    \end{align*}
+
+    We guess the solution has the form $Y(t) = e^{f(t, W(t))}$ for some function $f$ and use Ito's Lemma to find $f$.
+
+    \vspace{5pt}
+
+    \pause 
+
+    \textbf{Step 1:} Make an ansatz (fancy name for making a guess): $Y(t) = e^{aW(t) + bt}$ for some constant $a$, and $b$. We define $u(x, t) = e^{ax + bt}$ for convenience. Thus, $Y() = u(W(t), t)$.
+
+    \vspace{5pt}
+
+    \pause 
+
+    \textbf{Step 2:} For a smooth $u(x, t)$, Ito's Lemma gives 
+
+    \begin{align*}
+        du  = \pdv{u}{t}dt + \pdv{u}{x}dW+ \frac{1}{2}\pdv[2]{u}{x} dt
+    \end{align*}
+
+    Compute the partials of $u = e^{ax + bt}$: 
+
+    \begin{align*}
+        \pdv{u}{t} = be^{ax + bt}, \quad \pdv{u}{x} = a e^{ax + bt}, \quad \pdv[2]{u}{x} = a^2 e^{ax + bt}
+    \end{align*}
+    Then,  $dY = bYdt + a YdW + \frac{1}{2}a^2 Y dt = \bigg( b + \frac{a^2}{2} \bigg) Y dt + aY dW$.
+
+    
+\end{frame}
+
+\begin{frame}{Example continues ...}
+
+    \textbf{Match coefficients}
+
+    We need $dY = Y dW$ (that's what the original question is). Comparing coefficients:
+
+    \begin{align*}
+        \bigg( b + \frac{a^2}{2} \bigg) Y dt + aY dW =  0\cdot Y dt + 1\cdot Y dW
+    \end{align*}
+    
+    $ a= 1$, $ b + \frac{a^2}{2} = 0 \Rightarrow b  = -\frac{1}{2}$.
+    
+    \vspace{5pt}
+
+    \pause 
+
+    Putting into our ansatz:
+    \begin{align*}
+        Y(t) = e^{W(t) - \frac{1}{2}t}. 
+    \end{align*}
+    which also satisies $Y(0) = e^{W(0) - 0} = e^0 = 1$. We have $W(0) = 0$ by the definition of Brownian motion.
+\end{frame}
+
+\begin{frame}{Brownian Motion}
+
+    \textbf{Brownian Motion} is a fundamental stochastic process that came out of studying actual diffusion process in the nature.
+
+    \vspace{10pt}
+
+        \begin{tcolorbox}[enhanced, colback=red!5, colframe=red!60!black, boxrule=0.5pt, rightrule = 2mm, leftrule = 0mm, toprule=0mm, bottomrule=0mm,  fonttitle=\bfseries]
+            A Brownian motion $W = (W_t)_{0 \leq t \leq 1}$ is a stochastic process such that $W_0 = 0$, the trajectories $ t \mapsto W_t$ are continuous and holds two condition:
+            \begin{enumerate}
+                \item Normal increment: $W_t - W_s \sim \Ncal(0, (t-s)I_d)$ for all $ 0 \leq s \leq t $, i.e. increments have Gaussain distribution with variance increasing linearly in time ($I_d$ is the identity matrix).
+                \item Independent increments: Increments $W_{t_1} - W_{t_0}, \cdots , W_{t_n} - W_{t_{n-1}}$ are independent random variables.
+            \end{enumerate}
+        \end{tcolorbox}
+
+        \scriptsize
+
+        Brownian motion is called Weiner process. We can simulate Brownian motion with a step size $h$, such that $ t= 0, h, 2h, \cdots $ and $W_0 = 0$ such that $W_{t+1} = W_t + \sqrt{h}\epsilon_t$, $\epsilon_t \sim \Ncal(0, I_d)$.
+    
+\end{frame}
+
+\begin{frame}{Simulating an ODE}
+
+    Numerically, there is a rich theory and implementation on simulating a numerical ODE. Most simple one is the Euler method.
+
+    $$
+    X_{t+h} = X_t + h u_t(X_t), \quad t = 0, h, 2h, \cdots
+    $$
+    
+\end{frame}
+
+\begin{frame}
+    A flow model can be described by an ODE as 
+
+    \begin{align*}
+        X_0 \sim p_{init} \quad \textbf{random initiliazation}, p_{init}  = \Ncal(0, I_d)\\
+        \frac{d}{dt}X_t = u_t^\theta(X_t) \quad \textbf{ODE}
+    \end{align*}
+    Our goal is made endpoint trajectory $X_{end} \sim p_{data} \Leftrightarrow \psi_{end}^\theta(X_0) \sim p_{data}$
+    where $\psi_t^\theta$ describes the flow induced by $u_t^\theta$.
+
+    \begin{itemize}
+        \item Here, $u_t^\theta$ would be called \textbf{Neural Network vector field}.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Sampling from a Flow Model with Euler Method}
+
+\begin{algorithm}[H]
+    \caption{\textbf{Sampling from a Flow Model with Euler method}}
+    \DontPrintSemicolon
+    
+    \KwRequire{Neural network vector field $u_t^\theta$, number of steps $n$}
+    
+    Set $t = 0$\;
+    Set step size $h = \frac{1}{n}$\;
+    Draw a sample $X_0 \sim p_{\text{init}}$\;
+    
+    \For{$i = 1, \dots, n$}{
+        $X_{t+h} = X_t + h u_t^\theta(X_t)$\;
+        Update $t \leftarrow t + h$\;
+    }
+    
+    \KwRet $X_1$\;
+\end{algorithm}
+    
+\end{frame}
+
+\begin{frame}{From ODE to SDE}
+{\scriptsize \url{https://web.archive.org/web/20260319034510/https://diffusion.csail.mit.edu/2026/docs/lecture_notes.pdf}}
+
+\vspace{5pt}
+
+We can rewrite ODE trajectories as 
+
+\begin{align*}
+    & \frac{d}{dt} X_t = u_t(X_t)\\
+    \Leftrightarrow & \frac{1}{h} (X_{t+h}  - X_t) = u_t(X_t)  + R_t(h)\\
+    \Leftrightarrow & X_{t+h} = X_t + h u_t (X_t) + h R_t(h)
+\end{align*}
+
+where $R$ is some function such that $\lim_{h \to 0} R_t(h) = 0$ which is an error term in numerical method.
+
+To make it stochastic, we add one more term:
+
+\begin{align*}
+    X_{t+h} = X_t + hu_t(X_t) + \sigma_t(W_{t+h} - W_t) + h R_t(h)
+\end{align*}
+
+$\sigma_t$ is diffusion coefficient.
+
+    
+\end{frame}
+
+\begin{frame}{An Example of an SDE Process}
+
+Let's have a constant diffusion coefficient $\sigma_t = \sigma \geq 0 $ and  a constant linear drift $u_t(x ) = -\theta x$ for $\theta > 0$ which gives us
+
+\begin{align*}
+    dX_t = - \theta X_t dt + \sigma dW_t
+\end{align*}
+
+A solution to this SDE is called \textbf{ Ornstein - Uhlenbeck Process}.
+    
+\end{frame}
+
+\begin{frame}{Simulating an SDE}
+
+    The simplest method is \textbf{Euler - Maruyama} method.
+
+    \vspace{5pt}
+
+    Initialize $X_0 = x_0$ and update iteratively as 
+
+    $$
+    X_{t+h} = X_t + h u_t(X_t) + \sqrt{h}\sigma_t \epsilon_t, \quad \epsilon_t \sim \Ncal(0, I_d)
+    $$
+    
+\end{frame}
+
+\begin{frame}{Diffusion Model with SDE}
+
+    A diffusion model is thus given by 
+
+    \begin{align*}
+        & X_0 \sim p_{init}\\
+        & dX_t = u_t^\theta (X_t)dt + \sigma_t dW_t
+    \end{align*}
+
+    \scriptsize
+
+    \begin{algorithm}[H]
+    \caption{\textbf{Sampling from a Diffusion Model (Euler-Maruyama method)}}
+    \DontPrintSemicolon
+    
+    \textbf{\color{blue}Require:} Neural network $u_t^\theta$, number of steps $n$, diffusion coefficient $\sigma_t$\;
+    
+    Set $t = 0$\;
+    Set step size $h = \frac{1}{n}$\;
+    Draw a sample $X_0 \sim p_{\text{init}}$\;
+    
+    \For{$i = 1, \dots, n$}{
+        a sample $\epsilon \sim \mathcal{N}(0, I_d)$\;
+        $X_{t+h} = X_t + h u_t^\theta(X_t) + \sigma_t \sqrt{h} \epsilon$\;
+        Update $t \leftarrow t + h$\;
+    }
+    \textbf{\color{blue}return} $X_1$
+\end{algorithm}
+    
+\end{frame}
+
+
+\begin{frame}{Flow Matching}
+
+    We saw how can be use a neural network to construct flow and diffusion model.
+
+    But
+
+    \Large 
+    \vspace{10pt}
+    
+    \textbf{How to train them !}
+    
+\end{frame}
+
+\begin{frame}{References}
+\footnotesize
+    \begin{itemize}
+    \item \textbf{Original Paper} on Diffusion Model, Deep Unsupervised Learning using Nonequilibrium Thermodynamics: \url{https://proceedings.mlr.press/v37/sohl-dickstein15.pdf}
+    \item \textbf{The Most Influential Paper:} Denoising Diffusion Probabilistic Models \url{https://arxiv.org/pdf/2006.11239}
+        \item Deep Learning Notes by Prof. LI Hongsheng: \url{https://dl.ee.cuhk.edu.hk/slides/diffusion.pdf}
+        
+        \item Diffusion Models: A Comprehensive Survey of Methods and Applications: \url{https://dl.acm.org/doi/full/10.1145/3626235?casa_token=tLriJS0Ll7EAAAAA:G_ue_8JwODm_PGRul_bBdK70QpTLetomFM1ioVMzebrqCaAtiozqPpcs2hV62SMAUIz01-TvweBV}
+        \item Understanding Diffusion Models: A Unified Perspective: \url{https://arxiv.org/pdf/2208.11970.pdf}
+        \item U-Net: Convolutional Networks for Biomedical Image Segmentation: \url{https://arxiv.org/pdf/1505.04597.pdf}
+        \item ConvNext: A ConvNet for the 2020s: \url{https://arxiv.org/pdf/2201.03545.pdf}
+        \item ACC-UNet: A Completely Convolutional UNet model for the 2020s: \url{https://arxiv.org/pdf/2308.13680.pdf}
+        \item Latent Diffusion Paper: \url{https://arxiv.org/pdf/2112.10752.pdf}
+    \end{itemize}
+\end{frame}
+    
+\begin{frame}{References}
+    \begin{itemize}
+        \item Stable Diffusion Github Repo: \url{https://github.com/CompVis/stable-diffusion?tab=readme-ov-file}
+        \item Diffusion Models Beat GANs on Image Synthesis (Guided Diffusion): \url{https://arxiv.org/pdf/2105.05233.pdf}
+        \item Guided Diffusion Github Repo: \url{https://github.com/openai/guided-diffusion}
+    \end{itemize}
+\end{frame}
+%------------------------------------------------
+\begin{frame}
+    \Huge{\centerline{\color{MediumBlue}\textbf{The End}}}
+\end{frame}
     
 \end{document}
