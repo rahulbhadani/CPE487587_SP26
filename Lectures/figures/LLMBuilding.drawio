@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2025-04-22T14:00:00.000Z" agent="Mozilla/5.0" etag="abcdef123" version="20.1.2">
+  <diagram name="Page-1" id="diagram-1">
+    <mxGraphModel dx="1280" dy="800" grid="1" gridSize="10" guides="1">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <!-- Stage Labels -->
+        <mxCell id="2" value="STAGE 1" style="text;html=1;fontSize=14;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="200" y="20" width="100" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="12" value="STAGE 2" style="text;html=1;fontSize=14;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="20" width="100" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="22" value="STAGE 3" style="text;html=1;fontSize=14;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="960" y="20" width="100" height="30" as="geometry"/>
+        </mxCell>
+        <!-- Stage 1 boxes -->
+        <mxCell id="3" value="1) Data preparation &amp; sampling" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="100" y="80" width="160" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="4" value="2) Attention mechanism" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="280" y="80" width="160" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="5" value="3) LLM architecture" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="460" y="80" width="160" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Building an LLM -->
+        <mxCell id="6" value="Building an LLM" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="200" y="180" width="300" height="100" as="geometry"/>
+        </mxCell>
+        <!-- Supporting text Stage 1 -->
+        <mxCell id="7" value="Implement the data sampling and understand the basic mechanism" style="text;html=1;align=center;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="200" y="290" width="300" height="40" as="geometry"/>
+        </mxCell>
+        <!-- Arrows Stage 1 -->
+        <mxCell id="8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="3" target="6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="4" target="6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="5" target="6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Stage 2 boxes -->
+        <mxCell id="15" value="5) Training loop" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="540" y="80" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="16" value="6) Model evaluation" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="700" y="80" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="17" value="7) Load pretrained weights" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="860" y="80" width="160" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Foundation model -->
+        <mxCell id="13" value="Foundation model" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="560" y="180" width="300" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="14" value="Pretrain the LLM on unlabeled data to obtain a foundation model for further finetuning" style="text;html=1;align=center;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="560" y="290" width="300" height="40" as="geometry"/>
+        </mxCell>
+        <!-- Arrows Stage 2 -->
+        <mxCell id="18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="15" target="13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="16" target="13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="17" target="13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="21" value="4) Pretraining" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;align=center;" edge="1" parent="1" source="6" target="13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Stage 3 boxes -->
+        <mxCell id="23" value="Classifier" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="920" y="180" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="26" value="Personal assistant" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="180" width="160" height="60" as="geometry"/>
+        </mxCell>
+        <!-- Arrows Stage 3 -->
+        <mxCell id="24" value="8) Finetuning" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;align=center;" edge="1" parent="1" source="13" target="23">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="27" value="9) Finetuning" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;align=center;" edge="1" parent="1" source="13" target="26">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Supporting text Stage 3 -->
+        <mxCell id="29" value="Finetune the pretrained LLM to create a classification model" style="text;html=1;align=left;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="860" y="140" width="200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="30" value="Finetune the pretrained LLM to create a personal assistant or chat model" style="text;html=1;align=left;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="140" width="260" height="30" as="geometry"/>
+        </mxCell>
+        <!-- Dataset annotations -->
+        <mxCell id="25" value="Dataset with class labels" style="text;html=1;align=center;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="920" y="250" width="140" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="28" value="Instruction dataset" style="text;html=1;align=center;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="250" width="160" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

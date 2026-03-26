@@ -1,0 +1,49 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="26.1.2">
+  <diagram name="Page-1" id="R1V1kF8sDm3Gcl5N3S0uD">
+    <mxGraphModel dx="1204" dy="733" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="1" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="START" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;" parent="1" vertex="1">
+          <mxGeometry x="4" y="760" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="The" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;labelBackgroundColor=none;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="130" y="760" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="bat" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;" parent="1" vertex="1">
+          <mxGeometry x="256" y="760" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="made" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;labelBackgroundColor=none;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="382" y="760" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="noise" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;" parent="1" vertex="1">
+          <mxGeometry x="509" y="760" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="at" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;labelBackgroundColor=none;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="636" y="760" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="night" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;" parent="1" vertex="1">
+          <mxGeometry x="762" y="760" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="nIJgXjM5Lzeyh4QKWQOO-19" value="$$p(\cdot&amp;nbsp; | START)$$" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-45;fontSize=22;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="105" y="677" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nIJgXjM5Lzeyh4QKWQOO-20" value="$$p(\cdot&amp;nbsp; | START. The)$$" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-45;fontSize=22;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="245" y="667" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nIJgXjM5Lzeyh4QKWQOO-21" value="$$p(\cdot&amp;nbsp; | The, bat)$$" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-45;fontSize=22;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="361" y="681" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nIJgXjM5Lzeyh4QKWQOO-22" value="$$p(\cdot&amp;nbsp; | bat, made)$$" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-45;fontSize=22;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="480" y="681" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nIJgXjM5Lzeyh4QKWQOO-23" value="$$p(\cdot&amp;nbsp; | made, noise)$$" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-45;fontSize=22;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="606" y="674" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="nIJgXjM5Lzeyh4QKWQOO-24" value="$$p(\cdot&amp;nbsp; | noise, at)$$" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-45;fontSize=22;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="722" y="674" width="230" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

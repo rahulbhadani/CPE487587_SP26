@@ -1,0 +1,117 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="26.2.14">
+  <diagram name="Page-1" id="mZCDnZPrXeSavi9uBmQL">
+    <mxGraphModel dx="994" dy="617" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=19;labelBackgroundColor=none;strokeColor=#457B9D;fontColor=default;" edge="1" parent="1" source="3UvXv8NmLHr5xFKgVHNa-1" target="3UvXv8NmLHr5xFKgVHNa-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="65" y="290" />
+              <mxPoint x="65" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-1" value="1. Data Preparation and Sampling" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry y="190" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=19;labelBackgroundColor=none;strokeColor=#457B9D;fontColor=default;" edge="1" parent="1" source="3UvXv8NmLHr5xFKgVHNa-2" target="3UvXv8NmLHr5xFKgVHNa-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-2" value="2. Attention Mechanism" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="140" y="190" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=19;labelBackgroundColor=none;strokeColor=#457B9D;fontColor=default;" edge="1" parent="1" source="3UvXv8NmLHr5xFKgVHNa-3" target="3UvXv8NmLHr5xFKgVHNa-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="345" y="290" />
+              <mxPoint x="345" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-3" value="3. LLM Architecture" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="280" y="190" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-4" value="&lt;b&gt;Stage 1: Building&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=19;labelBackgroundColor=none;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="120" y="150" width="195" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=19;labelBackgroundColor=none;strokeColor=#457B9D;fontColor=default;" edge="1" parent="1" source="3UvXv8NmLHr5xFKgVHNa-5" target="3UvXv8NmLHr5xFKgVHNa-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-5" value="Building LLM" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="40" y="300" width="330" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-6" value="Foundation Model" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="480" y="300" width="330" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=19;labelBackgroundColor=none;strokeColor=#457B9D;fontColor=default;" edge="1" parent="1" source="3UvXv8NmLHr5xFKgVHNa-7" target="3UvXv8NmLHr5xFKgVHNa-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="505" y="290" />
+              <mxPoint x="505" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-7" value="5. Training Loop" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="440" y="190" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=19;labelBackgroundColor=none;strokeColor=#457B9D;fontColor=default;" edge="1" parent="1" source="3UvXv8NmLHr5xFKgVHNa-8" target="3UvXv8NmLHr5xFKgVHNa-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-8" value="6. Model Evaluation" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="580" y="190" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=19;labelBackgroundColor=none;strokeColor=#457B9D;fontColor=default;" edge="1" parent="1" source="3UvXv8NmLHr5xFKgVHNa-9" target="3UvXv8NmLHr5xFKgVHNa-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="785" y="290" />
+              <mxPoint x="785" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-9" value="7. Load pretrained Weights" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="720" y="190" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-10" value="Classifier" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="220" y="410" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-11" value="Personal Assistant" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="660" y="410" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-20" value="" style="html=1;shadow=0;dashed=0;align=center;verticalAlign=middle;shape=mxgraph.arrows2.jumpInArrow;dy=9.21;dx=19.02;arrowHead=39.24;direction=west;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="400" y="360" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-21" value="" style="html=1;shadow=0;dashed=0;align=center;verticalAlign=middle;shape=mxgraph.arrows2.jumpInArrow;dy=9.21;dx=19.02;arrowHead=39.24;direction=west;flipH=1;fontSize=19;labelBackgroundColor=none;fillColor=#A8DADC;strokeColor=#457B9D;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="560" y="360" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-24" value="4. Pretraining" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=19;labelBackgroundColor=none;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="360" y="280" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-25" value="&lt;b&gt;Stage 2: Pre-training&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=19;labelBackgroundColor=none;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="570" y="150" width="185" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-26" value="&lt;b&gt;Stage 3: Fine-tuning&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=19;labelBackgroundColor=none;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="390" y="535" width="195" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-27" value="&lt;i&gt;Dataset with labels&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=19;labelBackgroundColor=none;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="40" y="420" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-28" value="" style="endArrow=classic;html=1;rounded=0;fontSize=19;labelBackgroundColor=none;strokeColor=#457B9D;fontColor=default;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="439.44" as="sourcePoint" />
+            <mxPoint x="210" y="439.44" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-29" value="" style="endArrow=classic;html=1;rounded=0;fontSize=19;labelBackgroundColor=none;strokeColor=#457B9D;fontColor=default;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="710" y="520" as="sourcePoint" />
+            <mxPoint x="710" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3UvXv8NmLHr5xFKgVHNa-30" value="&lt;i&gt;Instruction Dataset&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=19;labelBackgroundColor=none;fontColor=#1D3557;" vertex="1" parent="1">
+          <mxGeometry x="640" y="520" width="140" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
