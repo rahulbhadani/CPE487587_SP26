@@ -2069,22 +2069,649 @@ A solution to this SDE is called \textbf{ Ornstein - Uhlenbeck Process}.
         $X_{t+h} = X_t + h u_t^\theta(X_t) + \sigma_t \sqrt{h} \epsilon$\;
         Update $t \leftarrow t + h$\;
     }
-    \textbf{\color{blue}return} $X_1$
+    \textbf{\color{blue}return} $X_{end}$
 \end{algorithm}
     
 \end{frame}
 
 
+    %------------------------------------------------
+    \section{Flow Matching}
+    %------------------------------------------------
+    
+    %------------------------------------------------
+    \begin{frame}{}
+    \begin{center}
+        \huge \bf \color{DarkBlue}
+        Flow Matching
+    \end{center}
+    \end{frame}
+
 \begin{frame}{Flow Matching}
+
+    \small
 
     We saw how can be use a neural network to construct flow and diffusion model.
 
-    But
-
-    \Large 
+    
     \vspace{10pt}
     
     \textbf{How to train them !}
+    
+
+    \vspace{10pt}
+
+        In the context of Diffusion model, we assume $t$ varies from $0$ to $1$ with equal binning. Time in the diffusion model is pesudo-time.
+
+    \vspace{10pt}
+
+    We want
+
+    \vspace{10pt}
+
+    \begin{tcolorbox}[enhanced, sharp corners,
+    % Set the base thickness for all sides
+    boxrule=0.0pt, 
+    % Specifically override the left side
+    leftrule = 2mm,
+    % Colors
+    colframe=white!80!Green, colback=dustyGreen!20,
+    % Ensure no title space is reserved
+    notitle,
+    % Optional: Add some padding so text doesn't touch the thick edge
+    left=1mm ]
+
+    $X_0 \sim p_{init}$ for $t = 0$ and $X_1 \sim p_{data}$ for $t = 1$. 
+
+    \end{tcolorbox}
+
+    We have the freedom to decide what happens between 0 and 1. That's what we call \textbf{Flow Matching}.
+
+\end{frame}
+
+\begin{frame}{Probabilistic Path}
+
+    \footnotesize
+
+    The first step in \textbf{Flowing Matching} is \textbf{Probability Path}.
+
+    \vspace{5pt}
+
+        \begin{tcolorbox}[enhanced, sharp corners,
+    % Set the base thickness for all sides
+    boxrule=0.0pt, 
+    % Specifically override the left side
+    leftrule = 2mm,
+    % Colors
+    colframe=white!80!red, colback=dustyGreen!20,
+    % Ensure no title space is reserved
+    notitle,
+    % Optional: Add some padding so text doesn't touch the thick edge
+    left=1mm ]
+
+    Probability path specifies gradual interpolation between $p_{init}$ and $p_{data}$.
+
+    \end{tcolorbox}
+
+    Assume $z\in \Rbb^d$ a data point. A conditional probability path for the intepolation is a set of distribution $p_t(x|z)$ over $\Rbb^d$ such that
+
+    $$
+    p_0(\cdot | z) = p_{init}, \quad p_1(\cdot | z) = \delta_z \quad \forall z \in \Rbb^d
+    $$
+    
+    \vspace{5pt}
+
+        \begin{tcolorbox}[enhanced, sharp corners,
+    % Set the base thickness for all sides
+    boxrule=0.0pt, 
+    % Specifically override the left side
+    leftrule = 2mm,
+    % Colors
+    colframe=white!80!red, colback=androidRed!20,
+    % Ensure no title space is reserved
+    notitle,
+    % Optional: Add some padding so text doesn't touch the thick edge
+    left=1mm ]
+
+    Dirac delta $\delta_z$ is \begin{align*}
+        \delta_z(x) = \begin{cases}
+            \infty, \quad \text{~if~} x = z\\
+            0, \quad \text{~if~} x \neq z
+        \end{cases}
+    \end{align*}
+    and it satisfies the properties of a probability distribution, i.e $\int_{-\infty}^\infty \delta_z(x)dx =  1 $. It also has an interesting property called \textbf{sifting property:} $\int_{-\infty}^\infty f(x)\delta_z(x)dx =  f(z) $
+
+    {\color{blue}Sampling from $\delta_z$ always deterministically returns $z$; it places all probability mass on a single point.}
+        \end{tcolorbox}
+\end{frame}
+
+\begin{frame}{Conditional Probability Path}
+
+    A conditional (interpolating) probability path is a set of distribution $p_t(x|z)$ over $\Rbb^d$ such that:
+
+    $$
+    p_0(\cdot | z) = p_{init}, \quad p_1(\cdot | z) = \delta_z, \forall z \in \Rbb^d
+    $$
+
+    A conditional probability path gradually converts the initial distribution $p_{init}$ into a \textbf{single} data point.
+
+    \begin{tcolorbox}[enhanced, sharp corners, boxrule=0.0pt, leftrule = 0.2em, toprule = 0.2em, colframe=white!80!neonBlue, colback=frameNavy!20,
+    notitle, left=1mm ]
+Think of a probability path as a trajectory in the space of distributions.
+    \end{tcolorbox}
+    
+\end{frame}
+
+\begin{frame}{Marginal Probability Path}
+
+        \begin{tcolorbox}[enhanced, sharp corners, boxrule=0.0pt, leftrule = 0.2em, toprule = 0.2em, colframe=white!80!springGreen, colback=hunterGreen!20,
+    notitle, left=1mm ]
+            Every conditional probability path $p_t(x|z)$ induces a \textbf{marginal probability path} $p_t(x)$ that is defined as the distribution that we obtain by first sampling a data point $ z\sim p_{data}$ from the data distribution and then sampling from $p_t(\cdot | z)$:
+
+            \begin{align*}
+            z & \sim p_{data}, \quad x \sim p_t(\cdot | z) \Rightarrow x \sim p_t \quad \text{sampling from marginal path} \\
+            p_t(x)  & = \int p_t(x|z) p_{data}(z) dz
+            \end{align*}
+
+            We know how to sample from $p_t(x)$ but  we have not determined $p_t(x)$ because we don't know $p_t(x|z)$.
+
+    \end{tcolorbox}
+
+    We use reparameterization tick similar to one in Variational AutoEncoder.
+    
+\end{frame}
+
+\begin{frame}{Gaussian Probability Path}
+
+    We take Gaussian probability path -- easy to do via reparameterization.
+
+    \begin{itemize}
+        \item $\alpha_t$, $\beta_t$ be the noise schedulers.
+        \item $\alpha_0 = \beta _ 1 = 0$, and $\alpha_1 = \beta_0 = 1$.
+        \item Gaussian conditional probability path is then $p_t(\cdot | z) = \Ncal (\alpha_t z, \beta_t^2 I_d)$ that fulfills
+        
+        \begin{align*}
+            p_0(\cdot | z) = \Ncal(\alpha_0 z, \beta_0^2 I_d) = \Ncal(0, I_d), \quad \text{and} \quad p_1(\cdot | z) = \Ncal(\alpha_1 z , \beta_1^2 I_d) = \delta_z
+        \end{align*}
+        Here, we used the limiting case of Normal distribution as Dirac-delta that zero variance, mean $z$ Normal distribution is $\delta_z$.
+    \end{itemize}
+    Expressing sampling from the marginal Gaussian path $p_t$ as 
+
+    $$z\sim p_{data}, \epsilon \sim p_{init} \Ncal(0, I_d) \Rightarrow x = \alpha_t z + \beta_t \epsilon \sim p_t$$
+\end{frame}
+
+\begin{frame}{Gaussian Probability Path}
+
+    \begin{center}
+        \includegraphics[width=1.0\linewidth]{figures/condition_probability_path_Gaussian.pdf}
+    \end{center}
+    
+\end{frame}
+
+\begin{frame}{Conditional and Marginal Vector Fields}
+
+    \footnotesize 
+
+    \begin{center}
+        But we have still not determined vector field. We want to find vector field such that the trajectories $X_t$ follow the probability path.
+    \end{center}
+
+    \textbf{Conditional vector field:}
+
+    $u_t^{target}(\cdot | z)$  is a conditional vector field that can be any vector field such that corresponding ODE yields the conditional probability path $p_t(\cdot | z)$ and it holds
+
+    \begin{align*}
+        X_0 \sim p_{init}, \quad \frac{d}{dt}X_t = u_t^{target}(X_t | z) \Rightarrow  X_t \sim p_t(\cdot | z)
+    \end{align*}
+    From Bayes theorem, the marginal vector field is:
+
+        \begin{tcolorbox}[enhanced, sharp corners, boxrule=0.0pt, leftrule = 0.0em, toprule = 0.0em, colframe=white!80!springGreen, colback=cashyellow!20,
+        notitle, left=1mm ]
+        \begin{align*}
+            u_t^{target}(x) = \bigint u_t^{target}(x|z) \frac{p_t(x|z)p_{data}(z)}{p_t(x)}dz \quad \text{This is called marginalization trick.}
+        \end{align*}
+        \end{tcolorbox}
+        and we say $u_{target}$ converts noise $p_{init}$ to data $p_{data}$.
+
+    
+\end{frame}
+
+
+
+\begin{frame}{Conditional Gaussian Vector Field}
+
+    If we have $p_t(\cdot | z) = \Ncal(\alpha_t z, \beta_t^2 I_d)$, and $\dot{\alpha}_t  = \partial_t \alpha_t$ and  $\dot{\beta}_t  = \partial_t \beta_t$ be the the derivative with respect to $t$, then conditional Gaussian vector field is given 
+
+    \begin{align*}
+        u_t^{target}(x|z) = \bigg( \dot{\alpha}_t - \frac{\dot{\beta}_t}{\beta_t}\alpha_t \bigg)z + \frac{\dot{\beta}_t}{\beta_t}x
+    \end{align*}
+
+    \vspace{5pt}
+    {\footnotesize Proof on page 18 of  \url{https://web.archive.org/web/20260319034510/https://diffusion.csail.mit.edu/2026/docs/lecture_notes.pdf}}
+    
+\end{frame}
+
+\begin{frame}{Continuity Equation}
+
+    We define divergence operator as
+    \begin{align*}
+        \nabla v_t(x) = \sum_{i=1}^d \pdv{}{x_i} v_t^i(x)
+    \end{align*}
+
+    \begin{tcolorbox}[enhanced, sharp corners, boxrule=0.0pt, leftrule = 0.0em, toprule = 0.0em, colframe=black!50, colback=cashyellow!20,
+        title = Continuity Equation, left=1mm ]
+
+        Given a flow model with the vector field $u_t^{target}$ and $X_0, \sim p_{init} = p_0$, then we have $X_t \sim p_t$ iff 
+
+        $$
+        \partial_t p_t(x ) = -\nabla (p_t u_t^{target})(x), \quad x \in \Rbb^d
+        $$
+        Divergence is net outflow from the vector field.
+
+    \end{tcolorbox}
+
+    
+\end{frame}
+
+\begin{frame}{Learning the Marginal Vector Field}
+
+
+    \footnotesize
+
+    We describe the training process now.
+
+\vspace{5pt}
+
+\textbf{\color{androidRed}Goal:} Train the neural network $u_t^\theta$ such that it equals the marginal vector field $u_t^{target}$. For that, we have mean-squared error loss acting as \textbf{flow matching loss:}
+
+\begin{align*}
+\Lcal_{FM}(\theta) & = \Ebb_{t\sim Unif,x \sim p_t}[ || u_t^\theta(x) - u_t^{target}(x) ||^2]    \\
+& =  \Ebb_{t\sim Unif,z \sim p_t}(\cdot | z)[ || u_t^\theta(x) - u_t^{target}(x) ||^2]
+\end{align*}
+
+\vspace{5pt}
+For the second step, we used $p_t(x) = \int p_t(x|z)p_{data}(z) dz$
+
+
+\begin{columns}
+    \column{0.48\linewidth}
+
+    Steps can be interpreted as:
+
+\begin{enumerate}
+    \item Draw a random time $t \in[0, 1]$
+    \item Draw a random point $z$ from the dataset.
+    \item Draw a sample from $p_t(\cdot | z)$ by adding noise.
+    \item Compute $u_t^\theta (x)$.
+    \item Calculate the Loss.
+\end{enumerate}
+
+\pause 
+    
+\column{0.48\linewidth}
+
+However, computing $u_t^{target}$ is intractable because we do not know the distribution of actual dataset.
+
+\vspace{10pt}
+
+But the conditional vector field $u_t^{target}(x|z)$  is tractable, for which, we have \textbf{conditional flow matching loss}.
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{Conditional Flow Matching Loss}
+
+    $$
+    \Lcal_{CFM}(\theta) = \Ebb_{t\sim Unif,z \sim p_t}(\cdot | z)\bigg[ || u_t^\theta(x) - u_t^{target}(x|z) ||^2\bigg]
+    $$
+
+    which is less than $\Lcal_{FM}(\theta)$ up to a constant, so their gradients wrt $\theta$ are same. (Proof on Page 20 of  \url{https://web.archive.org/web/20260319034510/https://diffusion.csail.mit.edu/2026/docs/lecture_notes.pdf})
+
+\end{frame}
+
+\newcommand{\mykw}[1]{\textbf{\color{blue}#1}}
+
+\begin{frame}[fragile]{Algorithm for Conditional Flow Matching}
+    
+    \begin{algorithm}[H]
+    \caption{\textbf{Flow Matching Training Procedure}}
+    \label{alg:training_fm_basic}
+    \mykw{Require:} A dataset of samples $z \sim p_{\text{data}}$, neural network $u_t^\theta$\;
+
+    \For{each mini-batch of data}{
+        Sample a data example $z$ from the dataset\;
+        Sample a random time $t \sim \text{Unif}[0,1]$\;
+        Sample noise $\epsilon \sim \mathcal{N}(0, I_d)$\;
+        Set $x = t z + (1-t)\epsilon \quad (\text{General case: } x \sim p_t(\cdot|z))$\;
+        
+        Compute loss: $\Lcal(\theta) = \|u_t^\theta(x) - (z - \epsilon)\|^2$\;
+        \quad \textit{\small (General case: $\Lcal(\theta) = \|u_t^\theta(x) - u_t^{target}(x|z)\|^2$)}\;
+        
+        Update $\theta \gets \text{grad\_update}(\Lcal(\theta))$\;
+    }
+    \end{algorithm}
+    
+\end{frame}
+
+\begin{frame}{Flow Matching for Gaussain Conditional Probability Path}
+
+    \footnotesize
+
+    \begin{columns}
+        
+        \column{0.48\linewidth}
+
+        \begin{itemize}
+            \item $p_t(\cdot | z) = \Ncal(\alpha_t z ; \beta_t^2 I_d)$
+            \item Reparametrization trick: 
+            
+            $\epsilon \sim \Ncal(0, I_d) \Rightarrow x_t = \alpha_t z \beta_t \epsilon \sim \Ncal(\alpha_t z ; \beta_t^2 I_d)$
+            
+            \item $u_t^{target}(x |z) = \bigg( \dot{\alpha}_t - \frac{\dot{\beta_t}}{\beta_t}\alpha_t \bigg)z + \frac{\dot{\beta}_t}{\beta_t}x$
+        \end{itemize}
+
+        \column{0.48\linewidth}
+
+
+    \end{columns}
+
+    This gives $\Lcal_{CFM}$ as 
+
+    \begin{align*}
+        \Lcal_{CFM}(\theta) & = \Ebb_{t\sim Unif,z \sim p_{data}, x\sim \Ncal(\alpha_t z, \beta_t^2 I_d)}\bigg[ || u_t^\theta(x) -\bigg( \dot{\alpha}_t - \frac{\dot{\beta_t}}{\beta_t}\alpha_t \bigg)z + \frac{\dot{\beta}_t}{\beta_t}x ||^2\bigg]\\
+        & = \Ebb_{t\sim Unif,z \sim p_{data}, \epsilon \sim \Ncal(0, I_d)}\bigg[ || u_t^\theta(\alpha_t z + \beta_t \epsilon) - (\dot{\alpha}_t z + \dot{\beta}_t \epsilon)
+        ||^2\bigg]
+    \end{align*}
+    There can be a special case of $\alpha_t = t$ and $\beta_t = 1-t$. This situation is called \textbf{Conditional Optimal Transport probability path}.
+    
+    \vspace{3pt}
+
+    Stable Diffusion 3 is based on \textbf{Conditional Optimal Transport probability path}.
+\end{frame}
+
+\begin{frame}{Gaussian Conditional Optimal Transport Probability Path}
+
+    \footnotesize
+
+    \begin{center}
+    \includegraphics[width=1.0\linewidth]{figures/Gaussian_CondOT.pdf}
+
+    \textbf{Top:} Ground-truth marginal probability path $p_t(x)$ histograms at $t = 0, 0.25, 0.5, 0.75, 1$
+
+    \textbf{Bottom:} Histograms from ODE samples of a \textit{trained} flow matching model
+
+    \end{center}
+    
+\end{frame}
+
+%------------------------------------------------
+\section{Score Functions and Score Matching}
+%------------------------------------------------
+
+%------------------------------------------------
+\begin{frame}{}
+\begin{center}
+    \huge \bf \color{DarkBlue}
+    Score Functions and Score Matching
+\end{center}
+\end{frame}
+
+\begin{frame}{Score Functions}
+
+    \footnotesize
+
+    \begin{itemize}
+        \item $q(z) \to$ Arbitraryy probability distribution.
+        \item Score function is defined as $\nabla \log q(x)$, gradient of the log-likelihood of $q$ with respect to $x$.
+        \item Score function is the direction of the steepest ascent with respect to log-likelihood.
+        \item A similar notion gives rise to the \textbf{conditional score function} $\nabla \log p_t(x|z)$ and the \textbf{marginal score function} $\nabla \log p_t(x)$.
+    \end{itemize}
+
+    \begin{columns}
+        \column{0.52\linewidth}
+
+            \begin{center}
+        \includegraphics[width=0.8\linewidth]{figures/SocreFunction.pdf}
+    \end{center}
+
+        \column{0.48\linewidth}
+
+        Marginal score can also be expressed as (proof omitted):
+        \begin{align*}
+            \nabla \log p_t(x) = \bigint \nabla \log p_t(x|z)\frac{p_t(x|z)p_{data}(z)}{p_t(x)}dz
+        \end{align*}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Score Functions for Gaussian Probability Paths}
+
+    For a Gaussian path: $p_t(x|z) = \Ncal(x; \alpha_t z , \beta_t^2 I_d)$, the score function is 
+
+    \begin{align*}
+        \nabla \log p_t(x|z) = \nabla \log \Ncal(x; \alpha_t z, \beta_t^2 I_d)  = -\frac{x-\alpha_t z}{\beta_t^2}
+    \end{align*}
+    
+\end{frame}
+
+\begin{frame}{Relation between Vector Fields and Score}
+
+    \begin{align*}
+        u_t^{target}(x | z) & = a_t \nabla \log p_t(x|z) + b_t x\\
+        u_t^{target}(x) & = a_t \nabla \log p_t(x) + b_t x
+    \end{align*}
+
+    where $a_t = \bigg ( \beta_t^2 \frac{\dot{\alpha}_t}{\alpha_t} - \dot{\beta}_t\beta_t \bigg), \quad b_t = \frac{\dot{\alpha}_t}{\alpha_t}$.
+    
+    \vspace{5pt}
+
+    It says that \textbf{vector field (marginal or conditional) can be recovered from the score}.
+\end{frame}
+
+\begin{frame}{Denoiser}
+
+    \footnotesize
+
+    For Gaussian probability paths, the conditional vector field $u_t^\text{target}(x|z)$ and the conditional score $\nabla \log p_t(x|z)$ are both linear functions of $x$
+and $z$, which means they are just different linear reparameterisations of the same underlying quantity, the posterior mean $\mathbb{E}[z \mid x]$(the expected clean data given noisy data $x$).
+
+\vspace{10pt}
+
+{\color{androidPurple}\hrule}
+
+\vspace{10pt}
+
+Therefore, learning any one of the threem the vector field, the score, or the posterior mean (called \textbf{denoiser} in this context), is equivalent to learning the other two, since you can convert between them algebraically without any additional training.
+
+\vspace{10pt}
+
+{\color{androidPurple}\hrule}
+
+\vspace{10pt}
+
+Conditional and marginal denoiser:
+\begin{align*}
+    D_t(x|z) = z, \quad D_t(x) = \bigint z \frac{p_t(x|z)p_{data}(z)}{p_t(x)}dz  = \frac{1}{\dot{\alpha}_t \beta_t - \alpha_t \dot{\beta}_t}(\beta_t u_t^{target}(x_t) - \dot{\beta}_t x_t)
+\end{align*}
+    
+\end{frame}
+
+\begin{frame}{Sampling from SDEs}
+
+    \footnotesize 
+
+    Until now: construct a trajectory $X_t$ of an ODE that follows a desired probability path $p_t$ via a marginal vector field $u_t^{target}$. That was for the flow model (applicable only with ODE).
+
+    \vspace{5pt}
+
+    We have not seen SDEs, hence, we have not learnt diffusion model yet.
+
+    \vspace{10pt}
+
+    {\color{androidOrange}\hrule}
+
+    \vspace{10pt}
+
+    We have to add stochastic dynamics to our formulation ($x_0 \sim p_{init}$, $X_t \sim p_t$): 
+
+    \begin{align*}
+        dX_t & = u_t^{target}(X_t)dt + \frac{\sigma_t^2}{2}\nabla \log p_t (X_t)dt + \sigma_t dW_t\\
+        & = \bigg[  u_t^{target}(X_t) + \frac{\sigma_t^2}{2}\nabla \log p_t (X_t)\bigg]dt + \sigma_t dW_t
+    \end{align*}
+
+    \vspace{10pt}
+
+    {\color{androidOrange}\hrule}
+
+    \vspace{10pt}
+
+    Training $u_t^\theta$ for SDE suffers from simulaion error in addition to training error as SDE can only be done in approximation. So numerical artifact is \textbf{finding best $\sigma_t$}.
+    
+\end{frame}
+
+
+\begin{frame}{Gaussian Probability Path with SDE}
+
+    \begin{align*}
+        dX_t = \bigg[ \bigg( a_t + \frac{\sigma_t^2}{2}  \bigg) \nabla \log p_t(X_t) + b_t X_t \bigg]dt + \sigma_t dW_t
+    \end{align*}
+    
+\end{frame}
+
+\begin{frame}{Fokker-Planck Equation}
+
+    In the context of SDE, $X_t$ has distribution $p_t$ for all $0\leq t \leq 1$ iff the \textbf{Fokker-Planck Equation} holds, which is 
+
+    \begin{align*}
+        \partial_t p_t(x) = -\nabla(p_t u_t)(x) + \frac{\sigma^2}{2}\delta p_t(x)
+    \end{align*}
+
+    which reduces to continuity equation when you see that $\sigma_t = 0$.
+
+
+    Here, 
+
+    $$
+    \Delta p_t(x) = \sum_{i=1}^{d} \frac{\partial^2}{\partial x_i^2} p_t(x)
+    $$
+    is called Laplacian.
+    
+\end{frame}
+
+\begin{frame}{Langevin Dynamics}
+
+    When the probability path $p_t = p$ for a fixed distribution, then we set $u_t^{target}$ and that gives us an SDE
+
+    \begin{align*}
+        dX_t = \frac{\sigma_t^2}{2}\nabla \log p(X_t)dt + \sigma_t dW_t
+    \end{align*}
+    which is called \textbf{Langevin Dynamics}.
+
+        \vspace{10pt}
+
+    {\color{longTermBlue}\hrule}
+
+    \vspace{10pt}
+    
+    \textbf{Langevin Dynamics} is basis for molecular dynamics simultions as well as Markov Chain Monte Carlo (MCMC) methods across Bayesian statistics and many other applications across science \& engineering, finance, risk management, robotics \& control, and climate modeling.
+    
+\end{frame}
+
+\begin{frame}{Score Matching}
+
+    \footnotesize
+
+It is still to see how we can learnthe marginal score function $\nabla \log p_t(x)$.
+
+        \vspace{10pt}
+
+    {\color{forestGreen}\hrule}
+
+    \vspace{10pt}
+
+    To approximate the marginal score $\nabla \log p_t$, we use a neural network called \text{score network} $s_t^\theta: \mathbb{R}^d \times [0, 1] \to \Rbb^d$.
+
+    Here, we define two loss functions:
+
+    \begin{align*}
+        \text{Score Matching Loss:~~~} & \Lcal_{SM}(\theta) = \Ebb_{t\sim Unif, z \sim p_{data}, x\sim p_t(\cdot | z)} \bigg[ || s_t^\theta(x)  - \nabla \log p_t(x) || ^2 \bigg]\\
+        \text{Conditional Score Matching Loss:~~~} & \Lcal_{CSM}(\theta) = \Ebb_{t\sim Unif, z \sim p_{data}, x\sim p_t(\cdot | z)} \bigg[ || s_t^\theta(x)  - \nabla \log p_t(x|z) || ^2 \bigg]\\
+    \end{align*}
+
+            \vspace{10pt}
+
+    {\color{hunterGreen}\hrule}
+
+    \vspace{10pt}
+
+    Similar to the Flow matching case, $\Lcal_{CSM}(\theta)$ is less than $\Lcal_{SM}(\theta)$ by a constant factor. Hence, we use $\Lcal_{CSM}(\theta)$ which is easier to model.
+\end{frame}
+
+\begin{frame}{DDPM in the Lens of SDE}
+
+    \footnotesize
+
+    $p_t(x|z) = \Ncal(\alpha_t z, \beta_t^2 I_d)$, so 
+
+    \begin{align*}
+        \nabla p_t(x|z) = -\frac{x-\alpha_t z}{\beta_t^2}
+    \end{align*}
+
+    Then, $\Lcal_{CSM}(\theta)$ is 
+    \begin{align*}
+        \Lcal_{CSM}(\theta)  & = \Ebb_{t\sim Unif, z \sim p_{data}, x\sim p_t(\cdot | z)} \bigg[ || s_t^\theta(x)  + \frac{x- \alpha_t z}{\beta_t^2} || ^2 \bigg]\\
+                & = \Ebb_{t\sim Unif, z \sim p_{data}, \epsilon \sim \Ncal(0, I_d)} \bigg [  ||s_t^\theta (\alpha_t z + \beta_t \epsilon) + \frac{\epsilon}{\beta_t}||^2 \bigg]\\
+                & = \Ebb_{t\sim Unif, z \sim p_{data}, \epsilon \sim \Ncal(0, I_d)} \bigg [ \frac{1}{\beta_t^2}|| \beta_t s_t^\theta (\alpha_t z + \beta_t\epsilon) + \epsilon||^2 \bigg]
+    \end{align*}
+    
+                \vspace{10pt}
+
+    {\color{hunterGreen}\hrule}
+
+    \vspace{10pt}
+
+    Here, we used $ x = \alpha_t z + \beta_t \epsilon$. Here, the network $s_t^\theta$ essentially learns to predict the noise that was used to corrupt a data sample $z$. Thus, the loss function is also called \textbf{denoising score matching}.
+\end{frame}
+
+\begin{frame}{Algorithm for Score Matching Training Procedure for Gaussian Probability Path}
+
+    \begin{algorithm}[H]
+\caption{\textbf{Score Matching Training Procedure for Gaussian Probability Path}}
+\label{alg:cfg_training}
+\mykw{Require:} A dataset of samples $z \sim p_{\mathrm{data}}$,
+score network $s_t^{\theta}$, or noise predictor $\epsilon_t^\theta$\;
+
+\For{each mini-batch of data}{
+    Sample a data example $z$ from the dataset\;
+    Sample a random time $t \sim \mathrm{Unif}_{[0,1]}$\;
+    Sample noise $\epsilon \sim \mathcal{N}(0, I_d)$\;
+    Set $x_t = \alpha_t z + \beta_t \epsilon$\;
+
+    Compute loss:
+    $\mathcal{L}(\theta) = \| s_t^{\theta}(x_t) + \frac{\epsilon}{\beta_t} \|^2$
+    \quad \textit{\small (General case:
+    $\mathcal{L}(\theta) = \| s_t^{\theta}(x)
+    -  \nabla \log p_t(x_t | z) \|^2$)}\;
+    \quad \text{Alternative:} $\Lcal(\theta) = || \epsilon_t^\theta(x_t) - \epsilon||^2$
+
+    Update $\theta \gets \mathrm{grad\_update}(\mathcal{L}(\theta))$\;
+}
+\end{algorithm}
+    
+\end{frame}
+
+\begin{frame}{Langevin Dynamics in Simulation}
+
+    \scriptsize
+
+    \begin{center}
+    \includegraphics[width=0.7\linewidth]{figures/LangevineDynamics.pdf}
+
+    \textbf{Top row:} Particles evolving under the Langevin dynamics, with $p(x)$ taken to be a Gaussian mixture with 4 modes.
+
+\textbf{Bottom row:} A kernel density estimate of the same samples shown in the top row. As one can see, the distribution of samples converges to the equilibrium distribution $p$ (blue background colour).
+
+    \end{center}
+    
     
 \end{frame}
 
@@ -2109,6 +2736,7 @@ A solution to this SDE is called \textbf{ Ornstein - Uhlenbeck Process}.
         \item Stable Diffusion Github Repo: \url{https://github.com/CompVis/stable-diffusion?tab=readme-ov-file}
         \item Diffusion Models Beat GANs on Image Synthesis (Guided Diffusion): \url{https://arxiv.org/pdf/2105.05233.pdf}
         \item Guided Diffusion Github Repo: \url{https://github.com/openai/guided-diffusion}
+        \item Lipman, Yaron, Marton Havasi, Peter Holderrieth, Neta Shaul, Matt Le, Brian Karrer, Ricky TQ Chen, David Lopez-Paz, Heli Ben-Hamu, and Itai Gat. "Flow matching guide and code." arXiv preprint arXiv:2412.06264 (2024). \url{https://arxiv.org/abs/2412.06264}
     \end{itemize}
 \end{frame}
 
