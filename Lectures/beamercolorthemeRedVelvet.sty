@@ -439,5 +439,69 @@
 \definecolor{NmColor}{HTML}{F78C6C}
 \usepackage{derivative}
 
+% Fix undefined colors
+\definecolor{lightorange}{RGB}{255,200,150}
+\definecolor{lightgreen}{RGB}{144,238,144}
+\definecolor{darkRose}{RGB}{180,60,80}
+\definecolor{indianRed}{RGB}{205,92,92}
+\definecolor{peach}{RGB}{255,218,185}
+
+
+% Fix /tikz/state key
+\usetikzlibrary{automata,positioning,arrows}
+
+
+\tikzset{basic/.style={draw,fill=MediumBlue!20,text width=1em,text badly centered}}
+\tikzset{input/.style={basic,circle}}
+\tikzset{weights/.style={basic,rectangle}}
+\tikzset{functions/.style={basic,circle,fill=MediumBlue!10}}
+
+
+
+\usepackage{listofitems} % for \readlist to create arrays
+\tikzstyle{mynode}=[thick,draw=MediumBlue,fill=MediumBlue!20,circle,minimum size=22]
+
+\newtcolorbox{peach}[2][]{
+  enhanced, breakable,
+  rounded corners,
+  sharp corners=northwest,
+  sharp corners=southeast,
+  colback=peachFuzz!10, colframe=peachFuzz!70!orange,
+  title={#2}, coltitle=red!90!orange,
+  boxrule=1.2pt,
+  drop shadow={burgundy!90}
+  #1}
+\definecolor{peachFuzz}{HTML}{FFBE98}
+\definecolor{burgundy}{HTML}{800020}  % Burgundy
+
+\newcommand{\perparrows}[6]{
+    \begin{tikzpicture}
+    % Horizontal double-headed arrow
+    \draw[#5, line width=#3, {Latex[length=#4]}-{Latex[length=#4]}] 
+        (-#1/2, 0) -- (#1/2, 0);
+    
+    % Vertical double-headed arrow
+    \draw[#6, line width=#3, {Latex[length=#4]}-{Latex[length=#4]}] 
+        (0, -#2/2) -- (0, #2/2);
+    \end{tikzpicture}
+}
+
+\definecolor{algoColorKey}{RGB}{0, 102, 204} % Blue for keywords
+\definecolor{algoColorComment}{RGB}{34, 139, 34} % Green for comments (if needed)
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+% Set algorithm keyword colors
+% Define custom colors
+\definecolor{algoColorKey}{RGB}{0, 102, 204} % Blue for keywords
+\definecolor{algoColorComment}{RGB}{34, 139, 34} % Green for comments (if needed)
+
+\definecolor{myBlue}{RGB}{0, 102, 204}
+
+% Correct way to colorize the "Require" and "return" keywords
+\SetKwInput{KwRequire}{\color{myBlue}Require}
+\SetKw{KwRet}{\color{myBlue}return}
+% Colorizing the 'for' and 'do' keywords
+\SetNlSty{boldmath}{}{}% Line numbers styling
+\SetKwFor{For}{\color{myBlue}for}{do}{\color{myBlue}end for}
 \usepackage{hyperref}
 
