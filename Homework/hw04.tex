@@ -1,0 +1,501 @@
+\documentclass[12pt, xcolor=dvipsnames,svgnames,x11names]{article}
+\input{common}
+\usetikzlibrary{shapes.geometric, arrows.meta, chains}
+\usepackage{booktabs} % Required for better vertical spacing
+\usepackage{array}    % Required for column formatting
+
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+
+\definecolor{defblue}{RGB}{20, 60, 120}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+
+% Redefine \maketitle to include tcolorbox
+\makeatletter
+\renewcommand{\maketitle}{%
+      \begin{center}
+         \begin{tcolorbox}[
+               enhanced,
+               colback=white,
+               colframe=goldenrod,
+               boxrule=1pt,
+               arc=3pt,
+               left=0pt,
+               right=0pt,
+               top=0pt,
+               bottom=0pt,
+               drop shadow={goldenrod!25!white},
+         ]
+               % Header section
+               \begin{tcolorbox}[
+                  enhanced,
+                  colback=stormblue!85!white,
+                  colframe=stormblue!25!white,
+                  boxrule=0pt,
+                  arc=3pt,
+                  sharp corners=south,
+                  left=2em,
+                  right=2em,
+                  top=1em,
+                  bottom=1em
+               ]
+                  \centering
+                  {\large\bfseries\textcolor{white}{\@title}}
+               \end{tcolorbox}
+               
+               % Content section
+               \vspace{1em}
+               \centering
+               {\large\textcolor{darkgray}{\@author}} \\[0.8em]
+               {\normalsize\textcolor{darkgray}{\@date}}
+               \vspace{1em}
+         \end{tcolorbox}
+      \end{center}
+      \vspace{2em}
+}
+\makeatother
+
+
+
+\newcommand{\hw}{Homework 4: Generative Modeling}
+\newcommand{\duedate}{April 24, 2026, 11:59 PM}
+\newcommand{\hwturnin}{hw03}
+
+\newenvironment{multiequation}[1][]{%
+\begin{equation}%
+   \begin{aligned}%
+   \ifx#1\@empty\else\label{#1}\fi%
+}{%
+   \end{aligned}%
+\end{equation}%
+}
+\pagestyle{fancy}
+
+\lhead{\footnotesize{\coursenumber, \courseterm}, \footnotesize{UAH}}
+\chead{}
+\rhead{\footnotesize{\emph{\hw}}}
+\lfoot{\footnotesize{\instructorname}}
+\cfoot{\footnotesize{\thepage}}
+\rfoot{\footnotesize{\textit{Last Revised:~\today}}}
+\renewcommand{\headrulewidth}{0.1pt}
+\renewcommand{\footrulewidth}{0.1pt}
+\newcommand{\minipagewidth}{0.8\columnwidth}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+
+\renewcommand{\headrulewidth}{0.1pt}
+\renewcommand{\footrulewidth}{0.1pt}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\definecolor{faintOrangeYellow}{HTML}{FFF9E6}
+
+\begin{document}
+
+
+\title{\textsc{\hw\\
+\coursenumber}}
+\author{Instructor: \instructorname}
+\date{Due: \duedate\\ 100 Points}
+
+\maketitle
+
+\setlength{\unitlength}{1in}
+You are allowed to use a generative model-based AI tool for your assignment. However, you must submit an accompanying reflection report detailing how you used the AI tool, the specific query you made, and how it improved your understanding of the subject. You are also required to submit screenshots of your conversation with any large language model (LLM) or equivalent conversational AI, clearly showing the prompts and your login avatar. Some conversational AIs provide a way to share a conversation link, and such a link is desirable for authenticity. Failure to do so may result in actions taken in compliance with the plagiarism policy.
+
+Additionally, you must include your thoughts on how you would approach the assignment if such a tool were not available. Failure to provide a reflection report for every assignment where an AI tool is used may result in a penalty, and subsequent actions will be taken in line with the plagiarism policy.
+
+\subsection*{Submission instruction:}
+Upload a .pdf on Canvas with the format  \texttt{CPE487587-LastFirst-HW-XX}. For example, if your name is Sam Wells, your file name should be \texttt{CPE487587-LastFirst-HW-XX.pdf}.  If there is a programming assignment, then you should include your source code along with your PDF files in a zip file \texttt{CPE487587-LastFirst-HW-XX.zip}. 
+Your submission must contain your name and UAH Charger ID or your UAH email address.  Please number your pages as well.
+
+All CPE 587 students are required to submit their response in a Latex-generated PDF.
+\vskip 1em
+\hrule
+\vskip 1em
+
+\newpage
+
+
+Provide a Github commit hash and GitHub repo URL for this assignment that supercedes the above instruction. In addition, include any plots in the PDF for practice portion if asked.
+
+\section{Image Quality Comparison from Generative Models}
+
+The goal is to make comparative assessment of image quality of three generative models: (i) Variational AutoEncoder; (ii) Generative Adversarial Network; (iii) Diffusion Model.
+
+We will use Celeb-FaceA dataset for benchmarking our comparison.
+
+Celeb Face A dataset is available on Lovelace machine at location 
+
+\texttt{/data/CPE\_487-587/img\_align\_celeba.zip}.
+
+Your job is broken into following steps:
+
+\begin{enumerate}
+\item Create three generative AI models (i) Variational AutoEncoder; (ii) Generative Adversarial Network; (iii) Diffusion Model using Cele-FaceA dataset. Save the trained models as onnx files.
+
+\item Load trained models and generate 25 random samples from trained models.
+
+\item Assess their quality on several metrics (defined below) and provide a comparative visualization of your choice (bar plot, box plot ,etc.).
+
+\item Commit your code to GitHub.
+\end{enumerate}
+
+
+\subsection{Image Sharpness Metrics}
+
+Let $I : \Omega \to [0,1]$ be a grayscale image defined on a discrete pixel
+domain $\Omega = \{(x,y) \mid 0 \le x < W, 0 \le y < H\}$ with width $W$
+and height $H$.  The total number of pixels is $N = WH$.
+
+For continuous-domain analogues, $I(x,y)$ denotes a scalar intensity function
+on a bounded region $\Omega \subset \mathbb{R}^2$.
+
+\begin{definition}[Image gradient]
+The spatial gradient of $I$ at pixel $(x,y)$ is the vector
+\begin{align*}
+  \nabla I(x,y) =
+  \begin{pmatrix} I_x(x,y) \\ I_y(x,y) \end{pmatrix},
+\end{align*}
+where $I_x$ and $I_y$ denote partial derivatives (or their finite-difference
+approximations) along the horizontal and vertical directions, respectively.
+\end{definition}
+
+\begin{definition}[Laplacian operator]
+The scalar Laplacian of $I$ is
+\begin{align*}
+  \nabla^2 I(x,y) = \frac{\partial^2 I}{\partial x^2}
+                         + \frac{\partial^2 I}{\partial y^2}.
+\end{align*}
+In discrete form, the most common $3\times3$ kernel is
+\begin{align*}
+  \mathbf{L} =
+  \begin{pmatrix}
+    0 & 1 & 0 \\
+    1 & {-4} & 1 \\
+    0 & 1 & 0
+  \end{pmatrix},
+\end{align*}
+so the discrete Laplacian response at pixel $(x,y)$ is the convolution
+$L(x,y) = (I * \mathbf{L})(x,y)$.
+\end{definition}
+
+\subsubsection{Variance of the Laplacian}
+
+\begin{definition}[Variance of Laplacian ,  VoL]
+Let $L(x,y) = (\nabla^2 I)(x,y)$ be the discrete Laplacian response.
+Define the sample mean
+\begin{align*}
+  \bar{L} = \frac{1}{N} \sum_{(x,y)\in\Omega} L(x,y).
+\end{align*}
+The \emph{Variance of Laplacian} focus measure is
+\begin{align*}
+  \boxed{F_{\mathrm{VoL}} =
+    \frac{1}{N}\sum_{(x,y)\in\Omega} \bigl(L(x,y) - \bar{L}\bigr)^2.}
+\end{align*}
+\end{definition}
+
+\begin{remark}
+Because the Laplacian acts as a second-order high-pass filter, its response is
+large at edges and fine-textured regions and near zero in smooth regions.
+Sharper images produce higher-variance Laplacian maps; blurred images drive
+$F_{\mathrm{VoL}} \to 0$.
+\end{remark}
+
+\subsubsection{Tenengrad Criterion}
+
+\begin{definition}[Sobel gradient components]
+The horizontal and vertical Sobel operators of size $3\times3$ convolve the
+image with the kernels
+\begin{align*}
+  \mathbf{S}_x =
+  \begin{pmatrix}
+    -1 & 0 & 1 \\
+    -2 & 0 & 2 \\
+    -1 & 0 & 1
+  \end{pmatrix}, \qquad
+  \mathbf{S}_y =
+  \begin{pmatrix}
+    -1 & -2 & -1 \\
+     0 &  0 &  0 \\
+     1 &  2 &  1
+  \end{pmatrix},
+\end{align*}
+yielding $G_x(x,y) = (I * \mathbf{S}_x)(x,y)$ and
+$G_y(x,y) = (I * \mathbf{S}_y)(x,y)$.
+\end{definition}
+
+\begin{definition}[Gradient magnitude]
+The pointwise gradient magnitude is
+\begin{align*}
+  M(x,y) = \sqrt{G_x(x,y)^2 + G_y(x,y)^2}.
+\end{align*}
+\end{definition}
+
+\begin{definition}[Tenengrad criterion ,  TEN]
+\begin{align*}
+  \boxed{F_{\mathrm{TEN}} =
+    \frac{1}{N}\sum_{(x,y)\in\Omega} \bigl(M(x,y) - \bar{M}\bigr)^2,}
+\end{align*}
+where $\bar{M} = \frac{1}{N}\sum_{(x,y)} M(x,y)$ is the mean gradient magnitude.
+Equivalently, the sum-of-squares variant
+\begin{align*}
+  F_{\mathrm{TEN}}^{(\Sigma)} = \sum_{(x,y)\in\Omega} M(x,y)^2
+\end{align*}
+is also widely used.
+\end{definition}
+
+\begin{remark}
+$F_{\mathrm{TEN}}$ is a first-order analogue of $F_{\mathrm{VoL}}$: it measures
+the strength and spread of edge responses rather than second-order curvature.
+For a diffraction-limited optical system it has been shown to be a reliable
+autofocus criterion.
+\end{remark}
+
+\subsubsection{Frequency-Domain High-Frequency Energy Ratio}
+
+\begin{definition}[Discrete 2-D Fourier Transform]
+The 2-D Discrete Fourier Transform (DFT) of $I$ is
+\begin{align*}
+  \hat{I}(u,v) =
+  \sum_{x=0}^{W-1}\sum_{y=0}^{H-1} I(x,y)\,
+  e^{-2\pi i\left(\frac{ux}{W}+\frac{vy}{H}\right)},
+  \quad u \in \{0,\ldots,W{-}1\}, v\in\{0,\ldots,H{-}1\}.
+\end{align*}
+After applying the \emph{frequency shift} (centering the zero-frequency
+component), the shifted spectrum is $\tilde{I}(u,v)$ with
+$(u,v)=(0,0)$ corresponding to the DC component at the array centre.
+\end{definition}
+
+\begin{definition}[Low-frequency disc mask]
+Let $r = \lfloor \alpha \cdot \min(W,H) \rfloor$ for a bandwidth parameter
+$\alpha \in (0,\tfrac{1}{2})$.  Define the low-frequency disc
+\begin{align*}
+  \mathcal{D}_r =
+  \bigl\{(u,v) \mid (u - \tfrac{W}{2})^2 + (v - \tfrac{H}{2})^2 \le r^2\bigr\},
+\end{align*}
+and its complement $\mathcal{D}_r^c = \Omega \setminus \mathcal{D}_r$, which
+forms the high-frequency annular region.
+\end{definition}
+
+\begin{definition}[High-frequency energy ratio ,  HFE]
+\begin{align*}
+  \boxed{F_{\mathrm{HFE}} =
+    \frac{\displaystyle\sum_{(u,v)\in \mathcal{D}_r^c}
+          \bigl|\tilde{I}(u,v)\bigr|}
+         {\displaystyle\sum_{(u,v)\in \Omega}
+          \bigl|\tilde{I}(u,v)\bigr|},}
+\end{align*}
+with the convention $F_{\mathrm{HFE}} = 0$ when the total energy vanishes.
+\end{definition}
+
+\begin{remark}
+By Parseval's theorem,
+$\sum_{(u,v)}|\hat{I}(u,v)|^2 = N\sum_{(x,y)}|I(x,y)|^2$,
+so an analogous energy-squared variant replaces $|\tilde{I}|$ with
+$|\tilde{I}|^2$.  Sharper images concentrate more energy in
+$\mathcal{D}_r^c$ and therefore yield larger $F_{\mathrm{HFE}}$.
+\end{remark}
+
+
+\subsubsection{Mean Local Standard Deviation}
+
+\begin{definition}[Local mean and variance via uniform filter]
+For a window of size $w \times w$, define the \emph{box-filtered} versions
+of $I$ and $I^2$:
+\begin{align*}
+  \mu_w(x,y) =
+  \frac{1}{w^2}\sum_{s=-\lfloor w/2\rfloor}^{\lfloor w/2\rfloor}
+               \sum_{t=-\lfloor w/2\rfloor}^{\lfloor w/2\rfloor}
+               I(x+s,\, y+t),
+\end{align*}
+\begin{align*}
+  \mu_{w^2}(x,y) =
+  \frac{1}{w^2}\sum_{s,t} I(x+s,\, y+t)^2.
+\end{align*}
+The local variance is given by the \emph{König–Huygens identity}:
+\begin{align*}
+  \sigma_w^2(x,y) =
+  \max\!\Bigl(0, \mu_{w^2}(x,y) - \mu_w(x,y)^2\Bigr),
+\end{align*}
+and the local standard deviation is $\sigma_w(x,y) = \sqrt{\sigma_w^2(x,y)}$.
+\end{definition}
+
+\begin{definition}[Mean local standard deviation ,  MLSD]
+\begin{align*}
+  \boxed{F_{\mathrm{MLSD}} =
+    \frac{1}{N}\sum_{(x,y)\in\Omega} \sigma_w(x,y).}
+\end{align*}
+\end{definition}
+
+\begin{remark}
+$F_{\mathrm{MLSD}}$ is a direct texture measure: regions with rapid
+intensity variation (fine detail, high-frequency texture) contribute large
+$\sigma_w$, whereas uniform or blurred regions contribute near zero.
+The $\max(0,\cdot)$ guard prevents numerical artefacts from floating-point
+cancellation.
+\end{remark}
+
+\subsubsection{GLCM Contrast}
+
+\begin{definition}[Quantised image]
+Given $Q$ grey levels, the quantised image is
+\begin{align*}
+  I_Q(x,y) = \bigl\lfloor I(x,y)\cdot(Q-1)\bigr\rfloor \in \{0,1,\ldots,Q-1\}.
+\end{align*}
+\end{definition}
+
+\begin{definition}[Gray-Level Co-occurrence Matrix]
+For a displacement vector $\mathbf{d}=(d,\theta)$ (distance $d$ and angle
+$\theta$), let $\Delta x = d\cos\theta$, $\Delta y = d\sin\theta$.  The
+unnormalised GLCM entry counting co-occurrences of intensity pair $(i,j)$ is
+\begin{align*}
+  C_{ij} =
+  \#\!\Bigl\{(x,y) \in \Omega \Big|
+  I_Q(x,y)=i, I_Q(x+\Delta x,\, y+\Delta y)=j\Bigr\}.
+\end{align*}
+The \emph{normalised} GLCM is
+\begin{align*}
+  P_{ij} = \frac{C_{ij}}{\displaystyle\sum_{i'=0}^{Q-1}\sum_{j'=0}^{Q-1}C_{i'j'}},
+  \qquad \sum_{i,j} P_{ij} = 1.
+\end{align*}
+Symmetrisation yields $P_{ij} \leftarrow (P_{ij}+P_{ji})/2$.
+\end{definition}
+
+\begin{definition}[GLCM Contrast]
+\begin{align*}
+  \boxed{F_{\mathrm{CON}} =
+    \sum_{i=0}^{Q-1}\sum_{j=0}^{Q-1}
+    (i-j)^2\, P_{ij}.}
+\end{align*}
+\end{definition}
+
+\begin{remark}
+The weight $(i-j)^2$ penalises co-occurrences between dissimilar grey levels
+at the displacement $\mathbf{d}$.  Images with sharp edges or fine texture
+have many large-gap neighbours, yielding high $F_{\mathrm{CON}}$.  Blurred
+images concentrate mass near the diagonal ($i \approx j$), driving
+$F_{\mathrm{CON}} \to 0$.
+\end{remark}
+
+\begin{remark}
+Related GLCM second-order statistics include:
+\begin{align*}
+  F_{\mathrm{ENE}} &= \sum_{i,j} P_{ij}^2
+    & &\text{(Energy / Angular Second Moment)},\\
+  F_{\mathrm{HOM}} &= \sum_{i,j}\frac{P_{ij}}{1+(i-j)^2}
+    & &\text{(Homogeneity / Inverse Difference Moment)},\\
+  F_{\mathrm{ENT}} &= -\sum_{i,j} P_{ij}\log P_{ij}
+    & &\text{(Entropy)}.
+\end{align*}
+\end{remark}
+
+
+\subsection{Reading The Image Dataset}
+
+You may use the following code to read the image dataset:
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=faintOrangeYellow,
+    fontsize=\scriptsize,
+    breaklines
+]{python}
+import torch, torchvision
+
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+
+
+import torch
+from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms
+from PIL import Image
+import zipfile
+import io
+
+class CelebAZipDataset(Dataset):
+    def __init__(self, zip_path, transform=None):
+        self.zip_path = zip_path
+        self.transform = transform
+
+        # Open zip once to collect all image filenames
+        with zipfile.ZipFile(zip_path, 'r') as zf:
+            self.image_names = sorted([
+                name for name in zf.namelist()
+                if name.lower().endswith(('.jpg', '.jpeg', '.png'))
+            ])
+
+    def __len__(self):
+        return len(self.image_names)
+
+    def __getitem__(self, idx):
+        # Re-open zip per worker (required for DataLoader multiprocessing)
+        with zipfile.ZipFile(self.zip_path, 'r') as zf:
+            with zf.open(self.image_names[idx]) as f:
+                img = Image.open(io.BytesIO(f.read())).convert('RGB')
+
+        if self.transform:
+            img = self.transform(img)
+
+        return img
+
+
+
+transform = transforms.Compose([
+    transforms.Resize(64),
+    transforms.CenterCrop(64),
+    transforms.ToTensor(),
+    transforms.Normalize([0.5]*3, [0.5]*3)  # to [-1, 1]
+])
+
+dataset = CelebAZipDataset(
+    zip_path='/data/CPE_487-587/img_align_celeba.zip',
+    transform=transform
+)
+
+dataloader = DataLoader(
+    dataset,
+    batch_size=128,
+    shuffle=True,
+    num_workers=4,
+    pin_memory=True
+)
+
+batch = next(iter(dataloader))
+print(f"Batch shape: {batch.shape}")   # torch.Size([128, 3, 64, 64])
+print(f"Value range: [{batch.min():.2f}, {batch.max():.2f}]")  # [-1.0, 1.0]
+
+\end{minted}
+
+\subsection{Deliverables}
+
+\begin{enumerate}
+\item In deepl subpackage, provide gen\_model.py module that contains implementation of VAE, GAN, and Diffusion Model.
+
+\item You should also provide an implementation for GenModelTrainer class that should be agnostic to model of choice , be it a VAE, GAN or Diffusion Model.
+
+\item Your trainer should be able to save an intermediate ONNX file every $x$ epoch where you should define $x$ in the runtime at command line.
+
+\item You should be able to write your script in such a way that it should take command line argument such as number of epochs to train, ratio of training dataset and validation dataset to use for training, as well which model to train with, such as VAE, GAN, Diffusion Model.
+
+\item You should train on all three models and save the ONNX file.
+
+\item You should provide an impl file in scripts folder that imports model classes and the trainer class that on execution trains the model and saves them.
+
+\item You should provide another impl file in scripts folder that loads the saved model to perform inference and generate 25 synthetic images and perfomr evaluation on the metrics defined above in this document. You may choose to provide implementation for metrics in your package in a suitable subpackage and import in the impl file. Evaluate generate images for the metrics and provide an aggregated visualization plot.
+
+\item Write a helping bash script genmodel\_impl.sh to orchestrate training and inference.
+
+\item Create a README file the provides instructions on how to run your code.
+\end{enumerate}
+
+
+\end{document}
