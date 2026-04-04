@@ -1,0 +1,179 @@
+\documentclass[12pt, xcolor=dvipsnames,svgnames,x11names]{article}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage[colorlinks=true,bookmarks=false,linkcolor=black,urlcolor=blue,citecolor=black]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[top=1in,bottom=1.2in,left=1in,right=1in]{geometry}
+\usepackage{multicol}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{circuits.logic.US, patterns}
+\usepackage{mathpazo}
+\usepackage{biolinum} 
+\usepackage[all]{tcolorbox}
+\usepackage{derivative}
+\usepackage{../Lectures/rahul_math}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Custom Color Palette from Image ---
+\definecolor{headerRed}{HTML}{A3403D} % Dark red from image top
+\definecolor{patternBg}{HTML}{F2D9D7} % Light pinkish bg from image bottom
+\definecolor{binaryText}{HTML}{D1A7A4} % Muted color for binary digits
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc}
+
+% --- Custom Colors ---
+\definecolor{lstmBackground}{RGB}{240, 240, 255}
+\definecolor{gateGreen}{RGB}{200, 255, 200}
+\definecolor{matrixBlue}{RGB}{135, 206, 250}
+
+% --- Background Pattern Setup ---
+\usepackage[pages=all]{background}
+\backgroundsetup{
+scale=1,
+color=black,
+opacity=1,
+angle=0,
+contents={%
+  \begin{tikzpicture}[remember picture,overlay]
+    % Top Header Bar
+    \fill[headerRed] (current page.north west) rectangle ([yshift=-1.2cm]current page.north east);
+    % Bottom Binary Background
+    \fill[patternBg] (current page.south west) rectangle ([yshift=3.5cm]current page.south east);
+    % Decorative Line (from image)
+    \draw[headerRed, line width=2pt] ([xshift=1in, yshift=-2.5cm]current page.north west) -- ([xshift=8in, yshift=-2.5cm]current page.north west);
+    % Binary Text Overlay (Sample)
+    \node[anchor=south, binaryText, font=\ttfamily\scriptsize, inner sep=0pt, yshift=1.5cm] at (current page.south) {
+        \begin{tabular}{c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c}
+        0 0 0 0 1 1 1 1 0 0 0 0 1 1 0 1 1 1 0 0 0 1 \\
+        1 0 0 1 0 1 0 0 0 1 0 0 1 1 0 0 1 0 1 1 \\
+        0 0 1 1 0 0 1 0 1 1 1 0 1 1 0 1 0 1 0 0 0 \\
+        The University of Alabama in Huntsville
+        \end{tabular}
+    };
+  \end{tikzpicture}
+}
+}
+
+\newcommand{\hw}{Classwork 06//KL Divergence}
+\newcommand{\duedate}{March 19, 2026}
+
+\usetikzlibrary{positioning, arrows.meta, shadows}
+
+% --- Header Styling ---
+\makeatletter
+\renewcommand{\maketitle}{%
+    \vspace*{0.2cm}
+    \begin{center}
+        \begin{tcolorbox}[
+            enhanced,
+            colback=white,
+            colframe=headerRed,
+            arc=0mm,
+            title={\textcolor{white}{\bfseries \@title}},
+            coltitle=white,
+            fonttitle=\bfseries\large,
+            attach boxed title to top left={xshift=10pt, yshift=-\tcboxedtitleheight/2},
+            boxed title style={sharp corners, colback=headerRed, frame hidden}
+        ]
+        \large
+        \vspace{10pt}
+\noindent
+\begin{tabular}{@{}p{3.5cm}p{6cm}r@{}}
+\textbf{Student Name:} & \underline{\hspace{6cm}} & \textbf{Points:} 30 \\
+\end{tabular}
+
+\vspace{10pt}
+
+\noindent
+\begin{tabular}{@{}p{3.5cm}p{6cm}r@{}}
+\textbf{A Number:} & \underline{\hspace{6cm}} & \textbf{Due Date:} \duedate \\
+\end{tabular}
+        \end{tcolorbox}
+    \end{center}
+    \vspace{10pt}
+}
+\makeatother
+
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small CPE 487/587, Spring 2026}
+\rhead{\small \textit{\hw}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+\usepackage{booktabs} % For professional lines
+
+
+% Define a very light gray for the rows
+\definecolor{tablegray}{gray}{0.95}
+
+\begin{document}
+
+
+\title{\hw}
+\maketitle
+
+
+Consider a random variable $X \sim Lognormal(\mu, \sigma^2)$ with the probability density function (pdf):
+
+\begin{align*}
+p(x) = \frac{1}{x\sigma \sqrt{2\pi}} \exp \bigg( - \frac{(\ln x - \mu)^2}{2\sigma^2} \bigg), \quad x > 0
+\end{align*}
+
+and normal distribution $Y\sim \Ncal (m, v^2)$ with pdf
+
+\begin{align*}
+q(x) = \frac{1}{v\sqrt{2\pi}} \exp \bigg( -\frac{(x-m)^2}{2v^2}  \bigg), \quad x\in \mathbb{R}
+\end{align*}
+
+The KL divergence formula is 
+
+\begin{align*}
+KL(p || q) = \int_0^\infty p(x) \log \frac{p(x)}{q(x)}dx
+\end{align*}
+
+which is defined only if the support of $P$ is contained in the support of $Q$. This is very important.
+
+Noting the above, compute the KL divergence $KL(Lognormal(\mu, \sigma^2) ||  \Ncal (m, v^2)))$.
+
+
+\subsection*{Proof:}
+
+\begin{align*}
+\log p(x) & = -\log x - \log \sigma - \frac{1}{2} \log (2\pi) - \frac{(\ln x - \mu)^2}{2\sigma^2}\\
+\log q(x) & = -\log v - \frac{1}{2} \log (2 \pi) - \frac{(x - m)^2}{2 v^2}\\
+\log \frac{p(x)}{q(x)} & = -\log x - \log \sigma + \log v -  \frac{(\ln x - \mu)^2}{2\sigma^2} + \frac{(x - m)^2}{2 v^2}\\
+KL(p||q) & = \int_0^x p(x) \bigg [  -\log x - \log \sigma + \log v -  \frac{(\ln x - \mu)^2}{2\sigma^2} + \frac{(x - m)^2}{2 v^2} \bigg] dx\\
+KL(p||q) & = - \Ebb_p[\log x] -\log \sigma  + \log v -\frac{1}{2\sigma^2}\Ebb_p[ (\ln x - \mu)^2] + \frac{1}{2v^2}\Ebb_p[(x-m)^2]
+\end{align*}
+
+
+
+From the property of lognormal distribution:
+
+(log = ln)
+
+\begin{align*}
+\Ebb[\ln x] & = \mu\\
+\Ebb[(\ln x - \mu)^2] & = \sigma^2
+\end{align*}
+
+And we apply the the proprty of expectations:
+
+\begin{align*}
+\Ebb[(x - m)^2] & = Var(x) + ( \Ebb[x] - m)^2 = \Ebb[x^2] + m^2 - 2m \Ebb[x]\\
+ & = e^{2\mu + 2\sigma^2} - 2m e^{\mu + \frac{\sigma^2}{2}} + m^2
+\end{align*}
+
+Hence,
+
+\begin{align*}
+KL(p||q) = -\mu + \log \frac{v}{\sigma} -\frac{1}{2} + \frac{1}{2v^2} (e^{2\mu + 2\sigma^2} - 2m e^{\mu + \frac{\sigma^2}{2}} + m^2 )
+\end{align*}
+
+\end{document}
