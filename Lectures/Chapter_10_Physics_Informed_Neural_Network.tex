@@ -636,6 +636,326 @@ including adaptively where the residual is largest.
 \end{frame}
 
 
+\section{Goal}
+
+\begin{frame}
+ \sectionpage
+ 
+ \begin{center}
+ \bigskip
+ 
+ \large  We want  data-efficient universal function approximators that naturally encode any underlying physical laws as prior information. 
+ \end{center}
+\end{frame}
+
+
+\begin{frame}{Differentiable Physics}
+
+We use domain knowledge in the form of model equations.
+
+\begin{itemize}
+\item We incorporate discretized version of this model equations into our training process.\end{itemize}
+
+
+
+In a supervised settings, we are interested in 
+
+$$
+f: X\to Y
+$$
+
+Let's assume $\Phi$ be a generic differential equations such that
+
+$$
+\Phi: Y \to Z
+$$
+which encodes a property of the solutions, e.g. some real world behavior we’d like to match. 
+
+  \begin{tcolorbox}[    enhanced,
+    colback=softMint,
+    colframe=borderLine,
+    sharp corners,
+    arc=0pt, 
+    boxrule=0.4pt,
+    leftrule=3pt,
+    % This creates the orange vertical bar on the left:
+    borderline west={5pt}{0pt}{highlightOrange}, 
+    fontupper=\color{boxBackground},
+    pad at break*=0mm,
+    top=5pt, bottom=5pt, left=5pt, right=5pt]
+  In contrast to methods discussed in previous chapters, we use discretized version of $\Phi$, and  and employ it to guide the training of $f$.
+  \end{tcolorbox}
+
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Example 1: Finding The Inverse Function of Parabola}
+\footnotesize
+
+
+Given $\Phi: x \to x^2$. 
+
+We need to find a function $f \approx \Phi^{-1}$  such that $\Phi(f(x)) = x$ (that is $f(x) \approx \pm \sqrt{x}$. A neural network $f_\theta$ is trained to approximate this. 
+
+
+\pause
+
+\begin{columns}[c]
+
+\column{0.5\linewidth}
+
+Data is $
+ \Dcal \{(x^{(i)}, y^{(i)})\}_{i=1}^N
+$ where $y^{(i)} = \pm\sqrt{x}^{(i)}$.
+
+
+\includegraphics[width=0.7\linewidth]{figures/parabola_supervised_nn.pdf}
+
+Loss: $\frac{1}{n}\sum_{i=1}^N ( f_\theta(x^{(i)}) - y^{(i)} )^2$
+
+\column{0.5\linewidth}
+
+\includegraphics[width=0.7\linewidth]{figures/parabola_physics_nn.pdf}
+
+Loss: $\frac{1}{n}\sum_{i=1}^N ( \Phi(f_\theta(x^{(i)})) - x^{(i)} )^2$.
+
+
+  \begin{tcolorbox}[    enhanced,
+    colback=softMint,
+    colframe=borderLine,
+    sharp corners,
+    arc=0pt, 
+    boxrule=0.4pt,
+    leftrule=3pt,
+    % This creates the orange vertical bar on the left:
+    borderline west={5pt}{0pt}{highlightOrange}, 
+    fontupper=\color{boxBackground},
+    pad at break*=0mm,
+    top=2pt, bottom=2pt, left=5pt, right=5pt]
+Here, no $y^{(i)}$ is used, but only the input $x^{(i)}$ and known forward operator $\Phi$.
+\end{tcolorbox}
+
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Backpropagation in Physics Loss}
+
+\footnotesize
+
+
+\begin{columns}
+
+\column{0.4\linewidth}
+
+For the physics loss, backprop through $\Phi$ gives 
+
+$$
+\pdv{\Lcal_{phys}}{f_\theta(x^{(i)})} = 4 f_\theta (x^{(i)})(f_\theta(x^{(i)})^2  - x^{(i)})
+$$
+
+Its derivative vanishes at $f_\theta(x^{(i)}) = 0$, regardless of $x^{(i)}$. Hence, the zero function is a saddle point of the physics loss that doesn't affect the supervised loss.
+
+\column{0.6\linewidth}
+
+
+\resizebox{\linewidth}{!}{
+\input{figures/physics_nn.tex}
+}
+
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{}
+
+\Large
+
+\begin{center}
+{
+
+\color{algoColorKey}
+
+Clearly, it didn't handle  the \textbf{bifurcation}.
+
+\vspace{10pt}
+
+
+\color{pinnColor}
+
+Can we do better?
+
+}
+
+\pause 
+
+\vspace{10pt}
+
+We can learn the full distribution of the posterior.
+
+\pause 
+
+\vspace{10pt}
+
+\color{trueColor}
+
+Do you remember \textbf{Flow Matching}?
+
+
+
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}{Flow  Matching for Inverse Function of Parabola}
+
+Assuming, normalized time, i.e. $t \sim \Ucal[0, 1]$.
+
+{\vspace{3pt}\color{peachFuzz}\hrule\vspace{3pt}}
+
+Recall, data is $ \Dcal \{\xbf^{(i)} \equiv (x^{(i)}, y^{(i)})\}_{i=1}^N $ where $y^{(i)} = \pm\sqrt{x^{(i)}}$.
+
+{\vspace{3pt}\color{peachFuzz}\hrule\vspace{3pt}}
+
+We define  $\xbf \sim \Ncal(0, \Ibf_2)$. Initial condition $\xbf^{(i)}_0[0] = x^{(i)}$ (we fix x-coordinate noise).
+
+{\vspace{3pt}\color{peachFuzz}\hrule\vspace{3pt}}
+
+For every sample index $i$, the end point should be $\xbf^{(i)}_1 = (x^{(i)}, y^{(i)})^\top$.
+
+
+{\vspace{3pt}\color{peachFuzz}\classicRule\vspace{3pt}}
+
+
+As we need to define a probability path $p_t$, but as we understand the $p_t$ being marginal is difficult to compute.
+
+\vspace{5pt}
+Conditional interpolant can help in this case. We fix a specific pair and define a deterministic path between them, such as,
+
+\begin{align*}
+\xbf_t \big|_{(\xbf_0, \xbf_1)} = (1 - t)\xbf_0  + t \xbf_1
+\end{align*}
+
+\vspace{10pt}
+
+\textbf{But remember that the interpolant doesn't have to be linear.}
+\end{frame}
+
+
+\begin{frame}{Flow  Matching for Inverse Function of Parabola}
+
+The marginal interpolant $p_t(\xbf)$ is recovered by averaging over all pairs:
+
+  \begin{tcolorbox}[    enhanced,
+    colback=softMint,
+    colframe=borderLine,
+    sharp corners,
+    arc=0pt, 
+    boxrule=0.4pt,
+    leftrule=3pt,
+    % This creates the orange vertical bar on the left:
+    borderline west={5pt}{0pt}{highlightOrange}, 
+    fontupper=\color{boxBackground},
+    pad at break*=0mm,
+    top=1pt, bottom=2pt, left=5pt, right=5pt]
+\begin{align*}
+p_t(\xbf) = \int p_t(\xbf_t \big|_{(\xbf_0, \xbf_1)}) q(\xbf_0)p_{data}(\xbf_1) d\xbf_0 d\xbf_1
+\end{align*}
+\end{tcolorbox}
+
+And, we have target conditional vector field as $u_t = \frac{dx_t}{dt}$, which is always deterministic, that is $x_1 - x_0$ (only applicable for linear interpolant, for non-linear interpolant, you will see $t$ in RHS of $u_t$).
+
+\vspace{5pt}
+
+\fleuronRule
+
+\vspace{5pt}
+
+We can define a neural network $v_\theta(\xbf_t, t)$ that will regress $u_t$ with Flow Matching Loss function:
+
+\begin{align*}
+\Lcal_{FM}(\theta) = \frac{1}{n}\sum_{i=1}^N ||  v_\theta( \xbf_t^{(i)}, t^{(i)}) - u_t^{(i)}||^2
+\end{align*}
+
+
+\end{frame}
+
+\begin{frame}{Flow  Matching for Inverse Function of Parabola}
+
+At the inference time (prediction with the trained model), given $\xbf_0 = (x^{(i)},z )^\top$ with $z \sim \Ncal(0, 1)$, the integrate the learned ODE model with step size $\Delta t = \frac{1}{T}$:
+
+\begin{align*}
+\xbf_{t_{k+1}}^{(i)} = \xbf_{t_{k}}^{(i)}  + \Delta t v_\theta (  \xbf_{t_{k}}^{(i)}, t_k)
+\end{align*}
+
+and then reimpose the x-conditioning at every step: $\xbf_{t_{k+1}}^{(i)}[0] \leftarrow x^{(i)}$ and we get the second coordinate of the final state 
+
+\begin{align*}
+\xbf_{t_1}^{(i)}[1] \sim p(y|x^{(i)})
+\end{align*}
+
+\end{frame}
+
+
+\begin{frame}{Flow  Matching for Inverse Function of Parabola}
+
+\resizebox{0.7\linewidth}{!}
+{
+\input{figures/fm.tex}
+}
+
+\end{frame}
+
+\begin{frame}{Flow  Matching for Inverse Function of Parabola}
+
+Caveats about Flow Matching:
+
+\begin{itemize}
+\item Flow Matching is \textbf{not} PINN.
+\item Physics get introduced in data construction $y^{(i)} = \pm \sqrt{x^{(i)}}$ but FM never sees $\Phi$.
+\item It learns conditional distributipn $p(y|x)$.
+\item In the case of FM, the parabola $y^2 = x$ is the \textbf{support manifold} of that distribution, but no operator passed to the loss.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Flow Matching for Inverse Function of Parabola}
+
+\begin{center}
+
+\includegraphics[width=0.8\linewidth]{figures/FM_probability_path_evo.pdf}
+
+
+
+\begin{columns}
+
+\column{0.5\linewidth}
+
+\includegraphics[width=0.6\linewidth]{figures/FM_training.pdf}
+
+\column{0.5\linewidth}
+
+\scriptsize
+
+Clearly, Flow Matching provides an approximate solution, although allows to take into account Bifurcation but makes mistakes as well. 
+
+\textbf{FM is not PINN. }
+
+\end{columns}
+
+
+
+\end{center}
+
+
+
+\end{frame}
+
+
 \begin{frame}{References}
 
 \scriptsize
@@ -647,6 +967,8 @@ including adaptively where the residual is largest.
 \item Physics Informed Deep Learning (Part I): Data-driven Solutions of Nonlinear Partial Differential Equations \url{https://arxiv.org/abs/1711.10561}
 
 \item Physics Informed Deep Learning (Part II): Data-driven Discovery of Nonlinear Partial Differential Equations \url{https://arxiv.org/abs/1711.10566}
+
+\item Thuerey, Nils, Philipp Holl, Maximilian Mueller, Patrick Schnell, Felix Trost, and Kiwon Um. "Physics-based deep learning." arXiv preprint arXiv:2109.05237 (2021). \url{https://arxiv.org/abs/2109.05237}
 
 \item Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations
 Author links open overlay panel \url{https://doi.org/10.1016/j.jcp.2018.10.045}
@@ -667,5 +989,7 @@ Author links open overlay panel \url{https://doi.org/10.1016/j.jcp.2018.10.045}
 \end{itemize}
 
 \end{frame}
+
+
 
 \end{document}
