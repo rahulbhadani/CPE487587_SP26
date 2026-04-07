@@ -946,15 +946,197 @@ Clearly, Flow Matching provides an approximate solution, although allows to take
 \textbf{FM is not PINN. }
 
 \end{columns}
-
-
-
 \end{center}
+\end{frame}
 
-
+\begin{frame}
 
 \end{frame}
 
+
+\section{Solving Nonlinear Partial Differential Equations}
+
+\begin{frame}
+ \sectionpage
+
+\end{frame}
+
+\begin{frame}{Nonlinear Partial Differential Equation}
+
+\footnotesize
+
+\begin{center}
+  \begin{tcolorbox}[    enhanced,
+    colback=softMint,
+    colframe=borderLine,
+    sharp corners,
+    arc=0pt, 
+    boxrule=0.4pt,
+    leftrule=3pt,
+    % This creates the orange vertical bar on the left:
+    borderline west={5pt}{0pt}{highlightOrange}, 
+    fontupper=\color{boxBackground},
+    pad at break*=0mm,
+    top=1pt, bottom=2pt, left=5pt, right=5pt]
+    
+    Parameterized, nonlinear partial differetial equation of the general form:
+    
+    \begin{align*}
+    \Phi(\xbf, t, u, \partial_t u, \nabla u, \nabla^2 u, \cdots) = 0, \quad (\xbf, t)\in \Omega \times (0, T]
+    \end{align*}
+    wheere $\Omega \subset \Rbb^d$ be a spatial domain, $t \in [0, T]$ be time, and $ u: \Omega \times [0, T] \to \Rbb^m$ be the unknown field.
+    
+    We can have boundary condition 
+    
+    \begin{align*}
+    \Bcal[u](\xbf, t) = 0, \quad \xbf \in \partial \Omega
+    \end{align*}
+    
+    and 
+    
+    the initial condition as 
+    
+    \begin{align*}
+    u(\xbf, 0) = u_0(\xbf), \xbf \in \Omega
+    \end{align*}
+    
+    
+    \end{tcolorbox}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Neural Parameterization}
+
+We parameterize the vector with a NN as $u_\theta: \Rbb^d \times [0, T] \to \Rbb^m$ such as that $u(\xbf, t) \approx u_\theta(\xbf, t), \quad \theta \in \Rbb^P$ for some $P$.
+
+\vspace{10pt}
+
+But this neural network need to be sufficiently smooth. So we cannot use ReLU. Instead we need to use tanh, sin, or Gaussian Error Linear Unit (GELU) activation functions. $GELU(x)= x\tfrac{1}{2}[1 + erf(x/\sqrt{2})]$
+
+Essentially, you can then write residual or error 
+
+as
+
+\begin{align*}
+r_\theta(\xbf, t) :=  \Phi(\xbf, t, u_\theta, \partial_t u_\theta, \nabla u_\theta, \nabla^2 u_\theta, \cdots) 
+\end{align*}
+\end{frame}
+
+\begin{frame}{PINN Loss}
+
+\footnotesize
+
+We need to select points for regular region, initial condition, and boundary region. These points are called \textbf{collocation points.}
+
+\begin{enumerate}
+\item $\Scal_r \subset \Omega \times (0, T]$
+\item $\Scal_b \subset \partial\Omega \times [0, T]$ *=(Here, $ \partial$ is not about derivative but about the boundary domain.
+\item $\Scal_0 \subset \Omega \times \{ 0\}$
+\end{enumerate}
+
+THe PINN loss can then be defined as 
+
+
+\begin{tcolorbox}[    enhanced,
+    colback=softMint,
+    colframe=borderLine,
+    sharp corners,
+    arc=0pt, 
+    boxrule=0.4pt,
+    leftrule=3pt,
+    % This creates the orange vertical bar on the left:
+    borderline west={5pt}{0pt}{highlightOrange}, 
+    fontupper=\color{boxBackground},
+    pad at break*=0mm,
+    top=1pt, bottom=2pt, left=5pt, right=5pt]
+    
+    \begin{align*}
+    \Lcal(\theta) & = \frac{1}{|\Scal_r|} \sum_{(\xbf, t) \in \Scal_r} ||\Phi(\xbf, t, u_\theta, \partial_t u_\theta, \nabla u_\theta, \nabla^2 u_\theta, \cdots) ||^2 \\
+   & + 
+    \frac{\lambda_b}{|\Scal_b|} \sum_{(\xbf, t) \in \Scal_b} || \Bcal[u_\theta](\xbf, t)||^2 \\
+   & + \frac{\lambda_0}{|\Scal_0|} \sum_{(\xbf, t) \in \Scal_b} ||  u_\theta(\xbf, 0) - u_0(\xbf)||^2 
+    \end{align*}
+    
+    \end{tcolorbox}
+    
+\end{frame}
+
+
+\begin{frame}{Example: Burgers' Equation}
+
+\begin{align*}
+\Phi(u, \partial_t u, \partial_x u, \partial_{xx} u): = \partial_t u  + u \partial_x u  - \nu \partial_{xx} u= 0, \quad (x, t) \in [-1 , 1] \times [0, T]
+\end{align*}
+
+\vspace{5pt}
+
+
+$\nu > 0$ is called Kinematic viscosity. The nonlinearity is by $ u \partial_x u$.
+
+\vspace{10pt}
+
+
+\textbf{Boundary condition:}
+
+$\Bcal[u](x, t):= u(x,t) , \quad x\in\{-1,1\}, t \in [0, T]$. One choice is $u(-1, t) = 0$, and $u(1, t) = 0$.
+
+\vspace{10pt}
+
+
+\textbf{Initial condition:}
+
+$u(x,0)  = u_0(x) = -\sin(\pi x), \quad x\in [-1,1]$.
+
+\vspace{10pt}
+
+We also have collocation sets as $\Scal_r \subset [-1,1] \times (0, T]$, $\Scal_b = \{-1, 1\} \times [0, T]$, and $\Scal_0 \subset [-1,1] \times\{0\}$.
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Derivative Computation Via AutoDiff}
+
+\begin{minted}[
+    linenos,
+    frame=lines,
+    framesep=2mm,
+    bgcolor=jadeGold!20,
+    fontsize=\scriptsize,
+    breaklines
+]{python}
+
+def Phi(u_theta, x, t):
+    u    = u_theta(x, t)                          # (B, 1)
+
+    u_t  = torch.autograd.grad(
+               u, t,
+               grad_outputs=torch.ones_like(u),
+               create_graph=True)[0]              # del_t u
+
+    u_x  = torch.autograd.grad(
+               u, x,
+               grad_outputs=torch.ones_like(u),
+               create_graph=True)[0]              # del_x u
+
+    u_xx = torch.autograd.grad(
+               u_x, x,
+               grad_outputs=torch.ones_like(u_x),
+               create_graph=True)[0]              # del_xx u
+
+    return u_t + u * u_x - nu * u_xx             # Phi[u]
+    
+\end{minted}
+
+\end{frame}
+
+\begin{frame}{Burgers' Equation Result}
+
+\begin{center}
+\includegraphics[width=0.65\linewidth]{figures/burger_pinn_results.pdf}
+\end{center}
+
+\end{frame}
 
 \begin{frame}{References}
 
