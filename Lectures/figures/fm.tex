@@ -1,0 +1,60 @@
+\begin{tikzpicture}[
+  node distance = 0.55cm and 0.65cm,
+  box/.style = {
+    draw, rounded corners=4pt, minimum width=1.8cm, minimum height=0.72cm,
+    font=\small, align=center, inner sep=4pt
+  },
+  gray box/.style   = {box, fill=gray!12,   draw=gray!50},
+  purple box/.style = {box, fill=violet!15,  draw=violet!50},
+  teal box/.style   = {box, fill=teal!15,   draw=teal!50},
+  amber box/.style  = {box, fill=orange!18,  draw=orange!50},
+  coral box/.style  = {box, fill=red!12,    draw=red!40},
+  blue box/.style   = {box, fill=blue!10,   draw=blue!40},
+  green box/.style  = {box, fill=green!12,  draw=green!50},
+  arr/.style   = {-{Stealth[length=5pt]}, semithick},
+  label/.style = {font=\scriptsize, text=gray!65!black},
+]
+
+\node[gray box]   (xi-fm)  []  {$x_i, y_i$};
+\node[blue box]   (x0)     [above=0.7cm of xi-fm] {$x_0{\sim}\mathcal{N}(0,I)$};
+\node[green box]  (t-node) [right=of xi-fm]        {$t{\sim}\mathcal{U}[0,1]$};
+
+% Interpolant node
+\node[gray box]   (xt)  [right=of t-node]  {$x_t$};
+\node[gray box]   (ut)  [below=1.2cm of xt]      {$u_t{=}x_1{-}x_0$};
+
+% velocity net
+\node[purple box] (vnet)  [below=1.0cm of t-node] {$v_\theta(x_t,t)$};
+
+% loss
+\node[coral box]  (mse-fm) [below=of xi-fm]  {MSE loss};
+
+% arrows
+\draw[arr] (xi-fm)  -- node[above, label, xshift=2pt]{$x_1$} (t-node);
+\draw[arr] (x0)     -- node[right, label, yshift=2pt]{fix $x_0[0]{=}x_i$} (xi-fm);
+\draw[arr] (t-node) -- (xt);
+\draw[arr] (x0.east) to[out=0,in=120] (xt.north);
+\draw[arr] (xt) -- (ut);
+\draw[arr] (xt)  -- (vnet);
+\draw[arr] (t-node) -- (vnet);
+\draw[arr] (vnet) -- (mse-fm);
+\draw[arr] (ut.west)  to[out=180,in=0] (mse-fm.east);
+
+\node[label, left=0pt of mse-fm.west, yshift=0pt]
+  {$v_\theta - u_t$};
+
+% interpolant label
+\node[label, above right=-2pt and 8pt of xt.south west, align=left, font=\tiny]
+  {$= (1{-}(1{-}\sigma_{\min})t)x_0+tx_1$};
+
+\node[label, below=0.45cm of mse-fm, align=center]
+  {$\mathcal{L}_{\mathrm{FM}} =
+    \dfrac{1}{n}\displaystyle\sum_{i}
+    \bigl\|v_\theta(x_t^{(i)}, t^{(i)}) - u_t^{(i)}\bigr\|^2$};
+
+\node[label, below=1.25cm of mse-fm, font=\scriptsize\itshape]
+  {no $y_i$ labels; $t,x_0$ stochastic};
+
+\node[font=\small\bfseries, above=0.55cm of x0] {Flow Matching};
+
+\end{tikzpicture}

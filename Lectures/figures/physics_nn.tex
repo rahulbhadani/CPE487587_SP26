@@ -1,0 +1,62 @@
+\begin{tikzpicture}[
+  node distance = 0.55cm and 0.7cm,
+  box/.style = {
+    draw, rounded corners=4pt, minimum width=1.8cm, minimum height=0.75cm,
+    font=\small, align=center, inner sep=4pt
+  },
+  gray box/.style  = {box, fill=gray!12,  draw=gray!50},
+  purple box/.style= {box, fill=violet!15, draw=violet!50},
+  teal box/.style  = {box, fill=teal!15,  draw=teal!50},
+  amber box/.style = {box, fill=orange!18, draw=orange!50},
+  coral box/.style = {box, fill=red!12,   draw=red!40},
+  arr/.style = {-{Stealth[length=5pt]}, semithick},
+  label/.style = {font=\footnotesize, text=gray!70!black},
+]
+
+\node[gray box]   (xi-s)  {$x_i$};
+\node[purple box] (f-s)   [right=of xi-s]  {$f_\theta$};
+\node[gray box]   (fx-s)  [right=of f-s]   {$f_\theta(x^{(i)})$};
+\node[teal box]   (yi)    [below=1.0cm of xi-s]  {$y^{(i)} {=} \pm\sqrt{x^{(i)}}$};
+\node[coral box]  (mse-s) [right=2.0cm of yi]    {MSE loss};
+
+\draw[arr] (xi-s) -- (f-s);
+\draw[arr] (f-s)  -- (fx-s);
+\draw[arr] (fx-s) -- (mse-s);
+\draw[arr] (yi)   -- (mse-s);
+
+\node[label, above right=-2pt and 2pt of yi.east] {$f_\theta(x^{(i)}) - y^{(i)}$};
+
+\node[label, below=0.55cm of mse-s, align=center]
+  {$\mathcal{L}_{\mathrm{sup}} = \frac{1}{n}\sum_{i=1}^N ( f_\theta(x^{(i)}) - y^{(i)} )^2$};
+
+\node[font=\small\bfseries, above=0.3cm of xi-s] {Supervised};
+
+\coordinate (div-top) at ($(fx-s.east)!0.5!(f-s.east) + (1.1cm, 1.0cm)$);
+\coordinate (div-bot) at ($(div-top) + (0,-4.2cm)$);
+
+
+\node[gray box]   (xi-p)  [right=1.5cm of fx-s]  {$x^{(i)}$};
+\node[purple box] (f-p)   [right=of xi-p]         {$f_\theta$};
+\node[gray box]   (fx-p)  [right=of f-p]          {$f_\theta(x^{(i)})$};
+\node[amber box]  (Phi)   [below=of fx-p]         {$\Phi(\cdot)=(\cdot)^2$};
+\node[coral box]  (mse-p) [below=2.0cm of f-p]          {MSE loss};
+\node[gray box]   (xi-p2) [below=of xi-p]         {$x^{(i)}$};
+
+\draw[arr] (xi-p)  -- (f-p);
+\draw[arr] (f-p)   -- (fx-p);
+\draw[arr] (fx-p)  -- (Phi);
+\draw[arr] (Phi)   -- (mse-p);
+\draw[arr] (xi-p2) -- (mse-p);
+
+\node[label, above right=-2pt and 2pt of mse-p.north east, align=left]
+  {$\Phi(f_\theta(x^{(i)})) - x^{(i)}$};
+
+\node[label, below=0.55cm of mse-p, align=center]
+  {$\mathcal{L}_{\mathrm{phys}} =\frac{1}{n}\sum_{i=1}^N ( \Phi(f_\theta(x^{(i)})) - x^{(i)} )^2$};
+
+\node[label, below=1.3cm of mse-p, align=center, font=\scriptsize\itshape]
+  {no $y^{(i)}$ labels used};
+
+\node[font=\small\bfseries, above=0.3cm of xi-p] {Physics-based};
+
+\end{tikzpicture}
