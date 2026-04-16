@@ -446,6 +446,49 @@
 \definecolor{indianRed}{RGB}{205,92,92}
 \definecolor{peach}{RGB}{255,218,185}
 
+\definecolor{PrimaryBlue}{HTML}{1A237E}
+\definecolor{AccentCyan}{HTML}{00ACC1}
+\definecolor{AccentOrange}{HTML}{F57C00}
+\definecolor{AccentGreen}{HTML}{2E7D32}
+\definecolor{AccentPurple}{HTML}{6A1B9A}
+\definecolor{LightGray}{HTML}{F5F5F5}
+\definecolor{MidGray}{HTML}{EEEEEE}
+\definecolor{NodeA}{HTML}{1565C0}
+\definecolor{NodeB}{HTML}{AD1457}
+\definecolor{NodeC}{HTML}{2E7D32}
+\definecolor{NodeD}{HTML}{E65100}
+\definecolor{NodeE}{HTML}{6A1B9A}
+
+\tcbset{
+  defbox/.style={
+    enhanced, colback=AccentCyan!8, colframe=AccentCyan!70,
+    fonttitle=\bfseries\small, coltitle=white,
+    attach boxed title to top left={yshift=-2mm,xshift=2mm},
+    boxed title style={colback=AccentCyan!80, rounded corners},
+    arc=4pt, boxrule=0.3pt
+  },
+  keybox/.style={
+    enhanced, colback=AccentOrange!8, colframe=AccentOrange!70,
+    fonttitle=\bfseries\small, coltitle=white,
+    attach boxed title to top left={yshift=-2mm,xshift=2mm},
+    boxed title style={colback=AccentOrange!85, rounded corners},
+    arc=4pt, boxrule=0.3pt
+  },
+  thmbox/.style={
+    enhanced, colback=AccentPurple!8, colframe=AccentPurple!60,
+    fonttitle=\bfseries\small, coltitle=white,
+    attach boxed title to top left={yshift=-2mm,xshift=2mm},
+    boxed title style={colback=AccentPurple!80, rounded corners},
+    arc=4pt, boxrule=0.3pt
+  },
+  greenbox/.style={
+    enhanced, colback=AccentGreen!8, colframe=AccentGreen!60,
+    fonttitle=\bfseries\small, coltitle=white,
+    attach boxed title to top left={yshift=-2mm,xshift=2mm},
+    boxed title style={colback=AccentGreen!75, rounded corners},
+    arc=4pt, boxrule=0.3pt
+  }
+}
 
 % Fix /tikz/state key
 \usetikzlibrary{automata,positioning,arrows}
@@ -505,3 +548,58 @@
 \SetKwFor{For}{\color{myBlue}for}{do}{\color{myBlue}end for}
 \usepackage{hyperref}
 
+
+\definecolor{trueColor}  {RGB}{220,  38,  38}   % crimson  – ground truth
+\definecolor{nnColor}    {RGB}{ 37,  99, 235}   % royal blue – data-only NN
+\definecolor{pinnColor}  {RGB}{ 22, 163,  74}   % emerald  – PINN
+\definecolor{collocColor}{RGB}{234,  88,  12}   % orange   – collocation pts
+\definecolor{trainBg}    {RGB}{219, 234, 254}   % light blue background
+\definecolor{extraBg}    {RGB}{254, 226, 226}   % light red  background
+
+\usepackage[object=vectorian]{pgfornament}
+
+\newcommand{\sectionline}{%
+  \noindent
+  \begin{center}
+  {\color{DarkViolet}
+    \resizebox{0.5\linewidth}{1ex}
+    {{%
+    {\begin{tikzpicture}
+    \node  (C) at (0,0) {};
+    \node (D) at (9,0) {};
+    \path (C) to [ornament=85] (D);
+    \end{tikzpicture}}}}}%
+    \end{center}
+  }
+%% A macro with two arguments to change ornaments and colors easily
+%% Syntax -- \sectionlinetwo{<color>}{<ornament>}
+\newcommand{\sectionlinetwo}[2]{%
+  \nointerlineskip \vspace{.5\baselineskip}\hspace{\fill}
+  {\color{#1}
+    \resizebox{0.5\linewidth}{2ex}
+    {{%
+    {\begin{tikzpicture}
+    \node  (C) at (0,0) {};
+    \node (D) at (9,0) {};
+    \path (C) to [ornament=#2] (D);
+    \end{tikzpicture}}}}}%
+    \hspace{\fill}
+    \par\nointerlineskip \vspace{.5\baselineskip}
+  }
+
+
+\usetikzlibrary{decorations.markings,decorations.pathmorphing}
+
+\newcommand{\classicRule}{%
+  \par\nointerlineskip\vspace{4pt}
+  {\color{gray!60}\hrule height 0.4pt \vspace{1.5pt}
+   \hrule height 2pt  \vspace{1.5pt}
+   \hrule height 0.4pt}
+  \vspace{4pt}}
+
+\newcommand{\fleuronRule}{%
+  \begin{center}
+    \rule[0.5ex]{0.3\linewidth}{0.5pt}
+    \quad{\large\textleaf}\quad   % or \faLeaf from fontawesome
+    \rule[0.5ex]{0.3\linewidth}{0.5pt}
+  \end{center}}

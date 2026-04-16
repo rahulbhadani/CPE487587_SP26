@@ -177,6 +177,7 @@ frame=none
 %    \includegraphics[width=0.4\linewidth]{figures/UAH_primary.png}
 % }
 
+\newcommand{\N}{\mathcal{N}}
 
 
 \begin{document}
@@ -749,7 +750,782 @@ L_w = D^{-1}L = I_n - D^{-1}A
 \end{frame}
 
 
-\begin{frame}{}
+\begin{frame}{Graph Spectrum}
+
+\footnotesize
+
+Spectral graph theory can extract the modes of variation of the graph system. This can be done using eigenvalue decomposition.
+
+\begin{tcolorbox}[    enhanced,
+    colback=uiCream,
+    colframe=embedEmerald,
+    sharp corners,
+    arc=0pt, 
+    boxrule=0.4pt,
+    leftrule=3pt,
+    % This creates the orange vertical bar on the left:
+    borderline west={5pt}{0pt}{embedEmerald}, 
+    fontupper=\color{wpDark},
+    pad at break*=0mm,
+    top=1pt, bottom=2pt, left=5pt, right=5pt]
+    
+    Considering Laplacian operator as $L$.  The Laplacian is symmetric positive semi-definite, so it admits an eigendecomposition:
+    
+    \begin{align*}
+    L = U \Lambda U^\top  
+    \end{align*}
+    where $U = [u_1, u_2, \cdots, u_n]$ are eigenvectors (graph Fourier basis) and $\Lambda  = diag(\lambda_1, \lambda_2, \cdots, \lambda_n)$ are eigenvalues with $0 = \lambda_1 \leq \lambda_2 \leq  \cdots \leq \lambda_n$. Also $U^\top U = I_n$. 
+    
+    \vspace{10pt}
+    
+    The eigenvectors are the modes of variation.  they capture how signals oscillate across the graph topology, from smooth global trends ($\lambda \approx 0$) to high-frequency local variation ($\lambda$ with a large value).
+    
+\end{tcolorbox}
+
+
+\end{frame}
+
+
+\begin{frame}{How to construct graphs from data?}
+
+Questions to ask first:
+
+\begin{itemize}
+\item Which type of graphs?
+\item Which data distance?
+\item Which data features?
+\end{itemize}
+
+\vspace{5pt}
+
+Optimal Graph Construction
+
+\begin{itemize}
+\item No universal recipe is available (no theory).
+\item It depends on data and analysis task (empirical).
+\item Domain expertise and good practice are essential.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Distance Definition}
+
+Euclidean/L2 distance :
+
+\begin{itemize}
+\item Good distance for low-dimensional data
+\item Good distance for high-dim data with linearly separable data
+\end{itemize}
+
+Cosine/dot product distance :
+
+\begin{itemize}
+\item Good distance for high-dim sparse data (.e.g text document)
+\item \begin{align*}
+d_{cos}(\xbf_i, \xbf_j) = \bigg|  \cos^{-1}\bigg( \frac{\langle \xbf_i, \xbf_j \rangle}{|| \xbf_i|| || \xbf_j|| }  \bigg)  \bigg|
+\end{align*}
+\end{itemize}
+
+Other distances are KL divergence, Wasserstein distance, etc.
+
+
+\end{frame}
+
+\begin{frame}{Representations for Learning with Graph}
+
+
+\begin{itemize}
+\item Each node $i$ carries a feature vector $\xbf_i$ which gives us $X \in \Rbb^{n \times d}$.
+\item Adjacency matrix $A$ tells who is conencted to whom. 
+\item Feature matrix $X$ tells what each node knows.
+\end{itemize}
+
+So how do we use $X$ and $A$ to learn something?
+
+\vspace{10pt}
+
+Or specifically, how to we prepare their representation that can be fed to a neural network.
+
+\end{frame}
+
+\begin{frame}{Naive Representation}
+
+\footnotesize
+
+\begin{center}
+One idea could be to concatenate as [$\xbf_i$, neighbors of $i$]. Collect all neighbor features, concatenate everything, and feed it to a standard neural network.
+
+\vspace{10pt}
+
+\includegraphics[width=0.35\linewidth]{figures/naive_graph_learning.png}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Naive Representation}
+
+\footnotesize
+
+\textbf{But we have problem!}
+
+\vspace{10pt}
+
+A graph has no natural ordering of nodes or neighbors. Permuting the nodes gives the same graph, but a completely different input vector to the MLP.
+
+
+\vspace{10pt}
+
+
+\includegraphics[width=0.45\linewidth]{figures/graph_ordering.png}
+
+\textbf{Another issue:} different nodes have different numbers of neighbors. An MLP requires a fixed-size input. It cannot natively handle node $v$ with 2 neighbors and node $u$ with 7 neighbors simultaneously.
+
+\begin{center}
+
+\textbf{We need an operation over neighbor features that is independent of ordering and handles any neighborhood size.} They are called \textbf{A Permutation-Invariant Aggregation}. Example: SUM, MEAN, MAX, etc.
+\end{center}
+
+
+\end{frame}
+
+\begin{frame}{Message Passing Graph Neural Network (Or Spatial GNN)}
+
+\footnotesize
+
+\textbf{Message Passing:}
+
+A mechanism enabling Graph Neural Networks to learn from graph-structured data by having nodes iteratively exchange information with their neighbour's. 
+
+\vspace{5pt}
+
+\begin{itemize}
+\item \textbf{Message Creation:} Computing messages (information about features) from neighbouring nodes.
+\item \textbf{Message Aggregation:} Aggregating these messages through operations like summation or attention.
+\item \textbf{Node Update:} Updating each node’s representation by combining the aggregated information with its current features.
+\end{itemize}
+
+\begin{align*}
+\hbf_u^{(k+1)} & = UPDATE^{(k)}\bigg( \hbf_u^{(k)}, AGGREGATE^{(k)}( \{\hbf_v^{(k)}, \forall v \in\Ncal(u) \}) \bigg)\\
+& =  UPDATE^{(k)}\bigg( \hbf_u^{(k)} , \mbf^{(k)}_{\Ncal(u)} \bigg)
+\end{align*}
+where $\hbf_u^{(k)}$ is the embedding corresponding to the node $u$, $\Ncal(u)$ is the neighbors of $u$, $\mbf$ is the meassage that is being aggregated.
+
+We use superscripts to distinguish the embeddings and functions at different iterations of message passing. In the context of GNN, they are called different \textbf{layers} of GNN.
+
+\end{frame}
+
+
+\begin{frame}{Message Passing Graph Neural Network (Or Spatial GNN)}
+
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{figures/message_passing.png}
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}{Message Passing Graph Neural Network (Or Spatial GNN)}
+
+
+\footnotesize
+
+\begin{columns}
+
+
+\column{0.5\linewidth}
+
+
+Initial embeddings are set as $\hbf_u^{(0)} = \xbf_u \forall u \in Vcal$. After running $k$ iteration,  we can use the output of the final layer to define the embeddings of each node:
+
+\begin{align*}
+\zbf_u = \hbf_u^{k}, \quad\forall u \in \Vcal
+\end{align*}
+
+\column{0.5\linewidth}
+
+\includegraphics[width=0.65\linewidth]{figures/aggregare_update.png}
+
+\end{columns}
+
+
+\textbf{Note:} Since the AGGREGATE function takes a set as input, GNNs defined in
+this way are permutation equivariant by design.
+
+
+\end{frame}
+
+\begin{frame}{The Most Basic GNN}
+
+
+\scriptsize
+
+\begin{tcolorbox}[title={Basic GNN Message Passing}]
+\begin{align*}
+  \mathbf{h}_u^{(k)} = \sigma\!\bigg(
+    \mathbf{W}_{\text{self}}^{(k)}\mathbf{h}_u^{(k-1)}
+    + \mathbf{W}_{\text{neigh}}^{(k)}\!\!\sum_{v\in \Ncal(u)}\!\mathbf{h}_v^{(k-1)}
+    + \mathbf{b}^{(k)}
+  \bigg)
+\end{align*}
+\end{tcolorbox}
+
+Many GNNs can also be succinctly defined using graph-level equations. In the case of a basic GNN, we can write the graph-level definition of the model as follows:
+
+\vspace{4pt}
+\begin{tcolorbox}[title={Graph-level Form}]
+\begin{align*}
+  H^{(t)} = \sigma\!\Bigl(AH^{(t-1)}\mathbf{W}_{\text{neigh}}^{(t)} + H^{(t-1)}\mathbf{W}_{\text{self}}^{(t)}\Bigr)
+\end{align*}
+Efficient via \textbf{sparse matrix operations}
+\end{tcolorbox}
+
+$\Hbf^{(t)} \in \Rbb^{|V| \times d}$ denotes the matrix of node representations at layer $t$ in the GNN. $\Abf$ is the graph adjacency matrix. This one omits bias for simplicity.
+
+\end{frame}
+
+
+\begin{frame}{The Most Basic GNN: An Abstract Form}
+
+$$
+\mathbf{x}_v^{(k + 1)} = f^{(k + 1)}_{\theta} \left( \mathbf{x}_v^{(k)}, \left\{ \mathbf{x}_w^{(k)} : w \in \mathcal{N}(v) \right\} \right)
+$$
+
+where node features $\mathbf{x}_v^{(k)}$ of all nodes $v \in \mathcal{V}$ in a graph $\mathcal{G} = (\mathcal{V}, \mathcal{E})$ are iteratively updated by aggregating localized information from their neighbors $\mathcal{N}(v)$.
+
+
+\end{frame}
+
+\begin{frame}[fragile]{Neighborhood Normalization}
+
+\footnotesize
+
+\begin{columns}[T]
+\column{0.50\textwidth}
+
+\textbf{Problem:} High-degree nodes produce large $\|\sum_v \mathbf{h}_v\|$, causing \emph{instability}.
+
+\vspace{6pt}
+\begin{tcolorbox}[defbox,title={Mean Normalization}]
+\begin{align*}
+  \mathbf{m}_{\Ncal(u)} = \frac{\displaystyle\sum_{v\in\Ncal(u)}\mathbf{h}_v}{|\Ncal(u)|}
+\end{align*}
+\end{tcolorbox}
+
+\begin{tcolorbox}[keybox,title={Kipf Normalization (GCN)}]
+\begin{align*}
+  \mathbf{m}_{\Ncal(u)} = \sum_{v\in\Ncal(u)} \frac{\mathbf{h}_v}{\sqrt{|\Ncal(u)||\Ncal(v)|}}
+\end{align*}
+Down-weights high-degree neighbors
+\end{tcolorbox}
+
+\column{0.46\textwidth}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=6.2cm, height=4.5cm,
+  xlabel={\small Node Degree},
+  ylabel={\small $\|$message norm$\|$},
+  xmin=1, xmax=20,
+  ymin=0, ymax=6,
+  grid=both, grid style={gray!25},
+  tick label style={font=\tiny},
+  label style={font=\small},
+  legend style={font=\tiny,at={(0.97,0.97)},anchor=north east},
+  title style={font=\small},
+  title={Effect of Normalization}
+]
+\addplot[AccentOrange,very thick,domain=1:20,samples=40]{sqrt(x)};
+\addlegendentry{Sum (unstable)}
+\addplot[AccentCyan,very thick,domain=1:20,samples=40]{1};
+\addlegendentry{Mean (stable)}
+\addplot[AccentGreen,very thick,domain=1:20,samples=40]{1/sqrt(x)};
+\addlegendentry{Kipf (decay)}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[thmbox,title={Note}]
+\tiny Normalization \textbf{trades expressivity for stability}. The mean aggregator is provably less powerful than the sum aggregator.
+\end{tcolorbox}
+
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Graph Convolutional Network (GCN)}
+
+\scriptsize
+
+\begin{columns}[T]
+\column{0.54\textwidth}
+
+\begin{tcolorbox}[defbox,title={GCN Layer (Kipf \& Welling, 2016)}]
+\begin{align*}
+  \mathbf{h}_v^{(k)} = \sigma\!\Biggl(
+    \mathbf{W}^{(k)}\!\!\!\!\sum_{v\in\N(u)\cup\{u\}}\!\!\!\!
+    \frac{\mathbf{h}_v}{\sqrt{|\N(u)||\N(v)|}}
+  \Biggr)
+\end{align*}
+\end{tcolorbox}
+
+\vspace{4pt}
+Combines: \textbf{Kipf normalization} + \textbf{self-loop} trick
+\begin{align*}
+  H^{(t)} = \sigma\!\Bigl((A+I)H^{(t-1)}W^{(t)}\Bigr)
+\end{align*}
+
+\begin{tcolorbox}[greenbox,title={Properties}]
+\ding{51}~Permutation equivariant\\
+\ding{51}~Efficient sparse ops\\
+\ding{51}~First-order spectral approximation
+\end{tcolorbox}
+
+\column{0.42\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+  \tikzset{
+    gn/.style={circle,draw=#1,fill=#1!20,thick,minimum size=8mm,font=\tiny\bfseries},
+  }
+  % Nodes
+  \node[gn=NodeA,minimum size=12mm] (u)  at (0,0)   {$u$};
+  \node[gn=NodeB] (v1) at (-1.6, 1.2) {$v_1$};
+  \node[gn=NodeC] (v2) at ( 1.6, 1.2) {$v_2$};
+  \node[gn=NodeD] (v3) at ( 0  ,-1.8) {$v_3$};
+  % Self-loop
+  \draw[NodeA,thick,->,looseness=5] (u) to[out=30,in=-30] node[right,font=\tiny]{self} (u);
+  % Edges + degree labels
+  \draw[gray,thick] (u)--(v1) node[midway,left,font=\tiny,AccentCyan]{$\frac{1}{\sqrt{d_u d_{v_1}}}$};
+  \draw[gray,thick] (u)--(v2) node[midway,right,font=\tiny,AccentCyan]{$\frac{1}{\sqrt{d_u d_{v_2}}}$};
+  \draw[gray,thick] (u)--(v3) node[midway,right,font=\tiny,AccentCyan]{$\frac{1}{\sqrt{d_u d_{v_3}}}$};
+  \node[font=\tiny,gray] at (0,-2.7) {GCN aggregation weights};
+\end{tikzpicture}
+\end{center}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Set Aggregators: Going Beyond Sum/Mean}
+
+\scriptsize
+
+\begin{columns}[T]
+\column{0.48\textwidth}
+
+\begin{tcolorbox}[defbox,title={Set Pooling (Zaheer et al., 2017)}]
+ Universal approximator for permutation-invariant functions:
+\begin{align*}
+  \mathbf{m}_{\N(u)} = \text{MLP}_\theta\!\!\!\left(\sum_{v\in\N(u)}\!\!\text{MLP}(\mathbf{h}_v)\right)
+\end{align*}
+\end{tcolorbox}
+
+\begin{tcolorbox}[keybox,title={Janossy Pooling (Murphy et al., 2018)}]
+ Apply a \emph{sequence model} on permutations, then average:
+\begin{align*}
+  \mathbf{m}_{\N(u)} = \text{MLP}_\theta\!\!\left(\frac{1}{|\Pi|}\sum_{\pi\in\Pi}\rho\!\left(\{\mathbf{h}_v\}_\pi\right)\right)
+\end{align*}
+where $\rho$ is typically an \textbf{LSTM}.
+\end{tcolorbox}
+
+\column{0.48\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=0.82,font=\small]
+  \tikzset{
+    block/.style={draw=#1,fill=#1!15,rounded corners,thick,
+                  minimum width=1.8cm,minimum height=0.55cm,
+                  font=\tiny\bfseries,align=center},
+    arr/.style={->,thick,gray}
+  }
+  \node[block=NodeB] (n1) at (-1.5,3) {$\mathbf{h}_{v_1}$};
+  \node[block=NodeC] (n2) at ( 0.0,3) {$\mathbf{h}_{v_2}$};
+  \node[block=NodeD] (n3) at ( 1.5,3) {$\mathbf{h}_{v_3}$};
+
+  \node[block=AccentCyan] (m1) at (-1.5,2) {MLP};
+  \node[block=AccentCyan] (m2) at ( 0.0,2) {MLP};
+  \node[block=AccentCyan] (m3) at ( 1.5,2) {MLP};
+
+  \node[block=AccentOrange] (sum) at (0,1) {$\Sigma$};
+  \node[block=AccentPurple] (mlp2) at (0,0) {MLP$_\theta$};
+  \node[font=\small\bfseries,AccentGreen] at (0,-0.8) {$\mathbf{m}_{\N(u)}$};
+
+  \draw[arr] (n1)--(m1); \draw[arr] (n2)--(m2); \draw[arr] (n3)--(m3);
+  \draw[arr] (m1)--(sum); \draw[arr] (m2)--(sum); \draw[arr] (m3)--(sum);
+  \draw[arr] (sum)--(mlp2);
+  \draw[->,thick,AccentGreen] (mlp2)--++(0,-0.5);
+\end{tikzpicture}
+\end{center}
+ \centering\textit{Set Pooling architecture}
+\end{columns}
+\end{frame}
+
+%% --- ATTENTION -------------------------------------------------
+\begin{frame}[fragile]{Graph Attention Networks (GAT)}
+\scriptsize
+\begin{columns}[T]
+\column{0.55\textwidth}
+
+\begin{tcolorbox}[defbox,title={Attention-based Aggregation}]
+
+\begin{align*}
+  \mathbf{m}_{\N(u)} = \sum_{v\in\N(u)} \alpha_{u,v}\,\mathbf{h}_v
+\end{align*}
+where the attention weight is:
+\begin{align*}
+  \alpha_{u,v} = \frac{\exp\!\bigl(\mathbf{a}^\top[\mathbf{W}\mathbf{h}_u \| \mathbf{W}\mathbf{h}_v]\bigr)}{\displaystyle\sum_{v'\in\N(u)}\exp\!\bigl(\mathbf{a}^\top[\mathbf{W}\mathbf{h}_u \| \mathbf{W}\mathbf{h}_v']\bigr)}
+\end{align*}
+\end{tcolorbox}
+
+\begin{tcolorbox}[keybox,title={Multi-head Attention}]
+
+\vspace{-10pt}
+
+\begin{align*}
+  \mathbf{m}_{\N(u)} &= [\mathbf{a}_1 \| \mathbf{a}_2 \| \cdots \| \mathbf{a}_K] \\
+  \mathbf{a}_k &= W_k\!\!\sum_{v\in\N(u)}\!\!\alpha_{u,v,k}\,\mathbf{h}_v
+\end{align*}
+\end{tcolorbox}
+
+\column{0.4\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=0.88]
+  \tikzset{
+    gn/.style={circle,draw=#1,fill=#1!20,very thick,minimum size=9mm,font=\small\bfseries},
+  }
+  \node[gn=NodeA,minimum size=11mm] (u)  at (0,0) {$u$};
+  \node[gn=NodeB] (v1) at (-1.7, 1.4) {$v_1$};
+  \node[gn=NodeC] (v2) at ( 1.7, 1.4) {$v_2$};
+  \node[gn=NodeD] (v3) at ( 0.0,-1.8) {$v_3$};
+  % Weighted edges
+  \draw[->,AccentOrange,very thick,opacity=0.9] (v1) to[bend right=10]
+    node[midway,left,font=\tiny,AccentOrange]{$\alpha=0.5$} (u);
+  \draw[->,AccentCyan,very thick,opacity=0.7] (v2) to[bend left=10]
+    node[midway,right,font=\tiny,AccentCyan]{$\alpha=0.3$} (u);
+  \draw[->,AccentPurple,thick,opacity=0.5] (v3) to[bend left=10]
+    node[midway,right,font=\tiny,AccentPurple]{$\alpha=0.2$} (u);
+  % Legend
+  \node[font=\tiny,AccentOrange] at (-2.2,-1.3) {high attention};
+  \node[font=\tiny,AccentPurple] at ( 1.8,-2.5) {low attention};
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[thmbox,title={Connection to Transformers}]
+\tiny A Transformer layer $\equiv$ a GAT on a \textbf{fully-connected} graph.\\
+Complexity: $\mathcal{O}(|V|^2)$ vs $\mathcal{O}(|V||E|)$ for sparse GNN.
+\end{tcolorbox}
+
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Over-Smoothing: A Core Challenge}
+
+\scriptsize
+
+\begin{columns}[T]
+\column{0.50\textwidth}
+
+\begin{tcolorbox}[keybox,title={Over-Smoothing}]
+ After many layers, \textbf{all node embeddings converge} to nearly the same vector -- local neighborhood information is lost.
+\end{tcolorbox}
+
+\vspace{4pt}
+\textbf{Influence Score} (Xu et al., 2018):
+\begin{align*}
+  I_K(u,v) = \mathbf{1}^\top\!\left(\frac{\partial\,\mathbf{h}_v^{(K)}}{\partial\,\mathbf{h}_u^{(0)}}\right)\!\mathbf{1}
+\end{align*}
+
+\begin{tcolorbox}[thmbox,title={Theorem (Xu et al.)}]
+ For GCN-style models with normalized aggregation:
+\begin{align*}
+  I_K(u,v) \;\propto\; p_{G,K}(v \mid u)
+\end{align*}
+the $K$-step random walk probability from $u$ to $v$.
+\end{tcolorbox}
+
+\column{0.46\textwidth}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=6.2cm, height=4.8cm,
+  xlabel={\small GNN Layers $K$},
+  ylabel={\small Embedding Similarity},
+  xmin=0, xmax=10,
+  ymin=0, ymax=1.05,
+  grid=both, grid style={gray!20},
+  tick label style={font=\tiny},
+  label style={font=\small},
+  legend style={font=\tiny,at={(0.05,0.97)},anchor=north west},
+  title style={font=\small},
+  title={Over-Smoothing Effect}
+]
+\addplot[AccentOrange,very thick,domain=0:10,samples=30]{1 - exp(-0.5*x)};
+\addlegendentry{Avg pairwise sim.}
+\addplot[AccentCyan,very thick,domain=0:10,samples=30]{exp(-0.4*x)};
+\addlegendentry{Local info retained}
+\addplot[PrimaryBlue,dashed,thick] coordinates {(0,0)(10,1)};
+\addlegendentry{Ideal (more layers = better)}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\centering\alert{Adding more layers can \textbf{hurt} performance!}
+\end{columns}
+\end{frame}
+
+%% --- SKIP CONNECTIONS ------------------------------------------
+\begin{frame}[fragile]{Addressing Over-Smoothing: Skip Connections}
+
+\scriptsize
+
+\begin{columns}[T]
+\column{0.50\textwidth}
+
+\begin{tcolorbox}[defbox,title={Concatenation Skip (GraphSAGE)}]
+
+\begin{align*}
+  \text{UPDATE}_{\text{concat}}(\mathbf{h}_u, \mathbf{m}) =
+  \bigl[\text{UPDATE}_{\text{base}}(\mathbf{h}_u, \mathbf{m}) \;\|\; \mathbf{h}_u\bigr]
+\end{align*}
+Explicitly preserves previous-layer info.
+\end{tcolorbox}
+
+\begin{tcolorbox}[keybox,title={Gated Interpolation (Pham et al., 2017)}]
+
+\begin{align*}
+  \text{UPDATE}_{\text{interp}} &= \bm{\alpha}_1 \odot \text{UPDATE}_{\text{base}} + \bm{\alpha}_2 \odot \mathbf{h}_u
+\end{align*}
+$\bm{\alpha}_1 + \bm{\alpha}_2 = \mathbf{1}$; gates learned from data.
+\end{tcolorbox}
+
+
+
+\column{0.46\textwidth}
+
+\begin{tcolorbox}[thmbox,title={Gated Updates (GRU/LSTM)}]
+
+\begin{align*}
+  \mathbf{h}_u^{(k)} = \text{GRU}\!\bigl(\mathbf{h}_u^{(k-1)},\;\mathbf{m}_{\N(u)}^{(k)}\bigr)
+\end{align*}
+Parameters \textbf{shared across nodes and layers}.
+\end{tcolorbox}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.72,font=\small,
+  blk/.style={draw=#1,fill=#1!15,rounded corners,thick,
+    minimum width=1.9cm,minimum height=0.55cm,font=\tiny\bfseries,align=center}]
+  % Layer k-1
+  \node[blk=NodeA] (hprev) at (0, 3.2) {$\mathbf{h}_u^{(k-1)}$};
+  % Aggregate
+  \node[blk=AccentCyan] (agg) at (0, 2.1) {AGGREGATE};
+  % Update base
+  \node[blk=AccentOrange] (upd) at (0, 1.0) {UPDATE$_{\text{base}}$};
+  % Concat
+  \node[blk=AccentPurple] (cat) at (0,-0.1) {CONCAT / GATE};
+  % Output
+  \node[font=\small\bfseries,AccentGreen] at (0,-1.0) {$\mathbf{h}_u^{(k)}$};
+  % Skip arrow
+  \draw[->,thick,AccentGreen,dashed] (hprev.east) to[bend left=50]
+    node[right,font=\tiny,AccentGreen]{skip} (cat.east);
+  % Normal flow
+  \draw[->,thick] (hprev)--(agg);
+  \draw[->,thick] (agg)--(upd);
+  \draw[->,thick] (upd)--(cat);
+  \draw[->,thick,AccentGreen] (cat)--++(0,-0.6);
+\end{tikzpicture}
+\end{center}
+\centering\textit{Skip connection architecture}
+\end{columns}
+\end{frame}
+
+%% --- JUMPING KNOWLEDGE -----------------------------------------
+\begin{frame}[fragile]{Jumping Knowledge Connections}
+
+\scriptsize
+
+\begin{columns}[T]
+\column{0.50\textwidth}
+
+\begin{tcolorbox}[defbox,title={JK Networks (Xu et al., 2018)}]
+ Instead of only using the final layer, \textbf{combine all layers}:
+\begin{align*}
+  \mathbf{z}_u = f_{\text{JK}}\!\bigl(\mathbf{h}_u^{(0)} \| \mathbf{h}_u^{(1)} \| \cdots \| \mathbf{h}_u^{(K)}\bigr)
+\end{align*}
+\end{tcolorbox}
+
+$f_{\text{JK}}$ can be:
+\begin{itemize}
+  \item \textbf{Concatenation} (identity)
+  \item Max-pooling over layers
+  \item LSTM attention over layers
+\end{itemize}
+
+\begin{tcolorbox}[greenbox,title={Benefit}]
+Each node can \textbf{adaptively select} the right neighborhood size -- some nodes need local info, others global.
+\end{tcolorbox}
+
+\column{0.46\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=0.85,font=\small]
+  \tikzset{
+    lay/.style={draw=PrimaryBlue,fill=PrimaryBlue!10,rounded corners,thick,
+      minimum width=1.6cm,minimum height=0.5cm,font=\tiny\bfseries}
+  }
+  \foreach \k/\y in {0/4.5,1/3.3,2/2.1,3/0.9}{
+    \node[lay] (L\k) at (0,\y) {Layer \k};
+  }
+  % Jump arrows to final node
+  \node[draw=AccentOrange,fill=AccentOrange!15,rounded corners,thick,
+    minimum width=1.6cm,minimum height=0.55cm,font=\tiny\bfseries] (jk) at (2.4,2.7) {$f_{\text{JK}}$};
+  \foreach \k in {0,1,2,3}{
+    \draw[->,AccentCyan,thick,dashed] (L\k.east) to[bend left=10] (jk.west);
+  }
+  \node[font=\small\bfseries,AccentOrange] at (2.4,1.8) {$\mathbf{z}_u$};
+  \draw[->,thick,AccentOrange] (jk)--++(0,-0.65);
+  % Normal flow arrows
+  \foreach \from/\to in {0/1,1/2,2/3}{
+    \draw[->,thick,gray] (L\from)--(L\to);
+  }
+\end{tikzpicture}
+\end{center}
+\end{columns}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Relational Graph Convolutional Networks (R-GCN)}
+
+\scriptsize
+
+\begin{columns}[T]
+\column{0.52\textwidth}
+
+\textbf{Challenge:} Graphs with \emph{multiple edge types} (e.g., knowledge graphs).
+
+\begin{tcolorbox}[defbox,title={RGCN Aggregation (Schlichtkrull et al., 2017)}]
+
+\begin{align*}
+  \mathbf{m}_{\N(u)} = \sum_{\tau\in\mathcal{R}}
+  \sum_{v\in\N_\tau(u)} \frac{W_\tau\,\mathbf{h}_v}{f_n(\N(u),\N(v))}
+\end{align*}
+One trainable matrix $W_\tau$ \textbf{per relation type}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[keybox,title={Parameter Sharing via Basis Decomposition}]
+
+\begin{align*}
+  W_\tau = \sum_{b=1}^{B} \alpha_{b,\tau}\,\mathbf{B}_b
+\end{align*}
+Shared basis matrices $\mathbf{B}_1,\ldots,\mathbf{B}_B$ across all relations.
+\end{tcolorbox}
+
+\column{0.44\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=0.82]
+  \tikzset{
+    ent/.style={ellipse,draw=#1,fill=#1!15,thick,minimum width=1.1cm,minimum height=0.6cm,font=\tiny\bfseries},
+  }
+  \node[ent=NodeA] (p1) at (0,2.2) {Person};
+  \node[ent=NodeB] (p2) at (2.4,2.2) {Person};
+  \node[ent=NodeC] (d)  at (1.2,0.8) {Drug};
+  \node[ent=NodeD] (dis) at (0.0,-0.5) {Disease};
+  \node[ent=NodeE] (pr) at (2.4,-0.5) {Protein};
+
+  \draw[->,AccentCyan,thick] (p1) -- node[above,font=\tiny]{knows} (p2);
+  \draw[->,AccentOrange,thick] (p1) -- node[left,font=\tiny]{takes} (d);
+  \draw[->,AccentGreen,thick]  (d)  -- node[left,font=\tiny]{treats} (dis);
+  \draw[->,AccentPurple,thick] (d)  -- node[right,font=\tiny]{targets} (pr);
+
+  % legend
+  \node[font=\tiny,AccentCyan]   at (-0.3,3.0) {\rule{0.4cm}{1.5pt}~social};
+  \node[font=\tiny,AccentOrange] at ( 1.2,3.0) {\rule{0.4cm}{1.5pt}~medical};
+  \node[font=\tiny,AccentGreen]  at ( 2.7,3.0) {\rule{0.4cm}{1.5pt}~clinical};
+\end{tikzpicture}
+\end{center}
+\centering\textit{Knowledge graph with multiple relation types}
+\end{columns}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Graph-Level Embeddings: Pooling Strategies}
+
+\scriptsize
+
+
+\begin{columns}[T]
+\column{0.48\textwidth}
+
+\textbf{Goal:} $\{z_1,\ldots,z_{|V|}\} \longrightarrow z_G$
+
+\vspace{4pt}
+\begin{tcolorbox}[defbox,title={Set Pooling}]
+ Simple sum / mean:
+\begin{align*}
+  z_G = \frac{\sum_{v\in V} z_v}{f_n(|V|)}
+\end{align*}
+Effective for \textbf{small graphs} (e.g., molecules).
+\end{tcolorbox}
+
+\begin{tcolorbox}[keybox,title={Attention Pooling (Vinyals et al., 2015)}]
+ Iterative attention over nodes:
+\begin{align*}
+  q_t &= \text{LSTM}(o_{t-1}, q_{t-1}), \quad  a_{v,t} &\propto \exp(f_a(z_v, q_t))\\
+  o_t &= \textstyle\sum_v a_{v,t}\,z_v
+\end{align*}
+$z_G = o_1 \| o_2 \| \cdots \| o_T$
+\end{tcolorbox}
+
+\column{0.48\textwidth}
+
+\begin{tcolorbox}[thmbox,title={Graph Coarsening (DiffPool)}]
+ Hierarchically collapse nodes into clusters:
+\begin{align*}
+  S &= f_c(G, Z) \;\in\;\mathbb{R}^{|V|\times c}\\
+  A_{\text{new}} &= S^\top A S\\
+  X_{\text{new}} &= S^\top Z
+\end{align*}
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[scale=0.82]
+  \tikzset{nd/.style={circle,draw=#1,fill=#1!20,thick,minimum size=5mm}}
+  % Level 0
+  \node[font=\tiny\bfseries,gray] at (-1.6, 1.5) {Level 0};
+  \foreach \i/\x/\y in {1/-1.9/0.7,2/-1.3/0.7,3/-1.9/0.1,4/-1.3/0.1,5/-0.8/0.4}{
+    \node[nd=PrimaryBlue] (n\i) at (\x,\y) {};
+  }
+  \draw[gray] (n1)--(n2) (n3)--(n4) (n1)--(n3) (n2)--(n4) (n4)--(n5);
+  % Arrow
+  \draw[->,very thick,AccentOrange] (-0.4,0.4) -- (0.2,0.4);
+  % Level 1
+  \node[font=\tiny\bfseries,gray] at (1.4,1.5) {Level 1};
+  \node[nd=AccentCyan,minimum size=9mm] (c1) at (0.8,0.4) {};
+  \node[nd=AccentOrange,minimum size=9mm] (c2) at (1.8,0.4) {};
+  \draw[gray,thick] (c1)--(c2);
+  \draw[->,very thick,AccentOrange] (2.2,0.4) -- (2.8,0.4);
+  % Level 2
+  \node[nd=AccentGreen,minimum size=11mm] at (3.3,0.4) {};
+  \node[font=\tiny\bfseries,gray] at (3.3, 1.5) {Level 2};
+\end{tikzpicture}
+\end{center}
+\centering\textit{Hierarchical graph coarsening}
+\end{columns}
+\end{frame}
+
+%\begin{frame}{Defining Convolutions on Graphs}
+%
+%But first, what is \textbf{Convolution?}
+%
+%\vspace{10pt}
+%
+%We already saw in CNN.
+%
+%\vspace{10pt}
+%
+%From signals perspective, convolution is multiplication in freqency domain.
+%
+%\end{frame}
+
+\begin{frame}{Use Case}
 
 
 \begin{center}
