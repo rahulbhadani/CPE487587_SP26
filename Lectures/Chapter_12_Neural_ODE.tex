@@ -196,10 +196,181 @@ frame=none
 \section{Motivation}
 %------------------------------------------------
 
+\begin{frame}{Ordinary Differential Equations}
 
-\begin{frame}{Neural ODEs in the Context of Discrete Dynamical Systems}
+
+\scriptsize
+
 \begin{columns}
-\column{0.52\textwidth}
+\column{0.62\textwidth}
+\begin{tblockFrost}{Initial Value Problems}
+
+  \begin{align*}
+    \frac{dx(t)}{dt} = f(x(t), t, \theta); \quad x(t_0) \text{ is given}; \quad x(t_1) = \;?
+  \end{align*}
+
+  \begin{itemize}
+    \item $x$ is a variable we are interested in,
+    \item $t$ is (typically) time,
+    \item $f$ is a function of $x$ and $t$; it is the differential,
+    \item $\theta$ parameterizes $f$ (optionally).
+  \end{itemize}
+
+\end{tblockFrost}
+\begin{alertblock}{}
+  \begin{center}
+    \fbox{Many physical processes follow this template!}
+  \end{center}\end{alertblock}
+\column{0.34\textwidth}
+
+  \textbf{Solution:}
+  \begin{align*}
+    x(t_1) = x(t_0) + \int_{t_0}^{t_1} f(x(t), t, \theta)\, dt
+  \end{align*}
+ 
+  \begin{block}{Example}
+    \begin{align*}
+      \frac{dx}{dt} &= 2t;\quad x(0) = 2;\quad x(1) = \;?\\
+      \Rightarrow x(1) &= x(0) + \int_0^1 2t\, dt\\
+                       &= x(0) + \bigl(t^2\big|_{t=1} - t^2\big|_{t=0}\bigr)\\
+                       &= 2 + 1^2 - 0^2 = 3
+    \end{align*}
+  \end{block}
+
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}{Ordinary Differential Equations (ODEs)}
+
+\scriptsize
+
+  \begin{align*}
+    x(t_1) = x(t_0) + \boxed{\int_{t_0}^{t_1} f(x(t), t, \theta)\, dt}
+    \quad \longrightarrow \text{ What if this cannot be analytically integrated?}
+  \end{align*}
+ 
+  \begin{block}{Example}
+    \begin{align*}
+      \frac{dx}{dt} &= 2xt;\quad x(0) = 3\\
+      \Rightarrow \int \frac{1}{2x}\, dx &= \int t\, dt\\
+      \Rightarrow \tfrac{1}{2}\log x &= \tfrac{1}{2}t^2 + c_0\\
+      \Rightarrow x(t) &= ce^{t^2},\quad x(0) = 3 \Rightarrow c = 2\\
+      \therefore x(t) &= 2e^{t^2} \Rightarrow x(1) = 5.436
+    \end{align*}
+  \end{block}
+\end{frame}
+ 
+ 
+ \begin{frame}{Ordinary Differential Equations (ODEs)}
+
+
+  \begin{align*}
+    x(t_1) = x(t_0) + \int_{t_0}^{t_1} f(x(t), t, \theta)\, dt
+  \end{align*}
+ 
+  \begin{block}{Approximations to $\int_{t_0}^{t_1} f(x(t),t,\theta)\,dt$\;  i.e.\ \textbf{Numerical Integration}}
+    \begin{itemize}
+      \item Euler method
+      \item Runge-Kutta methods
+      \item \ldots
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Ordinary Differential Equations (ODEs)}
+  \textbf{Initial value problem:}
+  \begin{align*}
+    \frac{dx(t)}{dt} = f(x(t), t, \theta); \quad x(t_0) \text{ is given}; \quad x(t_1) = \;?
+  \end{align*}
+ 
+  \textbf{Solution:}
+  \begin{align*}
+    x(t_1) = x(t_0) + \int_{t_0}^{t_1} f(x(t), t, \theta)\, dt
+  \end{align*}
+ 
+  \begin{block}{\textbf{1st-order Runge-Kutta / Euler's method}}
+    \begin{align*}
+      t_{n+1} &= t_n + h \quad \longrightarrow \text{ Step size } h\\
+      x(t_{n+1}) &= x(t_n) + h\,f(x(t_n), t_n) \quad \longrightarrow \text{ Update using derivative } f
+    \end{align*}
+  \end{block}
+ 
+  \begin{center}
+    \textit{Step size matters!}
+  \end{center}
+\end{frame}
+ 
+ 
+% ------------------------------------------------------------
+\begin{frame}{Ordinary Differential Equations (ODEs) -- Euler Example}
+  \textbf{1st-order Runge-Kutta / Euler's method:}
+  \begin{align*}
+    t_{n+1} &= t_n + h\\
+    x(t_{n+1}) &= x(t_n) + h\,f(x(t_n), t_n)
+  \end{align*}
+ 
+  \begin{block}{Example: $\frac{dx}{dt} = f(x,t) = 2xt$; $x(0)=3$; $x(1)=?$\quad (True: $x(1) \approx 5.436$)}
+    \small
+    \begin{align*}
+      h &= 0.25\\
+      x(0.25) &= x(0) + 0.25 \cdot f(x(0),0) = 3 + 0.25\cdot(2\cdot3\cdot0) = 3\\
+      x(0.5)  &= x(0.25) + 0.25\cdot f(x(0.25),0.25) = 3 + 0.25\cdot(2\cdot3\cdot0.25) = 3.375\\
+      x(0.75) &= x(0.5) + 0.25\cdot f(x(0.5),0.5) = 3.375 + 0.25\cdot(2\cdot3.375\cdot0.5) = 4.21875\\
+      x(1)    &= x(0.75) + 0.25\cdot f(x(0.75),0.75)\\
+              &= 4.21875 + 0.25\cdot(2\cdot4.21875\cdot0.75) \approx 5.8008
+    \end{align*}
+  \end{block}
+\end{frame}
+ 
+%------------------------------------------------------------
+\begin{frame}{Ordinary Differential Equations (ODEs)}
+  \textbf{\Large $\bigstar$ 4th-order Runge-Kutta method:}
+  \begin{align*}
+    t_{n+1} &= t_n + h\\
+    s_1 &= f(x(t_n),\, t_n)\\
+    s_2 &= f\!\left(x(t_n)+\tfrac{h}{2}s_1,\; t_n+\tfrac{h}{2}\right)\\
+    s_3 &= f\!\left(x(t_n)+\tfrac{h}{2}s_2,\; t_n+\tfrac{h}{2}\right)\\
+    s_4 &= f(x(t_n)+h\,s_3,\; t_n+h)\\
+    x(t_{n+1}) &= x(t_n) + \frac{h}{6}(s_1 + 2s_2 + 2s_3 + s_4)
+  \end{align*}
+ 
+  \hfill $\dashrightarrow$ Default ODE solver used in MATLAB.
+\end{frame}
+ 
+%------------------------------------------------------------
+\begin{frame}{Ordinary Differential Equations (ODEs)}
+  \textbf{Solution as an ODE solver call:}
+  \begin{align*}
+    x(t_1) = \mathrm{ODESolve}\!\bigl(\underbrace{f(x(t),t,\theta)}_{\text{Differential}},\;
+                                       \underbrace{x(t_0)}_{\text{Initial value}},\;
+                                       \underbrace{t_0}_{\text{Initial time}},\;
+                                       \underbrace{t_1}_{\text{Final time}}\bigr)
+  \end{align*}
+ 
+  Any ODE solver of our choice!
+\end{frame}
+ 
+%------------------------------------------------------------
+\begin{frame}{Ordinary Differential Equations (ODEs)}
+  \textbf{Fundamental Theorem of ODEs}
+ 
+  Suppose $f$ is continuously differentiable. Then:
+  \begin{enumerate}
+    \item The solution curves for the differential equation completely fill the plane
+          (geometrically, $x(t)$ is a \emph{flow}!), and
+    \item Solution curves for different solutions do not intersect.
+  \end{enumerate}
+\end{frame}
+ 
+ 
+\begin{frame}{ODEs in the Context of Discrete Dynamical Systems}
+
+\scriptsize
+
+\begin{columns}
+\column{0.62\textwidth}
 \begin{tblockFrost}{Deep Networks as Discrete Dynamical Systems}
 \begin{itemize}
   \item Modern deep networks (ResNets, DenseNets) stack many layers
@@ -211,10 +382,10 @@ $$
   \item As layer count $\to \infty$, the discrete steps become a continuous flow
 \end{itemize}
 \end{tblockFrost}
-\begin{alertblock}{Key Insight}
+\begin{alertblock}{}
 What if we \emph{directly} model the continuous dynamics instead of discretizing them by hand?
 \end{alertblock}
-\column{0.44\textwidth}
+\column{0.34\textwidth}
 
 \input{figures/discrete_dynamical.tex}
 
@@ -231,11 +402,11 @@ What if we \emph{directly} model the continuous dynamics instead of discretizing
 \scriptsize
 
 \begin{columns}
-\column{0.50\textwidth}
+\column{0.60\textwidth}
 \begin{block}{ResNet Building Block}
-\[
+$$
   \hbf_{t+1} = \hbf_{t} + f(\hbf_{t},\,\theta_t), \quad t = 0, 1, \ldots, T-1
-\]
+$$
 \begin{itemize}
   \item $\hbf_t \in \Rbb^d$: hidden state at layer $t$
   \item $f$: neural network (residual function)
@@ -246,11 +417,11 @@ What if we \emph{directly} model the continuous dynamics instead of discretizing
 \vspace{4pt}
 \begin{tblockFrost}{Connection to Euler Method}
 Euler's method for $\frac{d\hbf}{dt} = f(\hbf,t)$ with step $\Delta t = 1$:
-\[
+$$
   \hbf(t + \Delta t) \approx \hbf(t) + \Delta t \cdot f\!\left(\hbf(t), t\right)
-\]
+$$
 \end{tblockFrost}
-\column{0.46\textwidth}
+\column{0.36\textwidth}
 \begin{tikzpicture}[scale=0.9, node distance=0.8cm and 1.2cm, every node/.style={font=\scriptsize}]
   \node[draw, fill=gray!10, rounded corners, minimum width=1.5cm, minimum height=0.5cm] (in) {Input $\hbf_t$};
   \node[draw, fill=blue!20, rounded corners, minimum width=1.5cm, minimum height=0.5cm, below=0.7cm of in] (w1) {Weight Layer};
@@ -277,26 +448,26 @@ Euler's method for $\frac{d\hbf}{dt} = f(\hbf,t)$ with step $\Delta t = 1$:
 
 \begin{tblockFrost}{}
 As number of layers $T \to \infty$ and step size $\Delta t \to 0$, the residual update
-\[
+$$
   \hbf_{t+1} = \hbf_t + \Delta t\, f(\hbf_t,\, t,\, \theta)
-\]
+$$
 converges to the \textbf{continuous ODE}:
-\[
+$$
   \boxed{\frac{d\hbf(t)}{dt} = f\!\left(\hbf(t),\, t,\, \theta\right)}
-\]
+$$
 \end{tblockFrost}
 \begin{columns}
 \column{0.48\textwidth}
 \begin{block}{Discrete: ResNet}
-\[
+$$
   \hbf_T = \hbf_0 + \sum_{t=0}^{T-1} f(\hbf_t, \theta_t)
-\]
+$$
 \end{block}
 \column{0.48\textwidth}
 \begin{block}{Continuous: Neural ODE}
-\[
+$$
   \hbf(T) = \hbf(0) + \int_0^T f\!\left(\hbf(t), t, \theta\right) dt
-\]
+$$
 \end{block}
 \end{columns}
 \vspace{6pt}
@@ -318,13 +489,13 @@ The parameters $\theta$ are \textbf{shared across all depths}, unlike ResNets wi
 \column{0.52\textwidth}
 \begin{tblockFrost}{Initial Value Problem (IVP)}
 Given dynamics $f$ and initial condition $\hbf(t_0) = \hbf_0$, find $\hbf(t)$:
-\[
+$$
   \frac{d\hbf}{dt} = f(\hbf(t), t), \quad \hbf(t_0) = \hbf_0
-\]
+$$
 \textbf{Solution} (via Picard–Lindelöf):
-\[
+$$
   \hbf(t) = \hbf_0 + \int_{t_0}^{t} f(\hbf(s), s)\, ds
-\]
+$$
 \end{tblockFrost}
 \begin{block}{Existence \& Uniqueness}
 If $f$ is \textbf{Lipschitz continuous} in $\hbf$, a unique solution exists on $[t_0, T]$.
@@ -399,14 +570,14 @@ Neural ODE dynamics can vary rapidly in some regions; adaptive solvers allocate 
 \scriptsize
 \begin{tblockFrost}{Definition}
 A \textbf{Neural ODE} parametrizes the derivative of a hidden state with a neural network $f_\theta$:
-\[
+$$
   \frac{d\hbf(t)}{dt} = f_\theta\!\left(\hbf(t),\, t\right), \qquad \hbf(t_0) = \hbf_0
-\]
+$$
 The output at time $t_1$ is computed by \textbf{numerically integrating} the ODE:
-\[
+$$
   \hbf(t_1) = \hbf(t_0) + \int_{t_0}^{t_1} f_\theta\!\left(\hbf(t), t\right) dt
   \;=\; \texttt{ODESolve}(f_\theta,\, \hbf_0,\, t_0,\, t_1)
-\]
+$$
 \end{tblockFrost}
 \vspace{4pt}
 \begin{columns}
@@ -496,9 +667,9 @@ $$
 \column{0.44\textwidth}
 \begin{tblockWing}{Why the ODE block is invertible?}
 Given $\hbf(t_1)$, integrate the ODE \textbf{backwards} in time from $t_1$ to $t_0$:
-\[
+$$
   \hbf(t_0) = \hbf(t_1) + \int_{t_1}^{t_0} f_\theta(\hbf(t), t)\, dt
-\]
+$$
 This gives exact \textbf{free invertibility}, an interesting property for normalizing flows!
 \end{tblockWing}
 \end{columns}
@@ -522,9 +693,9 @@ Define the \textbf{adjoint} $\abf(t) = \frac{\partial \mathcal{L}}{\partial \hbf
   \item $\abf(t_1) = \frac{\partial \mathcal{L}}{\partial \hbf(t_1)}$ (from loss at output)
   \item $\abf(t)$ evolves \textbf{backwards} via its own ODE:
 \end{itemize}
-\[
+$$
   \frac{d\abf(t)}{dt} = -\abf(t)^\T \frac{\partial f_\theta(\hbf(t), t, \theta)}{\partial \hbf(t)}
-\]
+$$
 \end{block}
 \vspace{4pt}
 \begin{alertblock}{Memory Advantage}
@@ -542,18 +713,18 @@ The adjoint ODE is solved \textbf{backwards in time}, recomputing $\hbf(t)$ on t
 
 \begin{tblockFrost}{Augmented ODE (Backward in Time)}
 Solve the following augmented system from $t_1$ to $t_0$:
-\[
+$$
   \frac{d}{dt}\begin{bmatrix}\hbf(t)\\ \abf(t)\\ \frac{d\mathcal{L}}{d\theta}\end{bmatrix}
   = \begin{bmatrix}
       f_\theta(\hbf, t)\\
       -\abf^\T \frac{\partial f_\theta}{\partial \hbf}\\
       -\abf^\T \frac{\partial f_\theta}{\partial \theta}
     \end{bmatrix}
-\]
+$$
 with initial conditions at $t_1$:
-\[
+$$
   \hbf(t_1),\quad \abf(t_1) = \frac{\partial \mathcal{L}}{\partial \hbf(t_1)}, \quad \frac{d\mathcal{L}}{d\theta}\bigg|_{t_1} = \mathbf{0}
-\]
+$$
 \end{tblockFrost}
 
 \begin{block}{After integrating to $t_0$:}
@@ -615,9 +786,9 @@ The backward augmented ODE is solved with the \emph{same} ODE solver as the forw
 \column{0.50\textwidth}
 \begin{tblockFrost}{Change of Variables}
 A normalizing flow maps a simple base distribution $p_z(\zbf)$ (e.g., Gaussian) to a complex target $p_x(\xbf)$ via an invertible map $g: \zbf \mapsto \xbf$:
-\[
+$$
   \log p_x(\xbf) = \log p_z(\zbf) - \log \left|\det \frac{\partial g}{\partial \zbf}\right|
-\]
+$$
 \end{tblockFrost}
 \vspace{4pt}
 \begin{tblockWing}{Discrete NF Challenges}
@@ -661,18 +832,18 @@ A normalizing flow maps a simple base distribution $p_z(\zbf)$ (e.g., Gaussian) 
 
 \begin{tblockFrost}{Instantaneous Change of Variables}
 For a continuous transformation $\zbf(t)$ governed by an ODE, the log-density evolves as:
-\[
+$$
   \frac{d \log p(\zbf(t))}{dt} = -\operatorname{tr}\!\left(\frac{\partial f_\theta}{\partial \zbf(t)}\right)
-\]
+$$
 This is the \textbf{instantaneous change of variables} formula (Liouville's theorem).
 \end{tblockFrost}
 \vspace{4pt}
 \begin{columns}
 \column{0.48\textwidth}
 \begin{block}{CNF Log-Likelihood}
-\[
+$$
   \log p(\xbf) = \log p(\zbf(t_0)) - \int_{t_0}^{t_1} \operatorname{tr}\!\left(\frac{\partial f_\theta}{\partial \zbf}\right) dt
-\]
+$$
 \begin{itemize}
   \item $p(\zbf(t_0))$: base density (Gaussian)
   \item Trace computable in $\mathcal{O}(d)$ via Hutchinson's estimator
@@ -700,9 +871,9 @@ Computing $\operatorname{tr}(J_f)$ where $J_f = \frac{\partial f_\theta}{\partia
 \vspace{6pt}
 \begin{tblockFrost}{Hutchinson Estimator}
 For any random vector $\varepsilon \in \Rbb^d$ with $\Ebb[\varepsilon] = 0$, $\Ebb[\varepsilon \varepsilon^\T] = I$:
-\[
+$$
   \operatorname{tr}(J_f) = \Ebb_{\varepsilon}\!\left[\varepsilon^\T J_f\, \varepsilon\right]
-\]
+$$
 \begin{itemize}
   \item $\varepsilon^\T J_f$ is a \textbf{vector-Jacobian product}: computable via one backward pass through $f_\theta$, costing $\mathcal{O}(d)$
   \item Use Rademacher noise: $\varepsilon_i \in \{-1, +1\}$ with equal probability
@@ -802,15 +973,15 @@ Handles \textbf{arbitrarily irregular} time gaps between observations naturally.
 
 \begin{tblockFrost}{Variational Formulation}
 Model observations as:
-\[
+$$
   \zbf(t_0) \sim p(\zbf_0), \quad
   \zbf(t) = \zbf(t_0) + \int_{t_0}^{t} f_\theta(\zbf(s))\, ds, \quad
   \xbf(t_k) \sim p(\xbf \mid \zbf(t_k))
-\]
+$$
 Train with \textbf{ELBO} (Evidence Lower Bound):
-\[
+$$
   \mathcal{L} = \Ebb_{q(\zbf_0 | \{\xbf(t_k)\})}\!\left[\sum_k \log p(\xbf(t_k) \mid \zbf(t_k))\right] - \text{KL}\!\left[q(\zbf_0 \mid \cdot) \;\|\; p(\zbf_0)\right]
-\]
+$$
 \end{tblockFrost}
 \vspace{4pt}
 \begin{columns}
@@ -1063,9 +1234,9 @@ Recall: an ODE flow $\phi: \Rbb^d \to \Rbb^d$ is a \textbf{homeomorphism} — ca
 \column{0.52\textwidth}
 \begin{block}{Augmented Neural ODE (ANODE)}
 Augment the state with $p$ additional dimensions initialized to zero:
-\[
+$$
   \tilde{\hbf}(t_0) = \begin{bmatrix} \hbf(t_0) \\ \mathbf{0}_p \end{bmatrix} \in \Rbb^{d+p}
-\]
+$$
 Solve the ODE in the augmented space $\Rbb^{d+p}$, then read off the first $d$ dimensions.
 \begin{itemize}
   \item Extra dimensions provide ``lifting'' room to route around topological barriers
@@ -1098,9 +1269,9 @@ Solve the ODE in the augmented space $\Rbb^{d+p}$, then read off the first $d$ d
 \begin{columns}
 \column{0.48\textwidth}
 \begin{tblockFrost}{Neural Controlled Differential Equations (CDEs)}
-\[
+$$
   \zbf(T) = \zbf(t_0) + \int_{t_0}^T f_\theta(\zbf(t))\, d\Xbf(t)
-\]
+$$
 \begin{itemize}
   \item Generalizes Neural ODEs with a \textbf{control signal} $\Xbf(t)$ (the data path)
   \item Rigorously handles \textbf{online} time-series processing
@@ -1110,9 +1281,9 @@ Solve the ODE in the augmented space $\Rbb^{d+p}$, then read off the first $d$ d
 \end{tblockFrost}
 \column{0.48\textwidth}
 \begin{tblockFrost}{Neural Stochastic DEs (SDEs)}
-\[
+$$
   d\zbf(t) = f_\theta(\zbf(t),t)\,dt + g_\theta(\zbf(t),t)\,d\Wbf(t)
-\]
+$$
 \begin{itemize}
   \item $\Wbf(t)$: Wiener process (Brownian motion)
   \item $g_\theta$: diffusion / noise network
@@ -1130,9 +1301,9 @@ Solve the ODE in the augmented space $\Rbb^{d+p}$, then read off the first $d$ d
 
 \begin{tblockFrost}{Probability Flow ODE}
 Score-based diffusion models define a forward SDE that gradually adds noise to data. There exists an equivalent \textbf{deterministic ODE} (probability flow ODE) with the same marginal densities:
-\[
+$$
   d\xbf = \left[f(\xbf, t) - \frac{1}{2}g(t)^2 \nabla_\xbf \log p_t(\xbf)\right] dt
-\]
+$$
 \begin{itemize}
   \item $\nabla_\xbf \log p_t(\xbf)$: \textbf{score function}, learned by a neural network
   \item This is a Neural ODE with a score-network as the dynamics!
