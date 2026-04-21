@@ -376,7 +376,7 @@ frame=none
   \item Modern deep networks (ResNets, DenseNets) stack many layers
   \item Each layer transforms a hidden state:
 $$
-    \hbf_{t+1} = \hbf_t + f(\hbf_t,\,\theta_t)
+    \xbf_{t+1} = \xbf_t + f(\xbf_t,\,\theta_t)
 $$
   \item This is \textbf{Euler's method} applied to an ODE!
   \item As layer count $\to \infty$, the discrete steps become a continuous flow
@@ -405,10 +405,10 @@ What if we \emph{directly} model the continuous dynamics instead of discretizing
 \column{0.60\textwidth}
 \begin{block}{ResNet Building Block}
 $$
-  \hbf_{t+1} = \hbf_{t} + f(\hbf_{t},\,\theta_t), \quad t = 0, 1, \ldots, T-1
+  \xbf_{t+1} = \xbf_{t} + f(\xbf_{t},\,\theta_t), \quad t = 0, 1, \ldots, T-1
 $$
 \begin{itemize}
-  \item $\hbf_t \in \Rbb^d$: hidden state at layer $t$
+  \item $\xbf_t \in \Rbb^d$: hidden state at layer $t$
   \item $f$: neural network (residual function)
   \item Skip connection ensures gradient flow
   \item Enables very deep networks (100+ layers)
@@ -416,9 +416,9 @@ $$
 \end{block}
 \vspace{4pt}
 \begin{tblockFrost}{Connection to Euler Method}
-Euler's method for $\frac{d\hbf}{dt} = f(\hbf,t)$ with step $\Delta t = 1$:
+Euler's method for $\frac{d\xbf}{dt} = f(\xbf,t)$ with step $\Delta t = 1$:
 $$
-  \hbf(t + \Delta t) \approx \hbf(t) + \Delta t \cdot f\!\left(\hbf(t), t\right)
+  \xbf(t + \Delta t) \approx \xbf(t) + \Delta t \cdot f\!\left(\xbf(t), t\right)
 $$
 \end{tblockFrost}
 \column{0.36\textwidth}
@@ -428,7 +428,7 @@ $$
   \node[draw, fill=blue!20, rounded corners, minimum width=1.5cm, minimum height=0.5cm, below=0.7cm of w1] (relu) {ReLU};
   \node[draw, fill=blue!20, rounded corners, minimum width=1.5cm, minimum height=0.5cm, below=0.7cm of relu] (w2) {Weight Layer};
   \node[draw, fill=green!20, rounded corners, minimum width=1.5cm, minimum height=0.5cm, below=0.8cm of w2] (add) {$\oplus$ (Add)};
-  \node[draw, fill=gray!10, rounded corners, minimum width=1.5cm, minimum height=0.5cm, below=0.7cm of add] (out) {Output $\hbf_{t+1}$};
+  \node[draw, fill=gray!10, rounded corners, minimum width=1.5cm, minimum height=0.5cm, below=0.7cm of add] (out) {Output $\xbf_{t+1}$};
   \draw[->, thick] (in) -- (w1);
   \draw[->, thick] (w1) -- (relu);
   \draw[->, thick] (relu) -- (w2);
@@ -436,7 +436,7 @@ $$
   \draw[->, thick] (add) -- (out);
   % Skip connection
   \draw[->, thick, DarkRed] (in.east) -- ++(1.2,0) |- (add.east) node[pos=0.25, right, DarkRed] {skip};
-  \node[right=2.0cm of relu, text=DarkRed, font=\footnotesize] {$f(\hbf_t, \theta_t)$};
+  \node[right=2.0cm of relu, text=DarkRed, font=\footnotesize] {$f(\xbf_t, \theta_t)$};
 \end{tikzpicture}
 \end{columns}
 \end{frame}
@@ -449,24 +449,24 @@ $$
 \begin{tblockFrost}{}
 As number of layers $T \to \infty$ and step size $\Delta t \to 0$, the residual update
 $$
-  \hbf_{t+1} = \hbf_t + \Delta t\, f(\hbf_t,\, t,\, \theta)
+  \xbf_{t+1} = \xbf_t + \Delta t\, f(\xbf_t,\, t,\, \theta)
 $$
 converges to the \textbf{continuous ODE}:
 $$
-  \boxed{\frac{d\hbf(t)}{dt} = f\!\left(\hbf(t),\, t,\, \theta\right)}
+  \boxed{\frac{d\xbf(t)}{dt} = f\!\left(\xbf(t),\, t,\, \theta\right)}
 $$
 \end{tblockFrost}
 \begin{columns}
 \column{0.48\textwidth}
 \begin{block}{Discrete: ResNet}
 $$
-  \hbf_T = \hbf_0 + \sum_{t=0}^{T-1} f(\hbf_t, \theta_t)
+  \xbf_T = \xbf_0 + \sum_{t=0}^{T-1} f(\xbf_t, \theta_t)
 $$
 \end{block}
 \column{0.48\textwidth}
 \begin{block}{Continuous: Neural ODE}
 $$
-  \hbf(T) = \hbf(0) + \int_0^T f\!\left(\hbf(t), t, \theta\right) dt
+  \xbf(T) = \xbf(0) + \int_0^T f\!\left(\xbf(t), t, \theta\right) dt
 $$
 \end{block}
 \end{columns}
@@ -488,13 +488,13 @@ The parameters $\theta$ are \textbf{shared across all depths}, unlike ResNets wi
 \begin{columns}
 \column{0.52\textwidth}
 \begin{tblockFrost}{Initial Value Problem (IVP)}
-Given dynamics $f$ and initial condition $\hbf(t_0) = \hbf_0$, find $\hbf(t)$:
+Given dynamics $f$ and initial condition $\xbf(t_0) = \xbf_0$, find $\xbf(t)$:
 $$
-  \frac{d\hbf}{dt} = f(\hbf(t), t), \quad \hbf(t_0) = \hbf_0
+  \frac{d\xbf}{dt} = f(\xbf(t), t), \quad \xbf(t_0) = \xbf_0
 $$
 \textbf{Solution} (via Picard–Lindelöf):
 $$
-  \hbf(t) = \hbf_0 + \int_{t_0}^{t} f(\hbf(s), s)\, ds
+  \xbf(t) = \xbf_0 + \int_{t_0}^{t} f(\xbf(s), s)\, ds
 $$
 \end{tblockFrost}
 \begin{block}{Existence \& Uniqueness}
@@ -504,7 +504,7 @@ If $f$ is \textbf{Lipschitz continuous} in $\hbf$, a unique solution exists on $
 \begin{tikzpicture}
 \begin{axis}[
   width=6cm, height=5cm,
-  xlabel={$t$}, ylabel={$h(t)$},
+  xlabel={$t$}, ylabel={$x(t)$},
   title={\small ODE Solution},
   grid=major, grid style={dashed, gray!40},
   title style={font=\small},
@@ -514,7 +514,7 @@ If $f$ is \textbf{Lipschitz continuous} in $\hbf$, a unique solution exists on $
 ]
 \addplot[thick, blue, domain=0:3, samples=60] {exp(-x)*cos(deg(3*x))};
 \addplot[only marks, mark=*, mark size=2pt, red] coordinates {(0,1)};
-\node[font=\tiny, red] at (axis cs:0.25, 0.9) {$\hbf_0$};
+\node[font=\tiny, red] at (axis cs:0.25, 0.9) {$\xbf_0$};
 \end{axis}
 \end{tikzpicture}
 \end{columns}
@@ -528,7 +528,7 @@ If $f$ is \textbf{Lipschitz continuous} in $\hbf$, a unique solution exists on $
 \begin{tblockWing}{Euler Method (1st Order)}
 \vspace{-20pt}
 \begin{align*}
-  \hbf_{t+h} \approx \hbf_t + h\, f(\hbf_t, t)
+  \xbf_{t+h} \approx \xbf_t + h\, f(\xbf_t, t)
 \end{align*}
 
 Simple but low accuracy; $\mathcal{O}(h)$ error per step.
@@ -537,16 +537,16 @@ Simple but low accuracy; $\mathcal{O}(h)$ error per step.
 \begin{tblockWing}{Runge-Kutta 4 (RK4)}
 \vspace{-20pt}
 \begin{align*}
-  k_1 &= f(\hbf_t,\, t)\\
-  k_2 &= f\!\left(\hbf_t + \tfrac{h}{2}k_1,\, t+\tfrac{h}{2}\right)\\
-  k_3 &= f\!\left(\hbf_t + \tfrac{h}{2}k_2,\, t+\tfrac{h}{2}\right)\\
-  k_4 &= f(\hbf_t + h\, k_3,\, t+h)\\
-  \hbf_{t+h} &= \hbf_t + \tfrac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4)
+  k_1 &= f(\xbf_t,\, t)\\
+  k_2 &= f\!\left(\xbf_t + \tfrac{h}{2}k_1,\, t+\tfrac{h}{2}\right)\\
+  k_3 &= f\!\left(\xbf_t + \tfrac{h}{2}k_2,\, t+\tfrac{h}{2}\right)\\
+  k_4 &= f(\xbf_t + h\, k_3,\, t+h)\\
+  \xbf_{t+h} &= \xbf_t + \tfrac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4)
 \end{align*}
 $\mathcal{O}(h^4)$ error per step.
 \end{tblockWing}
 \column{0.46\textwidth}
-\begin{golden}{Adaptive Solvers (Dopri5)}
+\begin{tblockWing}{Adaptive Solvers (Dopri5)}
 \begin{itemize}
   \item Embed two RK schemes of different orders
   \item Estimate local truncation error
@@ -554,7 +554,7 @@ $\mathcal{O}(h^4)$ error per step.
   \item \textbf{Decrease} step size when error is large
   \item Control solution to a user-specified tolerance: \texttt{rtol}, \texttt{atol}
 \end{itemize}
-\end{golden}
+\end{tblockWing}
 \vspace{4pt}
 \begin{alertblock}{}
 Neural ODE dynamics can vary rapidly in some regions; adaptive solvers allocate computation where needed, yielding efficiency and accuracy.
@@ -566,17 +566,17 @@ Neural ODE dynamics can vary rapidly in some regions; adaptive solvers allocate 
 \section{Neural ODEs}
 %==============================================================
  
-\begin{frame}{Neural ODEs: The Core Idea}
+\begin{frame}{Introducing Neural ODEs}
 \scriptsize
 \begin{tblockFrost}{Definition}
 A \textbf{Neural ODE} parametrizes the derivative of a hidden state with a neural network $f_\theta$:
 $$
-  \frac{d\hbf(t)}{dt} = f_\theta\!\left(\hbf(t),\, t\right), \qquad \hbf(t_0) = \hbf_0
+  \frac{d\xbf(t)}{dt} = f_\theta\!\left(\xbf(t),\, t\right), \qquad \xbf(t_0) = \xbf_0
 $$
 The output at time $t_1$ is computed by \textbf{numerically integrating} the ODE:
 $$
-  \hbf(t_1) = \hbf(t_0) + \int_{t_0}^{t_1} f_\theta\!\left(\hbf(t), t\right) dt
-  \;=\; \texttt{ODESolve}(f_\theta,\, \hbf_0,\, t_0,\, t_1)
+  \xbf(t_1) = \xbf(t_0) + \int_{t_0}^{t_1} f_\theta\!\left(\xbf(t), t\right) dt
+  \;=\; \texttt{ODESolve}(f_\theta,\, \xbf_0,\, t_0,\, t_1)
 $$
 \end{tblockFrost}
 \vspace{4pt}
@@ -584,9 +584,9 @@ $$
 \column{0.48\textwidth}
 \begin{block}{Forward Pass}
 \begin{enumerate}
-  \item Set initial state $\hbf(t_0)$ (e.g., encoder output)
+  \item Set initial state $\xbf(t_0)$ (e.g., encoder output)
   \item Call ODE solver with $f_\theta$
-  \item Obtain $\hbf(t_1)$ as the model output
+  \item Obtain $\xbf(t_1)$ as the model output
   \item Apply output layer / loss
 \end{enumerate}
 \end{block}
@@ -612,14 +612,14 @@ $$
   % Encoder
   \node[draw, fill=blue!20, rounded corners, minimum width=1.2cm, minimum height=0.7cm, right=1.5cm of input] (enc) {Encoder};
   % h0
-  \node[draw, fill=green!15, rounded corners, minimum width=1.0cm, minimum height=0.7cm, right=1.5cm of enc] (h0) {$\hbf(t_0)$};
+  \node[draw, fill=green!15, rounded corners, minimum width=1.0cm, minimum height=0.7cm, right=1.5cm of enc] (h0) {$\xbf(t_0)$};
   % ODE block
   \node[draw, fill=red!10, rounded corners, minimum width=3cm, minimum height=1.4cm, right=1.5cm of h0] (ode) {};
   \node[above] at (ode.north) {\textbf{ODE Block}};
-  \node[font=\scriptsize] at (ode.center) {$\frac{d\hbf}{dt}=f_\theta(\hbf,t)$};
+  \node[font=\scriptsize] at (ode.center) {$\frac{d\xbf}{dt}=f_\theta(\xbf,t)$};
   \node[font=\scriptsize, below=0pt] at (ode.south) {\texttt{ODESolve}};
   % h1
-  \node[draw, fill=green!15, rounded corners, minimum width=1.4cm, minimum height=0.7cm, right=1.5cm of ode] (h1) {$\hbf(t_1)$};
+  \node[draw, fill=green!15, rounded corners, minimum width=1.4cm, minimum height=0.7cm, right=1.5cm of ode] (h1) {$\xbf(t_1)$};
   % Output
   \node[draw, fill=orange!20, rounded corners, minimum width=1.8cm, minimum height=0.7cm, right=1.5cm of h1] (out) {Output $\ybf$};
   % Arrows
@@ -657,18 +657,18 @@ $f_\theta$ is \textbf{shared} across all integration steps. Total parameters det
   \item \textbf{Downsampling conv layers}: extract features from input image $\xbf$
   \item \textbf{ODE block}: continuous feature evolution
 $$
-    \frac{d\hbf}{dt} = f_\theta(\hbf(t), t)
+    \frac{d\xbf}{dt} = f_\theta(\xbf(t), t)
 $$
-  \item \textbf{Fully connected layer}: map $\hbf(t_1) \to$ class logits
+  \item \textbf{Fully connected layer}: map $\xbf(t_1) \to$ class logits
 \end{enumerate}
 \end{tblockWing}
 \vspace{4pt}
 
 \column{0.44\textwidth}
-\begin{tblockWing}{Why the ODE block is invertible?}
-Given $\hbf(t_1)$, integrate the ODE \textbf{backwards} in time from $t_1$ to $t_0$:
+\begin{tblockWing}{ODE block is invertible.}
+Given $\xbf(t_1)$, integrate the ODE \textbf{backwards} in time from $t_1$ to $t_0$:
 $$
-  \hbf(t_0) = \hbf(t_1) + \int_{t_1}^{t_0} f_\theta(\hbf(t), t)\, dt
+  \xbf(t_0) = \xbf(t_1) + \int_{t_1}^{t_0} f_\theta(\xbf(t), t)\, dt
 $$
 This gives exact \textbf{free invertibility}, an interesting property for normalizing flows!
 \end{tblockWing}
@@ -679,6 +679,25 @@ This gives exact \textbf{free invertibility}, an interesting property for normal
 %==============================================================
 \section{Adjoint Sensitivity Method}
 %==============================================================
+
+\begin{frame}{Difficult of Bakcpropagaion in Neural ODE}
+
+\begin{center}
+
+
+
+Backpropagation (or reverse mode differentiation as you can call it) is difficult for continuous-depth networks.
+
+
+We treat ODE as a blackbox and compute gradients using \textbf{adjoint sensitivity} method that dates back to 1962. 
+
+Adjoint senstivity method computes gradients by solving  second, augmented ODE backwards in time, and is applicable to all ODE solvers.
+
+
+
+\end{center}
+
+\end{frame}
  
 \begin{frame}{The Adjoint Sensitivity Method: Overview}
 \scriptsize
@@ -688,21 +707,56 @@ To get trained model with parameters $\theta$ we need $\frac{d\mathcal{L}}{d\the
 \end{tblockFrost}
 \vspace{4pt}
 \begin{block}{Adjoint State}
-Define the \textbf{adjoint} $\abf(t) = \frac{\partial \mathcal{L}}{\partial \hbf(t)}$.
+Define the \textbf{adjoint} $\abf(t) = \frac{\partial \mathcal{L}}{\partial \xbf(t)}$.
 \begin{itemize}
-  \item $\abf(t_1) = \frac{\partial \mathcal{L}}{\partial \hbf(t_1)}$ (from loss at output)
+  \item $\abf(t_1) = \frac{\partial \mathcal{L}}{\partial \xbf(t_1)}$ (from loss at output)
   \item $\abf(t)$ evolves \textbf{backwards} via its own ODE:
 \end{itemize}
 $$
-  \frac{d\abf(t)}{dt} = -\abf(t)^\T \frac{\partial f_\theta(\hbf(t), t, \theta)}{\partial \hbf(t)}
+  \frac{d\abf(t)}{dt} = -\abf(t)^\T \frac{\partial f_\theta(\xbf(t), t, \theta)}{\partial \xbf(t)}
 $$
 \end{block}
 \vspace{4pt}
-\begin{alertblock}{Memory Advantage}
-The adjoint ODE is solved \textbf{backwards in time}, recomputing $\hbf(t)$ on the fly. No need to store forward trajectory. Memory cost: $\mathcal{O}(1)$ (constant w.r.t.\ solver steps)!
+\begin{alertblock}{}
+The adjoint ODE is solved \textbf{backwards in time}, recomputing $\xbf(t)$ on the fly. No need to store forward trajectory. Memory cost: $\mathcal{O}(1)$ (constant w.r.t.\ solver steps)!
 \end{alertblock}
 \end{frame}
 
+
+
+\begin{frame}{Adjoint Method: Gradient Computation}
+\scriptsize
+
+
+\begin{itemize}
+\item We can compute $\pdv{\Lcal}{\xbf(t_0)}$ by another call to ODE solver.
+
+\item This solver must run backwards starting from the initial value of $\pdv{\Lcal}{\xbf(t_1)}$.
+
+\item This may require knowing $\xbf(t)$  along its entire trajectory.
+
+\item But we can simply recompute $\xbf(t)$ backwards in time together with the adjoint starting from its final value $\xbf(t_1)$.
+\end{itemize}
+
+Computing the gradient wrt $\theta$ requires evaluating a third integral which depends on both $\zbf(t)$ and $\abf(t)$:
+
+\begin{align*}
+\frac{d\Lcal}{d\theta} = -\int_{t_1}^{t_0} \abf^\top \frac{\partial f_\theta(\xbf(t), t, \theta)}{\partial \xbf(t)} dt
+\end{align*}
+
+\end{frame}
+
+
+\begin{frame}{}
+
+\begin{center}
+\includegraphics[width=0.4\linewidth]{figures/adjoint_sensitivity.png}
+
+\url{https://arxiv.org/pdf/1806.07366}
+
+\end{center}
+
+\end{frame}
 %--------------------------------------------------------------
 \begin{frame}{Adjoint Method: Gradient Computation}
 \scriptsize
@@ -714,22 +768,22 @@ The adjoint ODE is solved \textbf{backwards in time}, recomputing $\hbf(t)$ on t
 \begin{tblockFrost}{Augmented ODE (Backward in Time)}
 Solve the following augmented system from $t_1$ to $t_0$:
 $$
-  \frac{d}{dt}\begin{bmatrix}\hbf(t)\\ \abf(t)\\ \frac{d\mathcal{L}}{d\theta}\end{bmatrix}
+  \frac{d}{dt}\begin{bmatrix}\xbf(t)\\ \abf(t)\\ \frac{d\mathcal{L}}{d\theta}\end{bmatrix}
   = \begin{bmatrix}
-      f_\theta(\hbf, t)\\
-      -\abf^\T \frac{\partial f_\theta}{\partial \hbf}\\
+      f_\theta(\xbf, t)\\
+      -\abf^\T \frac{\partial f_\theta}{\partial \xbf}\\
       -\abf^\T \frac{\partial f_\theta}{\partial \theta}
     \end{bmatrix}
 $$
 with initial conditions at $t_1$:
 $$
-  \hbf(t_1),\quad \abf(t_1) = \frac{\partial \mathcal{L}}{\partial \hbf(t_1)}, \quad \frac{d\mathcal{L}}{d\theta}\bigg|_{t_1} = \mathbf{0}
+  \xbf(t_1),\quad \abf(t_1) = \frac{\partial \mathcal{L}}{\partial \xbf(t_1)}, \quad \frac{d\mathcal{L}}{d\theta}\bigg|_{t_1} = \mathbf{0}
 $$
 \end{tblockFrost}
 
 \begin{block}{After integrating to $t_0$:}
 \begin{itemize}
-  \item $\abf(t_0) = \frac{\partial \mathcal{L}}{\partial \hbf(t_0)}$ \quad (gradient w.r.t.\ initial state)
+  \item $\abf(t_0) = \frac{\partial \mathcal{L}}{\partial \xbf(t_0)}$ \quad (gradient w.r.t.\ initial state)
   \item $\frac{d\mathcal{L}}{d\theta}$ accumulated across all time \quad (gradient w.r.t.\ parameters)
 \end{itemize}
 \end{block}
@@ -755,18 +809,18 @@ Jacobian-vecs & via autograd\\
 \begin{algorithm}[H]
 \caption{Neural ODE Training with Adjoint Sensitivity}
 \SetAlgoLined
-\KwIn{Parameters $\theta$, initial state $\hbf_0$, loss $\mathcal{L}$, times $t_0 < t_1$}
-\KwOut{Gradients $\frac{d\mathcal{L}}{d\theta}$, $\frac{d\mathcal{L}}{d\hbf_0}$}
+\KwIn{Parameters $\theta$, initial state $\xbf_0$, loss $\mathcal{L}$, times $t_0 < t_1$}
+\KwOut{Gradients $\frac{d\mathcal{L}}{d\theta}$, $\frac{d\mathcal{L}}{d\xbf_0}$}
 \BlankLine
 \textbf{Forward pass:}\\
-$\hbf(t_1) \leftarrow \texttt{ODESolve}(f_\theta, \hbf_0, t_0, t_1)$\;
-Compute $\mathcal{L}(\hbf(t_1))$\;
+$\xbf(t_1) \leftarrow \texttt{ODESolve}(f_\theta, \xbf_0, t_0, t_1)$\;
+Compute $\mathcal{L}(\xbf(t_1))$\;
 \BlankLine
 \textbf{Backward pass (Adjoint):}\\
-Initialize $\abf(t_1) = \frac{\partial \mathcal{L}}{\partial \hbf(t_1)}$,\; $\gbf_\theta = \mathbf{0}$\;
+Initialize $\abf(t_1) = \frac{\partial \mathcal{L}}{\partial \xbf(t_1)}$,\; $\gbf_\theta = \mathbf{0}$\;
 Solve augmented ODE from $t_1$ to $t_0$:
-$[\hbf(t_0),\, \abf(t_0),\, \gbf_\theta] \leftarrow \texttt{ODESolve}(\text{aug}, [\hbf_1, \abf_1, \mathbf{0}], t_1, t_0)$\;
-\Return $\frac{d\mathcal{L}}{d\hbf_0} = \abf(t_0)$,\;\; $\frac{d\mathcal{L}}{d\theta} = \gbf_\theta$\;
+$[\hbf(t_0),\, \abf(t_0),\, \gbf_\theta] \leftarrow \texttt{ODESolve}(\text{aug}, [\xbf_1, \abf_1, \mathbf{0}], t_1, t_0)$\;
+\Return $\frac{d\mathcal{L}}{d\xbf_0} = \abf(t_0)$,\;\; $\frac{d\mathcal{L}}{d\theta} = \gbf_\theta$\;
 \end{algorithm}
 \vspace{4pt}
 \begin{alertblock}{}
@@ -786,8 +840,9 @@ The backward augmented ODE is solved with the \emph{same} ODE solver as the forw
 \column{0.50\textwidth}
 \begin{tblockFrost}{Change of Variables}
 A normalizing flow maps a simple base distribution $p_z(\zbf)$ (e.g., Gaussian) to a complex target $p_x(\xbf)$ via an invertible map $g: \zbf \mapsto \xbf$:
+
 $$
-  \log p_x(\xbf) = \log p_z(\zbf) - \log \left|\det \frac{\partial g}{\partial \zbf}\right|
+\xbf = f(\zbf) \Rightarrow  \log p_x(\xbf) = \log p_z(\zbf) - \log \left|\det \frac{\partial g}{\partial \zbf}\right|
 $$
 \end{tblockFrost}
 \vspace{4pt}
@@ -833,7 +888,7 @@ $$
 \begin{tblockFrost}{Instantaneous Change of Variables}
 For a continuous transformation $\zbf(t)$ governed by an ODE, the log-density evolves as:
 $$
-  \frac{d \log p(\zbf(t))}{dt} = -\operatorname{tr}\!\left(\frac{\partial f_\theta}{\partial \zbf(t)}\right)
+  \frac{\partial \log p(\zbf(t))}{\partial t} = -\operatorname{tr}\!\left(\frac{\partial f_\theta}{\partial \zbf(t)}\right)
 $$
 This is the \textbf{instantaneous change of variables} formula (Liouville's theorem).
 \end{tblockFrost}
@@ -950,7 +1005,7 @@ $$
 $$
 \end{itemize}
 \end{tblockFrost}
-\begin{alertblock}{Advantage}
+\begin{alertblock}{}
 Handles \textbf{arbitrarily irregular} time gaps between observations naturally.
 \end{alertblock}
 \column{0.44\textwidth}
@@ -1235,7 +1290,7 @@ Recall: an ODE flow $\phi: \Rbb^d \to \Rbb^d$ is a \textbf{homeomorphism} — ca
 \begin{block}{Augmented Neural ODE (ANODE)}
 Augment the state with $p$ additional dimensions initialized to zero:
 $$
-  \tilde{\hbf}(t_0) = \begin{bmatrix} \hbf(t_0) \\ \mathbf{0}_p \end{bmatrix} \in \Rbb^{d+p}
+  \tilde{\xbf}(t_0) = \begin{bmatrix} \xbf(t_0) \\ \mathbf{0}_p \end{bmatrix} \in \Rbb^{d+p}
 $$
 Solve the ODE in the augmented space $\Rbb^{d+p}$, then read off the first $d$ dimensions.
 \begin{itemize}
@@ -1322,7 +1377,7 @@ Neural ODEs form the theoretical backbone of modern \textbf{diffusion-based gene
 
 \begin{tblockFrost}{}
 \begin{enumerate}
-  \item \textbf{Neural ODEs} replace discrete layer stacks with a continuous ODE: $\frac{d\hbf}{dt} = f_\theta(\hbf, t)$
+  \item \textbf{Neural ODEs} replace discrete layer stacks with a continuous ODE: $\frac{d\xbf}{dt} = f_\theta(\xbf, t)$
   \item \textbf{Forward pass}: call a black-box ODE solver (\texttt{ODESolve})
   \item \textbf{Backward pass}: adjoint sensitivity method — $\mathcal{O}(1)$ memory, numerically stable
   \item \textbf{CNFs}: exact log-likelihood via instantaneous change of variables + trace estimator
@@ -1338,17 +1393,18 @@ Neural ODEs form the theoretical backbone of modern \textbf{diffusion-based gene
 \scriptsize
 
 \begin{columns}
-\column{0.48\textwidth}
+\column{0.68\textwidth}
 \begin{block}{}
 \begin{itemize}
-  \item Chen et al.\ (2018) — \textit{Neural Ordinary Differential Equations}, NeurIPS
-  \item Grathwohl et al.\ (2018) — \textit{FFJORD}, ICLR 2019
-  \item Rubanova et al.\ (2019) — \textit{Latent ODEs}, NeurIPS
-  \item Kidger et al.\ (2020) — \textit{Neural CDEs}
-  \item Song et al.\ (2021) — \textit{Score-Based Generative Modeling through SDEs}
+  \item Chen, Ricky TQ, Yulia Rubanova, Jesse Bettencourt, and David K. Duvenaud. "Neural ordinary differential equations." Advances in neural information processing systems 31 (2018).
+  \item Grathwohl, Will, Ricky TQ Chen, Jesse Bettencourt, Ilya Sutskever, and David Duvenaud. "Ffjord: Free-form continuous dynamics for scalable reversible generative models." arXiv preprint arXiv:1810.01367 (2018).
+  \item Rubanova, Yulia, Ricky TQ Chen, and David K. Duvenaud. "Latent ordinary differential equations for irregularly-sampled time series." Advances in neural information processing systems 32 (2019).
+  \item Kidger, Patrick, James Morrill, James Foster, and Terry Lyons. "Neural controlled differential equations for irregular time series." Advances in neural information processing systems 33 (2020): 6696-6707.
+  \item Song, Yang, Jascha Sohl-Dickstein, Diederik P. Kingma, Abhishek Kumar, Stefano Ermon, and Ben Poole. "Score-based generative modeling through stochastic differential equations." arXiv preprint arXiv:2011.13456 (2020).
+  \item \url{https://people.bath.ac.uk/jmf68/pdf/Neural\%20SDE\%20presentation.pdf}
 \end{itemize}
 \end{block}
-\column{0.48\textwidth}
+\column{0.3\textwidth}
 \begin{tblockFrost}{}
 Neural ODEs unify \textbf{dynamical systems} and \textbf{deep learning}: they give continuous-depth models, constant-memory training, adaptive computation, and a principled framework for continuous-time sequence modeling and generative modeling.
 \end{tblockFrost}
