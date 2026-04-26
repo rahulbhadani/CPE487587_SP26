@@ -1,0 +1,164 @@
+\documentclass[12pt, xcolor=dvipsnames,svgnames,x11names]{article}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage[colorlinks=true,bookmarks=false,linkcolor=black,urlcolor=blue,citecolor=black]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[top=1in,bottom=1.2in,left=1in,right=1in]{geometry}
+\usepackage{multicol}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{circuits.logic.US, patterns}
+\usepackage{mathpazo}
+\usepackage{biolinum} 
+\usepackage[all]{tcolorbox}
+\usepackage{derivative}
+\usepackage{../Lectures/rahul_math}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Custom Color Palette from Image ---
+\definecolor{headerRed}{HTML}{A3403D} % Dark red from image top
+\definecolor{patternBg}{HTML}{F2D9D7} % Light pinkish bg from image bottom
+\definecolor{binaryText}{HTML}{D1A7A4} % Muted color for binary digits
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc}
+
+% --- Custom Colors ---
+\definecolor{lstmBackground}{RGB}{240, 240, 255}
+\definecolor{gateGreen}{RGB}{200, 255, 200}
+\definecolor{matrixBlue}{RGB}{135, 206, 250}
+
+% --- Background Pattern Setup ---
+\usepackage[pages=all]{background}
+\backgroundsetup{
+scale=1,
+color=black,
+opacity=1,
+angle=0,
+contents={%
+  \begin{tikzpicture}[remember picture,overlay]
+    % Top Header Bar
+    \fill[headerRed] (current page.north west) rectangle ([yshift=-1.2cm]current page.north east);
+    % Bottom Binary Background
+    \fill[patternBg] (current page.south west) rectangle ([yshift=3.5cm]current page.south east);
+    % Decorative Line (from image)
+    \draw[headerRed, line width=2pt] ([xshift=1in, yshift=-2.5cm]current page.north west) -- ([xshift=8in, yshift=-2.5cm]current page.north west);
+    % Binary Text Overlay (Sample)
+    \node[anchor=south, binaryText, font=\ttfamily\scriptsize, inner sep=0pt, yshift=1.5cm] at (current page.south) {
+        \begin{tabular}{c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c}
+        0 0 0 0 1 1 1 1 0 0 0 0 1 1 0 1 1 1 0 0 0 1 \\
+        1 0 0 1 0 1 0 0 0 1 0 0 1 1 0 0 1 0 1 1 \\
+        0 0 1 1 0 0 1 0 1 1 1 0 1 1 0 1 0 1 0 0 0 \\
+        The University of Alabama in Huntsville
+        \end{tabular}
+    };
+  \end{tikzpicture}
+}
+}
+
+\newcommand{\hw}{Classwork 08//Diffusion Process and Gaussian Distribution}
+\newcommand{\duedate}{April 07, 2026}
+
+\usetikzlibrary{positioning, arrows.meta, shadows}
+
+% --- Header Styling ---
+\makeatletter
+\renewcommand{\maketitle}{%
+    \vspace*{0.2cm}
+    \begin{center}
+        \begin{tcolorbox}[
+            enhanced,
+            colback=white,
+            colframe=headerRed,
+            arc=0mm,
+            title={\textcolor{white}{\bfseries \@title}},
+            coltitle=white,
+            fonttitle=\bfseries\large,
+            attach boxed title to top left={xshift=10pt, yshift=-\tcboxedtitleheight/2},
+            boxed title style={sharp corners, colback=headerRed, frame hidden}
+        ]
+        \large
+        \vspace{10pt}
+\noindent
+\begin{tabular}{@{}p{3.5cm}p{6cm}r@{}}
+\textbf{Student Name:} & \underline{\hspace{6cm}} & \textbf{Points:} 30 \\
+\end{tabular}
+
+\vspace{10pt}
+
+\noindent
+\begin{tabular}{@{}p{3.5cm}p{6cm}r@{}}
+\textbf{A Number:} & \underline{\hspace{6cm}} & \textbf{Due Date:} \duedate \\
+\end{tabular}
+        \end{tcolorbox}
+    \end{center}
+    \vspace{10pt}
+}
+\makeatother
+
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small CPE 487/587, Spring 2026}
+\rhead{\small \textit{\hw}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+\usepackage{booktabs} % For professional lines
+
+
+% Define a very light gray for the rows
+\definecolor{tablegray}{gray}{0.95}
+
+\begin{document}
+
+
+\title{\hw}
+\maketitle
+
+
+Consider a random variable
+\begin{align*}
+\varepsilon \sim \Ncal (0, \Ibf)
+\end{align*}
+
+Imagine that $\xbf_0$ is the initial data distribution (the original data distribution). 
+
+Then, in the forward diffusion process, we have 
+
+\begin{align*}
+    \xbf_{t+1}  = \sqrt{1 - \beta_t}\xbf_t + \sqrt{\beta_t}\varepsilon
+\end{align*}
+
+Here, the recursive relationship collaposes into a single step relative to $\xbf_0$:
+
+\begin{align*}
+\xbf_{t+1} = \sqrt{\bar{\alpha}_{t+1}}\xbf_0 + \sqrt{1 - \bar{\alpha}_{t+1}}\varepsilon
+\end{align*}
+
+where we have the following relationship:
+
+$\alpha_i = 1 - \beta_i$, and $\bar{\alpha}_{t+1} = \prod_{i=0}^t \alpha_i$
+
+
+Suppose somebody told you that initial data $\xbf_0$ has distribution $\Ncal(m,s)$ where $s$ is the variance and $m$ is the mean.
+
+
+\begin{enumerate}
+\item Derive the mean $\Ebb[\xbf_{t+1}]$ and the variance $\Vbb(\xbf_{t+1})$ in the form of $\beta_{t+1}$, $m$ and $s$.
+
+\item Also provide the expression when $\beta_{t+1} = 0.1$ for all $t$.
+
+\item Derive Derive $q(\xbf_1 | \xbf_0)$.
+
+\item In Diffusion process, in every step, we make sure that variance of the noisy data at time $t$ doesn't explode. This is called variance preserving method. How does it guide us in choose what $\beta_t$ we can use? How is it related to stochastic differential equation (SDE)?
+\end{enumerate}
+
+In doing above derivation, please state what properites of expectations, and Gaussian distributions you are using.
+
+
+
+
+\end{document}
